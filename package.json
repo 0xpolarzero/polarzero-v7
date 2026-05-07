@@ -15,12 +15,15 @@
     "format:check": "oxfmt . --list-different"
   },
   "dependencies": {
+    "@openrouter/ai-sdk-provider": "^2.9.0",
     "@primer/octicons": "^19.25.0",
+    "ai": "^6.0.175",
     "astro": "^6.2.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/compiler": "^3.0.1",
+    "@types/node": "^25.6.0",
     "js-tiktoken": "^1.0.21",
     "oxfmt": "^0.48.0",
     "oxlint": "^1.61.0",

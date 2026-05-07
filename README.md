@@ -1,6 +1,6 @@
-# PolarZero — retro technical Astro site
+# polarzero — retro technical Astro site
 
-A hand-built Astro implementation of the old-school, high-signal PolarZero redesign.
+A hand-built Astro implementation of the old-school, high-signal polarzero redesign.
 
 ## Stack
 

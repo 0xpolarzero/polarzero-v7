@@ -1,4 +1,4 @@
-name: Update pinned repos
+name: Update generated data
 
 on:
   schedule:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: update-pinned-repos
+  group: update-generated-data
   cancel-in-progress: true
 
 jobs:
@@ -22,18 +22,18 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
-      - run: bun run update:pinned-repos
+      - run: bun run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit updated repo metadata
+      - name: Commit updated generated data
         run: |
-          if [[ -n "$(git status --porcelain src/data/pinned-repos.json)" ]]; then
+          if [[ -n "$(git status --porcelain src/data/pinned-repos.json src/data/chat-context.md)" ]]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add src/data/pinned-repos.json
-            git commit -m "Update pinned repo metadata"
+            git add src/data/pinned-repos.json src/data/chat-context.md
+            git commit -m "Update generated site data"
             git push
           else
-            echo "Pinned repo metadata is already up to date."
+            echo "Generated site data is already up to date."
           fi

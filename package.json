@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "bun run update:pinned-repos && bun run generate:chat-context && astro check && astro build",
+    "generate:chat-context": "node scripts/generate-chat-context.mjs",
     "preview": "astro preview",
     "update:pinned-repos": "node scripts/update-pinned-repos.mjs",
     "lint": "oxlint .",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/compiler": "^3.0.1",
+    "js-tiktoken": "^1.0.21",
     "oxfmt": "^0.48.0",
     "oxlint": "^1.61.0",
     "typescript": "^5.9.3"

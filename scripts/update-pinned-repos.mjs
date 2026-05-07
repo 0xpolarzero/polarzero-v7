@@ -7,7 +7,8 @@ const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
 const outputPath = fileURLToPath(new URL("../src/data/pinned-repos.json", import.meta.url));
 
 if (!token) {
-  throw new Error("Missing GITHUB_TOKEN or GH_TOKEN.");
+  console.warn("Missing GITHUB_TOKEN or GH_TOKEN. Keeping existing pinned repo metadata.");
+  process.exit(0);
 }
 
 const query = `

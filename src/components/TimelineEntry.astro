@@ -1,5 +1,6 @@
 ---
 import ExternalLinks from "@/components/ExternalLinks.astro";
+import { SHARED_DESCRIPTION_LINKS } from "@/data/shared-description-links";
 import type { TimelineItem } from "@/data/timeline";
 
 type Props = {
@@ -9,32 +10,10 @@ type Props = {
 
 const { item, compact = false } = Astro.props;
 const dateLabel = item.to ? `${item.from} → ${item.to}` : `${item.from} → now`;
-const SHARED_DESCRIPTION_LINKS: Record<string, string> = {
-  Atmoky: "https://www.atmoky.com/",
-  BubbleTea: "https://github.com/charmbracelet/bubbletea",
-  Certora: "https://github.com/certora/certora",
-  Deno: "https://deno.com",
-  Electrobun: "https://electrobun.dev",
-  Foundry: "https://github.com/foundry-rs/foundry",
-  Halmos: "https://github.com/certora/halmos",
-  Hardhat: "https://github.com/NomicFoundation/hardhat",
-  Hasura: "https://github.com/hasura/graphql-engine",
-  MUD: "https://github.com/latticexyz/mud",
-  Neon: "https://neon.tech",
-  "Next.js": "https://nextjs.org",
-  Pi: "https://pi.dev",
-  Remix: "https://remix.run",
-  Smithers: "https://smithers.sh",
-  Svelte: "https://svelte.dev",
-  Tevm: "https://tevm.sh",
-  Timescale: "https://github.com/timescale/timescaledb",
-  "Yellowstone gRPC": "https://github.com/rpcpool/yellowstone-grpc",
-  Whatsabi: "https://github.com/shazow/whatsabi",
-};
 
 const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const getLinkedParts = (line: string) => {
-  const links = { ...SHARED_DESCRIPTION_LINKS, ...item.descriptionLinks };
+  const links: Record<string, string> = { ...SHARED_DESCRIPTION_LINKS, ...item.descriptionLinks };
 
   const terms = Object.keys(links).sort((a, b) => b.length - a.length);
   const pattern = new RegExp(`(${terms.map(escapeRegExp).join("|")})`, "g");

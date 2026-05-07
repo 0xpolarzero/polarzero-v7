@@ -96,7 +96,7 @@ export const TIMELINE: TimelineYear[] = [
           twitter: "https://x.com/primodiumgame",
         },
         descriptionLinks: {
-          "DEX Indexer": "https://github.com/primodiumxyz/dex-indexer-stack/tree/main/packages/indexer",
+          "DEX Indexer": "https://github.com/primodiumxyz/dex-indexer-stack",
           "DEX GraphQL": "https://github.com/primodiumxyz/dex-indexer-stack/tree/main/packages/gql",
           "DEX Server": "https://github.com/primodiumxyz/dex-server",
           Tub: "https://github.com/primodiumxyz/tub-ios",

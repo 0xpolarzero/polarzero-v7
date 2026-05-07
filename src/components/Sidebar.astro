@@ -1,21 +1,28 @@
 ---
+import octicons from "@primer/octicons";
 import { NAV } from "@/data/nav";
 import { PROFILE } from "@/data/profile";
 import { SOCIALS } from "@/data/socials";
+
+const socialIcons = {
+  Email: octicons.mail.toSVG({ "aria-hidden": "true", class: "sidebar-link-icon", height: 14, width: 14 }),
+  GitHub: octicons["mark-github"].toSVG({ "aria-hidden": "true", class: "sidebar-link-icon", height: 14, width: 14 }),
+  Twitter: octicons.mention.toSVG({ "aria-hidden": "true", class: "sidebar-link-icon", height: 14, width: 14 }),
+};
 ---
 
 <aside class="sidebar">
   <a class="skip-link" href="#content">skip to content</a>
 
   <nav class="sidebar-block" aria-label="Primary navigation">
-    <p class="prompt">&gt; navigation</p>
-    <ul class="nav-list">
+    <ul class="nav-list sidebar-primary-nav">
       {NAV.map((item) => <li><a href={item.href}>[{item.label}]</a></li>)}
     </ul>
   </nav>
 
+  <div class="sidebar-separator" aria-hidden="true"></div>
+
   <div class="sidebar-block">
-    <p class="prompt">&gt; links</p>
     <ul class="nav-list">
       {
         SOCIALS.map((social) => (
@@ -25,12 +32,18 @@ import { SOCIALS } from "@/data/socials";
               rel="noreferrer"
               target={social.href.startsWith("mailto:") ? undefined : "_blank"}
             >
+              <span set:html={socialIcons[social.label]} />
               [{social.label}]
             </a>
           </li>
         ))
       }
     </ul>
+  </div>
+
+  <div class="sidebar-separator" aria-hidden="true"></div>
+
+  <div class="sidebar-block">
     <dl class="kv-list">
       <div>
         <dt>timezone</dt>
@@ -38,5 +51,4 @@ import { SOCIALS } from "@/data/socials";
       </div>
     </dl>
   </div>
-
 </aside>

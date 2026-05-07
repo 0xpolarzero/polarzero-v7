@@ -134,6 +134,13 @@ samp,
   padding: 20px 0;
 }
 
+.sidebar-separator {
+  width: 42px;
+  height: 1px;
+  margin: 2px 0;
+  background: var(--line-soft);
+}
+
 .site-stamp {
   padding-top: 0;
 }
@@ -161,16 +168,31 @@ samp,
 .nav-list {
   display: grid;
   gap: 4px;
-  padding: 10px 0 0;
+  padding: 0;
   margin: 0;
   list-style: none;
   font-size: 0.92rem;
 }
 
+.nav-list a {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.sidebar-primary-nav a {
+  text-decoration: none;
+}
+
+.sidebar-link-icon {
+  flex: 0 0 auto;
+  fill: currentColor;
+}
+
 .kv-list {
   display: grid;
   gap: 8px;
-  margin: 12px 0 0;
+  margin: 0;
   font-size: 0.82rem;
 }
 
@@ -517,10 +539,6 @@ h1 {
     gap: 6px 14px;
   }
 
-  .sidebar .kv-list {
-    margin-top: 10px;
-  }
-
   .sidebar .kv-list div {
     display: flex;
     gap: 8px;
@@ -566,21 +584,10 @@ h1 {
 }
 
 @media (min-width: 720px) and (max-width: 1180px) {
-  .sidebar-block {
-    display: grid;
-    grid-template-columns: 7.5rem minmax(0, 1fr);
-    gap: 12px;
-    align-items: baseline;
-  }
-
   .sidebar .nav-list,
   .sidebar .kv-list {
     padding-top: 0;
     margin-top: 0;
-  }
-
-  .sidebar-block > .kv-list {
-    grid-column: 1 / -1;
   }
 }
 

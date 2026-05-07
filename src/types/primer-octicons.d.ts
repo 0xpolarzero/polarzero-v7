@@ -4,6 +4,9 @@ declare module "@primer/octicons" {
   };
 
   const octicons: {
+    mail: Octicon;
+    "mark-github": Octicon;
+    mention: Octicon;
     star: Octicon;
     "repo-forked": Octicon;
   };

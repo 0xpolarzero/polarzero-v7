@@ -14,7 +14,7 @@
  * - Create chats, switch chats, and ask follow-up questions.
  * - Send only the active chat's bounded message history to OpenRouter.
  * - Stream assistant output via the Vercel AI SDK.
- * - Use deepseek/deepseek-v4-flash with high reasoning.
+ * - Use deepseek/deepseek-v4-flash with medium reasoning.
  * - Give the model tightly instructed access to OpenRouter server-side web_search and web_fetch tools.
  *
  * This is a POC file, not production UI code. In production, the requestOpenRouterStream
@@ -61,7 +61,7 @@ type StorageLike = {
 
 const STORAGE_KEY = "polarzero.chat.v1";
 const DEFAULT_MODEL = "deepseek/deepseek-v4-flash";
-const DEFAULT_REASONING_EFFORT = "high";
+const DEFAULT_REASONING_EFFORT = "medium";
 const DEFAULT_MAX_OUTPUT_TOKENS = 1_000;
 const SITE_URL = "https://polarzero.xyz";
 const SITE_TITLE = "polarzero";

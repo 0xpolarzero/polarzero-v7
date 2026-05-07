@@ -1,0 +1,30 @@
+{
+  "name": "polarzero-retro-astro",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.2.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt . --list-different"
+  },
+  "dependencies": {
+    "astro": "^6.2.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/compiler": "^3.0.1",
+    "oxfmt": "^0.48.0",
+    "oxlint": "^1.61.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "bun": ">=1.2.0",
+    "node": ">=22.12.0"
+  }
+}

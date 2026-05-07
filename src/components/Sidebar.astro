@@ -1,0 +1,70 @@
+---
+import AsciiMark from "@/components/AsciiMark.astro";
+import { NAV } from "@/data/nav";
+import { PROFILE } from "@/data/profile";
+import { SOCIALS } from "@/data/socials";
+
+const currentYear = new Date().getFullYear();
+---
+
+<aside class="sidebar">
+  <a class="skip-link" href="#content">skip to content</a>
+
+  <div class="sidebar-block site-stamp">
+    <p class="prompt">&gt; identity</p>
+    <a class="wordmark" href="/">{PROFILE.name}</a>
+    <p>{PROFILE.handle}</p>
+  </div>
+
+  <nav class="sidebar-block" aria-label="Primary navigation">
+    <p class="prompt">&gt; navigation</p>
+    <ul class="nav-list">
+      {NAV.map((item) => <li><a href={item.href}>[{item.label}]</a></li>)}
+    </ul>
+  </nav>
+
+  <div class="sidebar-block">
+    <p class="prompt">&gt; status</p>
+    <dl class="kv-list">
+      <div>
+        <dt>focus</dt>
+        <dd>{PROFILE.operatingMode}</dd>
+      </div>
+      <div>
+        <dt>location</dt>
+        <dd>{PROFILE.location}</dd>
+      </div>
+      <div>
+        <dt>tz</dt>
+        <dd>{PROFILE.timezone}</dd>
+      </div>
+      <div>
+        <dt>accent</dt>
+        <dd>{PROFILE.accent}</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="sidebar-block">
+    <p class="prompt">&gt; find me</p>
+    <ul class="nav-list">
+      {
+        SOCIALS.map((social) => (
+          <li>
+            <a
+              href={social.href}
+              rel="noreferrer"
+              target={social.href.startsWith("mailto:") ? undefined : "_blank"}
+            >
+              [{social.label}]
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <AsciiMark />
+
+  <p class="copyright">© 2017–{currentYear} PolarZero</p>
+</aside>

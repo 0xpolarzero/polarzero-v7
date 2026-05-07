@@ -1,0 +1,29 @@
+---
+import type { TimelineLinkMap } from "@/data/timeline";
+
+type Props = {
+  links?: TimelineLinkMap;
+};
+
+const { links } = Astro.props;
+const entries = links ? Object.entries(links) : [];
+const labels: Record<string, string> = {
+  website: "web",
+  github: "git",
+  twitter: "x",
+  article: "article",
+  docs: "docs",
+};
+---
+
+{
+  entries.length > 0 && (
+    <nav class="external-links" aria-label="External links">
+      {entries.map(([key, href]) => (
+        <a href={href} rel="noreferrer" target="_blank">
+          [{labels[key] ?? key}]
+        </a>
+      ))}
+    </nav>
+  )
+}

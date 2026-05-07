@@ -546,6 +546,10 @@ h1 {
     padding: 0;
   }
 
+  .sidebar-separator {
+    display: none;
+  }
+
   .sidebar .nav-list,
   .sidebar .kv-list {
     display: flex;

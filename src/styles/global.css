@@ -184,6 +184,16 @@ samp,
   text-decoration: none;
 }
 
+.sidebar-primary-nav a[aria-current="true"] {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.sidebar-primary-nav a[aria-current="true"]::before {
+  color: var(--accent-strong);
+  content: ">";
+}
+
 .sidebar-link-icon {
   flex: 0 0 auto;
   fill: currentColor;
@@ -424,6 +434,10 @@ h1 {
 
 .activity-filter::after {
   content: "]";
+}
+
+.activity-filter:hover {
+  color: var(--accent-strong);
 }
 
 .activity-filter[aria-pressed="true"] {

@@ -16,7 +16,7 @@ const socialIcons = {
 
   <nav class="sidebar-block" aria-label="Primary navigation">
     <ul class="nav-list sidebar-primary-nav">
-      {NAV.map((item) => <li><a href={item.href}>[{item.label}]</a></li>)}
+      {NAV.map((item) => <li><a data-nav-link href={item.href}>[{item.label}]</a></li>)}
     </ul>
   </nav>
 

@@ -82,6 +82,20 @@ const activityFilters: Array<TimelineCategory | "all"> = [
         const entries = Array.from(document.querySelectorAll<HTMLElement>(".timeline-entry"));
         const years = Array.from(document.querySelectorAll<HTMLElement>(".timeline-year"));
         const status = document.querySelector<HTMLElement>('[data-section-eyebrow="activity-title"]');
+        const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-nav-link]"));
+        const sections = navLinks
+          .map((link) => document.querySelector<HTMLElement>(link.hash))
+          .filter((section): section is HTMLElement => Boolean(section));
+
+        const setCurrentSection = (id: string) => {
+          navLinks.forEach((link) => {
+            if (link.hash === `#${id}`) {
+              link.setAttribute("aria-current", "true");
+            } else {
+              link.removeAttribute("aria-current");
+            }
+          });
+        };
 
         const applyFilter = (filter: string) => {
           filters.forEach((button) => {
@@ -106,6 +120,19 @@ const activityFilters: Array<TimelineCategory | "all"> = [
             applyFilter(button.dataset.filter ?? "all");
           });
         });
+
+        if (sections.length > 0) {
+          const updateCurrentSection = () => {
+            const marker = window.scrollY + window.innerHeight * 0.35;
+            const current = sections.findLast((section) => section.offsetTop <= marker) ?? sections[0];
+
+            setCurrentSection(current.id);
+          };
+
+          updateCurrentSection();
+          window.addEventListener("scroll", updateCurrentSection, { passive: true });
+          window.addEventListener("resize", updateCurrentSection);
+        }
       </script>
 
       <footer class="site-footer">

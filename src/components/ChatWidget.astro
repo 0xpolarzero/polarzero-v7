@@ -1,0 +1,758 @@
+---
+const suggestions = [
+  "What kind of work does polarzero do?",
+  "Summarize the EVM tooling experience.",
+  "What has polarzero built recently?",
+  "How can I contact polarzero?",
+];
+
+const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
+---
+
+<section id="assistant" class="chat-demo section-block" aria-labelledby="assistant-title">
+  <header class="chat-demo-header">
+    <div>
+      <p class="eyebrow">Assistant</p>
+      <h2 id="assistant-title">Ask about polarzero</h2>
+    </div>
+  </header>
+
+  <div class="agent-context-note">
+    <p>Or paste this into your favorite agent interface:</p>
+    <div class="agent-prompt-copy">
+      <code data-agent-prompt>{agentPrompt}</code>
+      <button type="button" data-agent-prompt-copy>Copy</button>
+    </div>
+  </div>
+
+  <div class="chat-workbench" data-chat-root>
+    <aside class="chat-sidebar" aria-label="Conversations">
+      <div class="chat-sidebar-topline">
+        <span>Conversations</span>
+        <button class="chat-icon-button" type="button" aria-label="New chat" data-chat-new>+</button>
+      </div>
+
+      <div class="chat-list" data-chat-list></div>
+
+      <div class="chat-sidebar-actions">
+        <button type="button" data-chat-delete>Delete chat</button>
+        <button type="button" data-chat-clear>Clear all</button>
+      </div>
+    </aside>
+
+    <div class="chat-panel" aria-label="Active conversation">
+      <div class="chat-empty-state" aria-label="New chat suggestions" data-chat-empty>
+        <div>
+          <span class="chat-kicker">New chat state</span>
+          <p>Start with one of these prompts.</p>
+        </div>
+        <div class="chat-suggestions">
+          {
+            suggestions.map((suggestion) => (
+              <button type="button" data-chat-suggestion={suggestion}>
+                {suggestion}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="chat-transcript" aria-live="polite" aria-label="Conversation transcript" data-chat-transcript>
+      </div>
+
+      <form class="chat-composer" aria-label="Ask about polarzero" data-chat-form>
+        <label for="chat-input">Message</label>
+        <textarea
+          id="chat-input"
+          name="message"
+          placeholder="Ask about my work, projects, writing, or background"
+          rows="3"
+          data-chat-input></textarea>
+        <div class="chat-composer-actions">
+          <div class="chat-status-pill" aria-live="polite" data-chat-status hidden>
+            <span class="chat-status-dot" aria-hidden="true"></span>
+            <span data-chat-status-text>streaming</span>
+          </div>
+          <div>
+            <button class="chat-stop-button" type="button" data-chat-stop hidden>Stop</button>
+            <button class="chat-send-button" type="submit" data-chat-send disabled>Send</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  import DOMPurify from "dompurify";
+  import { marked } from "marked";
+
+  type Role = "user" | "assistant";
+  type MessageStatus = "complete" | "streaming" | "error";
+
+  type StoredMessage = {
+    id: string;
+    role: Role;
+    content: string;
+    status: MessageStatus;
+    createdAt: string;
+  };
+
+  type StoredChat = {
+    id: string;
+    title: string;
+    messages: StoredMessage[];
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  type StoredChatState = {
+    version: 1;
+    activeChatId: string;
+    chats: StoredChat[];
+  };
+
+  const STORAGE_KEY = "polarzero.chat.v1";
+  const MAX_CHATS = 10;
+  const MAX_MESSAGES_PER_CHAT = 24;
+  const SERVER_MESSAGE_WINDOW = 12;
+  const MAX_MESSAGE_CHARS = 4_000;
+  const MAX_STORED_MESSAGE_CHARS = 8_000;
+  const MAX_SERIALIZED_STORAGE_BYTES = 1_000_000;
+  const STREAM_PERSIST_INTERVAL_MS = 300;
+  const GENERIC_FAILURE = "I could not reach the assistant right now. Please try again in a moment.";
+  const TEMPORARY_FAILURE = "The assistant is temporarily unavailable. Please try again in a moment.";
+
+  marked.use({
+    async: false,
+    breaks: false,
+    gfm: true,
+  });
+
+  const root = document.querySelector<HTMLElement>("[data-chat-root]");
+  const list = root?.querySelector<HTMLElement>("[data-chat-list]");
+  const status = root?.querySelector<HTMLElement>("[data-chat-status]");
+  const statusText = root?.querySelector<HTMLElement>("[data-chat-status-text]");
+  const empty = root?.querySelector<HTMLElement>("[data-chat-empty]");
+  const transcript = root?.querySelector<HTMLElement>("[data-chat-transcript]");
+  const form = root?.querySelector<HTMLFormElement>("[data-chat-form]");
+  const input = root?.querySelector<HTMLTextAreaElement>("[data-chat-input]");
+  const send = root?.querySelector<HTMLButtonElement>("[data-chat-send]");
+  const stop = root?.querySelector<HTMLButtonElement>("[data-chat-stop]");
+  const newChat = root?.querySelector<HTMLButtonElement>("[data-chat-new]");
+  const deleteChat = root?.querySelector<HTMLButtonElement>("[data-chat-delete]");
+  const clearAll = root?.querySelector<HTMLButtonElement>("[data-chat-clear]");
+  const agentPrompt = document.querySelector<HTMLElement>("[data-agent-prompt]");
+  const copyAgentPrompt = document.querySelector<HTMLButtonElement>("[data-agent-prompt-copy]");
+
+  let memoryStorageValue = "";
+  let state: StoredChatState;
+  let abortController: AbortController | undefined;
+  let activeAssistantMessageId: string | undefined;
+  let pendingPersistTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const createId = () => crypto.randomUUID();
+
+  const now = () => new Date().toISOString();
+
+  const byteLength = (value: string) => new TextEncoder().encode(value).byteLength;
+
+  const titleFromFirstMessage = (content: string) => {
+    const clean = content.trim().replace(/\s+/g, " ");
+    return clean.length > 48 ? `${clean.slice(0, 48)}...` : clean || "New chat";
+  };
+
+  const isIsoDateString = (value: unknown) =>
+    typeof value === "string" && !Number.isNaN(Date.parse(value));
+
+  const createInitialState = (): StoredChatState => {
+    const createdAt = now();
+    const chat = {
+      id: createId(),
+      title: "New chat",
+      messages: [],
+      createdAt,
+      updatedAt: createdAt,
+    };
+
+    return {
+      version: 1,
+      activeChatId: chat.id,
+      chats: [chat],
+    };
+  };
+
+  const normalizeStoredChatState = (value: unknown): StoredChatState | undefined => {
+    if (!value || typeof value !== "object") {
+      return undefined;
+    }
+
+    const candidate = value as Partial<StoredChatState>;
+
+    if (candidate.version !== 1 || !Array.isArray(candidate.chats)) {
+      return undefined;
+    }
+
+    const chats = candidate.chats
+      .filter((chat): chat is StoredChat => Boolean(chat && typeof chat === "object"))
+      .map((chat) => {
+        const createdAt = isIsoDateString(chat.createdAt) ? chat.createdAt : now();
+        const updatedAt = isIsoDateString(chat.updatedAt) ? chat.updatedAt : createdAt;
+        const messages = Array.isArray(chat.messages)
+          ? chat.messages
+              .filter((message): message is StoredMessage =>
+                Boolean(
+                  message &&
+                    typeof message === "object" &&
+                    (message.role === "user" || message.role === "assistant") &&
+                    (message.status === "complete" ||
+                      message.status === "streaming" ||
+                      message.status === "error") &&
+                    typeof message.content === "string" &&
+                    isIsoDateString(message.createdAt),
+                ),
+              )
+              .slice(-MAX_MESSAGES_PER_CHAT)
+              .map((message) => ({
+                id: typeof message.id === "string" ? message.id.slice(0, 128) : createId(),
+                role: message.role,
+                content: message.content.slice(0, MAX_STORED_MESSAGE_CHARS),
+                status: message.status === "streaming" ? "error" : message.status,
+                createdAt: message.createdAt,
+              }))
+          : [];
+
+        return {
+          id: typeof chat.id === "string" ? chat.id.slice(0, 128) : createId(),
+          title: typeof chat.title === "string" ? chat.title.slice(0, 80) : "New chat",
+          messages,
+          createdAt,
+          updatedAt,
+        };
+      })
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+      .slice(0, MAX_CHATS);
+
+    if (!chats.length) {
+      return undefined;
+    }
+
+    const activeChatId =
+      typeof candidate.activeChatId === "string" &&
+      chats.some((chat) => chat.id === candidate.activeChatId)
+        ? candidate.activeChatId
+        : chats[0].id;
+
+    return {
+      version: 1,
+      activeChatId,
+      chats,
+    };
+  };
+
+  function loadState() {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      const normalized = raw ? normalizeStoredChatState(JSON.parse(raw)) : undefined;
+      return normalized ?? createInitialState();
+    } catch {
+      const normalized = memoryStorageValue
+        ? normalizeStoredChatState(JSON.parse(memoryStorageValue))
+        : undefined;
+      return normalized ?? createInitialState();
+    }
+  }
+
+  const getActiveChat = () => {
+    const chat = state.chats.find((candidate) => candidate.id === state.activeChatId);
+
+    if (!chat) {
+      state = createInitialState();
+      return state.chats[0];
+    }
+
+    return chat;
+  };
+
+  const enforceStorageLimits = () => {
+    state.chats = state.chats.map((chat) => ({
+      ...chat,
+      messages: chat.messages.slice(-MAX_MESSAGES_PER_CHAT).map((message) => ({
+        ...message,
+        content: message.content.slice(0, MAX_STORED_MESSAGE_CHARS),
+      })),
+    }));
+
+    while (state.chats.length > MAX_CHATS) {
+      const oldestNonActive = [...state.chats]
+        .filter((chat) => chat.id !== state.activeChatId)
+        .sort((a, b) => a.updatedAt.localeCompare(b.updatedAt))[0];
+
+      if (!oldestNonActive) {
+        break;
+      }
+
+      state.chats = state.chats.filter((chat) => chat.id !== oldestNonActive.id);
+    }
+
+    let serialized = JSON.stringify(state);
+
+    while (byteLength(serialized) > MAX_SERIALIZED_STORAGE_BYTES && state.chats.length > 1) {
+      const oldestNonActive = [...state.chats]
+        .filter((chat) => chat.id !== state.activeChatId)
+        .sort((a, b) => a.updatedAt.localeCompare(b.updatedAt))[0];
+
+      if (!oldestNonActive) {
+        break;
+      }
+
+      state.chats = state.chats.filter((chat) => chat.id !== oldestNonActive.id);
+      serialized = JSON.stringify(state);
+    }
+
+    while (
+      byteLength(serialized) > MAX_SERIALIZED_STORAGE_BYTES &&
+      getActiveChat().messages.length > 1
+    ) {
+      getActiveChat().messages.shift();
+      serialized = JSON.stringify(state);
+    }
+
+    return serialized;
+  };
+
+  const persist = () => {
+    if (pendingPersistTimer) {
+      clearTimeout(pendingPersistTimer);
+      pendingPersistTimer = undefined;
+    }
+
+    const serialized = enforceStorageLimits();
+    memoryStorageValue = serialized;
+
+    try {
+      sessionStorage.setItem(STORAGE_KEY, serialized);
+    } catch {
+      return;
+    }
+  };
+
+  const schedulePersist = () => {
+    if (pendingPersistTimer) {
+      return;
+    }
+
+    pendingPersistTimer = setTimeout(persist, STREAM_PERSIST_INTERVAL_MS);
+  };
+
+  const formatTime = (createdAt: string) =>
+    new Intl.DateTimeFormat(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(createdAt));
+
+  const renderMessageContent = (message: StoredMessage) => {
+    const fragment = document.createDocumentFragment();
+    const content = message.content.trim() || "";
+    const rendered = document.createElement("div");
+    rendered.className = "chat-message-content";
+    rendered.innerHTML = DOMPurify.sanitize(marked.parse(content) as string, {
+      ADD_ATTR: ["target"],
+    });
+
+    rendered.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((anchor) => {
+      anchor.rel = "noreferrer";
+      anchor.target = "_blank";
+    });
+
+    fragment.append(rendered);
+
+    if (message.status === "streaming") {
+      const cursor = document.createElement("span");
+      cursor.className = "chat-cursor";
+      cursor.setAttribute("aria-hidden", "true");
+      fragment.append(cursor);
+    }
+
+    return fragment;
+  };
+
+  const render = () => {
+    if (!root || !list || !status || !statusText || !empty || !transcript || !input || !send || !stop) {
+      return;
+    }
+
+    const activeChat = getActiveChat();
+    const isStreaming = Boolean(abortController);
+
+    status.hidden = !isStreaming;
+    statusText.textContent = isStreaming ? "streaming" : "ready";
+    empty.hidden = activeChat.messages.length > 0;
+    stop.hidden = !isStreaming;
+    send.disabled = input.value.trim().length === 0 || isStreaming;
+    list.replaceChildren(
+      ...state.chats.map((chat) => {
+        const item = document.createElement("button");
+        item.className = "chat-list-item";
+        item.type = "button";
+
+        if (chat.id === state.activeChatId) {
+          item.setAttribute("aria-current", "true");
+        }
+
+        const name = document.createElement("span");
+        name.textContent = chat.title;
+
+        const meta = document.createElement("small");
+        meta.textContent =
+          chat.messages.length === 0
+            ? "empty"
+            : `${chat.messages.length} message${chat.messages.length === 1 ? "" : "s"}`;
+
+        item.append(name, meta);
+        item.addEventListener("click", () => {
+          if (chat.id === state.activeChatId) {
+            return;
+          }
+
+          abortActiveStream();
+          state.activeChatId = chat.id;
+          persist();
+          render();
+          input.focus();
+        });
+
+        return item;
+      }),
+    );
+
+    transcript.replaceChildren(
+      ...activeChat.messages.map((message) => {
+        const article = document.createElement("article");
+        article.className = `chat-message chat-message-${message.role}`;
+
+        if (message.status === "streaming") {
+          article.classList.add("is-streaming");
+        }
+
+        if (message.status === "error") {
+          article.classList.add(message.content.includes("[Response interrupted.]") ? "is-interrupted" : "is-error");
+        }
+
+        const meta = document.createElement("div");
+        meta.className = "chat-message-meta";
+
+        const author = document.createElement("span");
+        author.textContent = message.role === "user" ? "You" : "polarzero assistant";
+
+        const time = document.createElement("time");
+        time.dateTime = message.createdAt;
+        time.textContent = formatTime(message.createdAt);
+
+        meta.append(author, time);
+        article.append(meta, renderMessageContent(message));
+        return article;
+      }),
+    );
+
+    transcript.scrollTop = transcript.scrollHeight;
+  };
+
+  const createMessage = (role: Role, content: string, status: MessageStatus): StoredMessage => ({
+    id: createId(),
+    role,
+    content: content.slice(0, MAX_STORED_MESSAGE_CHARS),
+    status,
+    createdAt: now(),
+  });
+
+  const boundedActiveMessages = () =>
+    getActiveChat()
+      .messages.filter((message) => message.content.trim())
+      .slice(-SERVER_MESSAGE_WINDOW)
+      .map((message) => ({
+        id: message.id,
+        role: message.role,
+        content: message.content.slice(0, MAX_MESSAGE_CHARS),
+        createdAt: message.createdAt,
+      }));
+
+  const abortActiveStream = () => {
+    if (!abortController || !activeAssistantMessageId) {
+      return;
+    }
+
+    abortController.abort();
+    const message = getActiveChat().messages.find((candidate) => candidate.id === activeAssistantMessageId);
+
+    if (message) {
+      message.status = message.content.trim() ? "complete" : "error";
+      message.content = message.content.trim() ? message.content : GENERIC_FAILURE;
+      getActiveChat().updatedAt = now();
+    }
+
+    abortController = undefined;
+    activeAssistantMessageId = undefined;
+    persist();
+    render();
+  };
+
+  const handleStream = async (assistantMessageId: string) => {
+    abortController = new AbortController();
+    activeAssistantMessageId = assistantMessageId;
+    render();
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        chatId: getActiveChat().id,
+        messages: boundedActiveMessages(),
+      }),
+      signal: abortController.signal,
+    });
+
+    if (!response.ok || !response.body) {
+      throw new Error("Chat request failed.");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let sawDone = false;
+    let sawError = false;
+
+    const handleEvent = (rawEvent: string) => {
+      const event = rawEvent
+        .split("\n")
+        .find((line) => line.startsWith("event: "))
+        ?.slice("event: ".length);
+      const dataLine = rawEvent
+        .split("\n")
+        .find((line) => line.startsWith("data: "))
+        ?.slice("data: ".length);
+      const data = dataLine ? JSON.parse(dataLine) : {};
+      const message = getActiveChat().messages.find((candidate) => candidate.id === assistantMessageId);
+
+      if (!message) {
+        return;
+      }
+
+      if (event === "message" && typeof data.content === "string") {
+        message.content = `${message.content}${data.content}`.slice(0, MAX_STORED_MESSAGE_CHARS);
+        message.status = "streaming";
+        getActiveChat().updatedAt = now();
+        schedulePersist();
+        render();
+      }
+
+      if (event === "error") {
+        sawError = true;
+        message.status = "error";
+        message.content = message.content.trim()
+          ? `${message.content}\n\n[Response interrupted.]`
+          : TEMPORARY_FAILURE;
+        getActiveChat().updatedAt = now();
+        persist();
+        render();
+      }
+
+      if (event === "done") {
+        sawDone = true;
+      }
+    };
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split("\n\n");
+      buffer = events.pop() ?? "";
+
+      for (const event of events) {
+        if (event.trim()) {
+          handleEvent(event);
+        }
+      }
+    }
+
+    if (buffer.trim()) {
+      handleEvent(buffer);
+    }
+
+    const message = getActiveChat().messages.find((candidate) => candidate.id === assistantMessageId);
+
+    if (!sawDone && message && !sawError) {
+      message.status = "error";
+      message.content = message.content.trim()
+        ? `${message.content}\n\n[Response interrupted.]`
+        : GENERIC_FAILURE;
+      persist();
+      render();
+      return;
+    }
+
+    if (message && !sawError) {
+      message.status = "complete";
+      persist();
+      render();
+    }
+  };
+
+  const submitQuestion = async (content: string) => {
+    const question = content.trim();
+
+    if (!question || abortController) {
+      return;
+    }
+
+    const chat = getActiveChat();
+    const userMessage = createMessage("user", question, "complete");
+    chat.messages.push(userMessage);
+    chat.updatedAt = userMessage.createdAt;
+
+    if (chat.title === "New chat") {
+      chat.title = titleFromFirstMessage(question);
+    }
+
+    const assistantMessage = createMessage("assistant", "", "streaming");
+    chat.messages.push(assistantMessage);
+    chat.updatedAt = assistantMessage.createdAt;
+    input!.value = "";
+    persist();
+    render();
+
+    try {
+      await handleStream(assistantMessage.id);
+    } catch (error) {
+      if ((error as Error).name === "AbortError") {
+        return;
+      }
+
+      const message = getActiveChat().messages.find((candidate) => candidate.id === assistantMessage.id);
+
+      if (message) {
+        message.status = "error";
+        message.content = message.content.trim()
+          ? `${message.content}\n\n[Response interrupted.]`
+          : GENERIC_FAILURE;
+      }
+
+      persist();
+      render();
+    } finally {
+      abortController = undefined;
+      activeAssistantMessageId = undefined;
+      render();
+    }
+  };
+
+  newChat?.addEventListener("click", () => {
+    abortActiveStream();
+    const createdAt = now();
+    const chat = {
+      id: createId(),
+      title: "New chat",
+      messages: [],
+      createdAt,
+      updatedAt: createdAt,
+    };
+
+    state.chats.unshift(chat);
+    state.activeChatId = chat.id;
+    persist();
+    render();
+    input?.focus();
+  });
+
+  deleteChat?.addEventListener("click", () => {
+    abortActiveStream();
+    const deletedActive = state.activeChatId;
+    state.chats = state.chats.filter((chat) => chat.id !== deletedActive);
+
+    if (!state.chats.length) {
+      state = createInitialState();
+    } else {
+      state.activeChatId = [...state.chats].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0].id;
+    }
+
+    persist();
+    render();
+    input?.focus();
+  });
+
+  clearAll?.addEventListener("click", () => {
+    abortActiveStream();
+    state = createInitialState();
+
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      return;
+    }
+
+    persist();
+    render();
+    input?.focus();
+  });
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    void submitQuestion(input?.value ?? "");
+  });
+
+  input?.addEventListener("input", render);
+
+  input?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      form?.requestSubmit();
+    }
+  });
+
+  stop?.addEventListener("click", abortActiveStream);
+
+  root?.querySelectorAll<HTMLButtonElement>("[data-chat-suggestion]").forEach((button) => {
+    button.addEventListener("click", () => {
+      void submitQuestion(button.dataset.chatSuggestion ?? "");
+    });
+  });
+
+  copyAgentPrompt?.addEventListener("click", async () => {
+    const prompt = agentPrompt?.textContent?.trim();
+
+    if (!prompt) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(prompt);
+      copyAgentPrompt.textContent = "Copied";
+    } catch {
+      const selection = window.getSelection();
+      const range = document.createRange();
+
+      if (agentPrompt) {
+        range.selectNodeContents(agentPrompt);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+
+      copyAgentPrompt.textContent = "Selected";
+    }
+
+    window.setTimeout(() => {
+      copyAgentPrompt.textContent = "Copy";
+    }, 1600);
+  });
+
+  state = loadState();
+  persist();
+  render();
+</script>

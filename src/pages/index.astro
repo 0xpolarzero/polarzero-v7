@@ -1,5 +1,6 @@
 ---
 import PinnedRepoCard from "@/components/PinnedRepoCard.astro";
+import ChatWidget from "@/components/ChatWidget.astro";
 import SectionHeader from "@/components/SectionHeader.astro";
 import Sidebar from "@/components/Sidebar.astro";
 import TimelineEntry from "@/components/TimelineEntry.astro";
@@ -34,6 +35,8 @@ const activityFilters: Array<TimelineCategory | "all"> = [
           </div>
         </div>
       </section>
+
+      <ChatWidget />
 
       <section id="pinned" class="section-block" aria-label="Pinned">
         <SectionHeader

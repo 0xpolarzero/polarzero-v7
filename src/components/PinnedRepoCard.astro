@@ -1,0 +1,46 @@
+---
+import octicons from "@primer/octicons";
+
+type PinnedRepo = {
+  name: string;
+  nameWithOwner: string;
+  url: string;
+  description: string;
+  language: string | null;
+  languageColor: string | null;
+  stars: number;
+  forks: number;
+};
+
+type Props = {
+  repo: PinnedRepo;
+};
+
+const { repo } = Astro.props;
+const starIcon = octicons.star.toSVG({ "aria-hidden": "true", class: "repo-stat-icon", height: 16, width: 16 });
+const forkIcon = octicons["repo-forked"].toSVG({
+  "aria-hidden": "true",
+  class: "repo-stat-icon",
+  height: 16,
+  width: 16,
+});
+---
+
+<article class="pinned-repo-card">
+  <h3>
+    <a href={repo.url} rel="noreferrer" target="_blank">{repo.name}</a>
+  </h3>
+  {repo.description && <p>{repo.description}</p>}
+  <footer>
+    {
+      repo.language && (
+        <span>
+          <span class="language-dot" style={`--language-color: ${repo.languageColor ?? "var(--muted)"}`} />
+          {repo.language}
+        </span>
+      )
+    }
+    <span aria-label={`${repo.stars} stars`} set:html={`${starIcon}${repo.stars}`} />
+    <span aria-label={`${repo.forks} forks`} set:html={`${forkIcon}${repo.forks}`} />
+  </footer>
+</article>

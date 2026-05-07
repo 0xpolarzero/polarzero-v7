@@ -1,0 +1,64 @@
+{
+  "repos": [
+    {
+      "name": "svvy",
+      "nameWithOwner": "0xpolarzero/svvy",
+      "url": "https://github.com/0xpolarzero/svvy",
+      "description": "A strategic coding workbench for directing bounded, workflow-backed agent work.",
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "stars": 0,
+      "forks": 0
+    },
+    {
+      "name": "evmstate",
+      "nameWithOwner": "polareth/evmstate",
+      "url": "https://github.com/polareth/evmstate",
+      "description": "A TypeScript library for tracing, and visualizing EVM state changes with detailed human-readable labeling.",
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "stars": 33,
+      "forks": 6
+    },
+    {
+      "name": "dex-indexer-stack",
+      "nameWithOwner": "primodiumxyz/dex-indexer-stack",
+      "url": "https://github.com/primodiumxyz/dex-indexer-stack",
+      "description": "A full-stack for indexing DEX trades on Solana using Yellowstone GRPC and Timescale.",
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "stars": 13,
+      "forks": 4
+    },
+    {
+      "name": "savvy",
+      "nameWithOwner": "polareth/savvy",
+      "url": "https://github.com/polareth/savvy",
+      "description": "An interface for the EVM in the browser, to simulate and visualize your onchain activity.",
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "stars": 27,
+      "forks": 4
+    },
+    {
+      "name": "reactive-tables",
+      "nameWithOwner": "primodiumxyz/reactive-tables",
+      "url": "https://github.com/primodiumxyz/reactive-tables",
+      "description": "A Typescript library for managing reactive tables in a MUD application, on node and browser environments.",
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "stars": 3,
+      "forks": 3
+    },
+    {
+      "name": "compiler",
+      "nameWithOwner": "0xpolarzero/compiler",
+      "url": "https://github.com/0xpolarzero/compiler",
+      "description": "A powerful Solidity and Vyper compiler for TypeScript.",
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "stars": 0,
+      "forks": 0
+    }
+  ]
+}

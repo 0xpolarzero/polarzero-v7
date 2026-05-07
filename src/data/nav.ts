@@ -1,5 +1,5 @@
 export const NAV = [
-  { label: "Profile", href: "#profile" },
-  { label: "Activity", href: "#activity" },
-  { label: "Changelog", href: "#changelog" },
+  { label: "profile", href: "#profile" },
+  { label: "pinned", href: "#pinned" },
+  { label: "activity", href: "#activity" },
 ] as const;

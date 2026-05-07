@@ -11,6 +11,7 @@ export type TimelineItem = {
   to?: string | null;
   caption: string;
   description: string[];
+  descriptionLinks?: Record<string, string>;
   links?: TimelineLinkMap;
 };
 
@@ -27,15 +28,20 @@ export const TIMELINE: TimelineYear[] = [
         title: "svvy",
         category: "work",
         from: "2026-04",
-        caption: "a strategic coding workbench for directing bounded, workflow-backed agent work",
+        caption: "A strategic coding workbench for directing bounded, workflow-backed agent work",
         description: [
-          "svvy organizes coding work around orchestrator sessions that hold product intent, route implementation into bounded threads, and reconcile durable results from structured, inspectable workflows those threads supervise without bloating orchestrator context, while letting you steer at any layer.",
-          "electrobun-browser-tools shipped an inspection and driving bridge for Electrobun apps, exposing windows, views, layout trees, DOM state, logs, events, screenshots, and Playwright-style locators to agents.",
-          "electrobun-e2e shipped shared end-to-end infrastructure for running Electrobun desktop apps headlessly in OrbStack Linux environments.",
+          "svvy: organizes coding work around orchestrator sessions that hold product intent, route implementation into bounded threads, and reconcile durable results from structured, inspectable workflows those threads supervise without bloating orchestrator context, while letting you steer at any layer.",
+          "electrobun-browser-tools: shipped an inspection and driving bridge for Electrobun apps, exposing windows, views, layout trees, DOM state, logs, events, screenshots, and Playwright-style locators to agents.",
+          "electrobun-e2e: shipped shared end-to-end infrastructure for running Electrobun desktop apps headlessly in OrbStack Linux environments.",
           "Built with Electrobun, Svelte, Pi, and Smithers.",
         ],
         links: {
           github: "https://github.com/0xpolarzero/svvy",
+        },
+        descriptionLinks: {
+          svvy: "https://github.com/0xpolarzero/svvy",
+          "electrobun-browser-tools": "https://github.com/0xpolarzero/electrobun-browser-tools",
+          "electrobun-e2e": "https://github.com/0xpolarzero/electrobun-e2e",
         },
       },
     ],
@@ -49,16 +55,23 @@ export const TIMELINE: TimelineYear[] = [
         from: "2025-04",
         caption: "Contributing to a multi-language library for running an EVM in every environment",
         description: [
-          "@tevm/compiler shipped a Solidity & Vyper compiler around Foundry compilers for Typescript.",
-          "guillotine worked on a high-performance EVM implementation in Zig.",
-          "chop worked on a CLI tool for EVM disassembly and simulation in Golang using BubbleTea.",
-          "@tevm/test-matchers shipped a Javascript library that extends Vitest with EVM-related test matchers.",
-          "@tevm/test-node shipped a Javascript library to snapshot EVM JSON-RPC calls in Vitest/Bun.",
+          "@tevm/compiler: shipped a Solidity & Vyper compiler around Foundry compilers for Typescript.",
+          "guillotine: worked on a high-performance EVM implementation in Zig.",
+          "chop: worked on a CLI tool for EVM disassembly and simulation in Golang using BubbleTea.",
+          "@tevm/test-matchers: shipped a Javascript library that extends Vitest with EVM-related test matchers.",
+          "@tevm/test-node: shipped a Javascript library to snapshot EVM JSON-RPC calls in Vitest/Bun.",
         ],
         links: {
           website: "https://tevm.sh",
           github: "https://github.com/evmts",
           twitter: "https://x.com/tevmtools",
+        },
+        descriptionLinks: {
+          "@tevm/compiler": "https://github.com/evmts/compiler/blob/main/libs/compiler/README.md",
+          guillotine: "https://github.com/evmts/guillotine",
+          chop: "https://github.com/evmts/chop",
+          "@tevm/test-matchers": "https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-matchers",
+          "@tevm/test-node": "https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-node",
         },
       },
       {
@@ -68,19 +81,29 @@ export const TIMELINE: TimelineYear[] = [
         to: "2025-03",
         caption: "Worked at a startup exploring onchain games and crypto user-facing products",
         description: [
-          "DEX Indexer shipped a Yellowstone gRPC Typescript indexer for Solana DEX trades.",
-          "DEX GraphQL shipped a Hasura + Timescale GraphQL client for querying DEX activity & analytics on Solana.",
-          "DEX Server worked on a tRPC server for building and sponsoring user transactions on Solana.",
-          "Tub worked on an iOS trading app on Solana with a TikTok-inspired UX.",
-          "Gasless server shipped a MUD-compatible gasless server library for EVM chains.",
-          "Primodium Empires worked on a fully onchain turn-based prediction market game on Ethereum.",
-          "Reactive Tables shipped a state management library for onchain games built on MUD for Typescript & React.",
-          "Primodium v0.11 worked on a fully onchain MMO.",
+          "DEX Indexer: shipped a Yellowstone gRPC Typescript indexer for Solana DEX trades.",
+          "DEX GraphQL: shipped a Hasura + Timescale GraphQL client for querying DEX activity & analytics on Solana.",
+          "DEX Server: worked on a tRPC server for building and sponsoring user transactions on Solana.",
+          "Tub: worked on an iOS trading app on Solana with a TikTok-inspired UX.",
+          "Gasless server: shipped a MUD-compatible gasless server library for EVM chains.",
+          "Primodium Empires: worked on a fully onchain turn-based prediction market game on Ethereum.",
+          "Reactive Tables: shipped a state management library for onchain games built on MUD for Typescript & React.",
+          "Primodium v0.11: worked on a fully onchain MMO.",
         ],
         links: {
           website: "https://primodium.com",
           github: "https://github.com/primodiumxyz",
           twitter: "https://x.com/primodiumgame",
+        },
+        descriptionLinks: {
+          "DEX Indexer": "https://github.com/primodiumxyz/dex-indexer-stack/tree/main/packages/indexer",
+          "DEX GraphQL": "https://github.com/primodiumxyz/dex-indexer-stack/tree/main/packages/gql",
+          "DEX Server": "https://github.com/primodiumxyz/dex-server",
+          Tub: "https://github.com/primodiumxyz/tub-ios",
+          "Gasless server": "https://github.com/primodiumxyz/gasless",
+          "Primodium Empires": "https://github.com/primodiumxyz/empires",
+          "Reactive Tables": "https://github.com/primodiumxyz/reactive-tables",
+          "Primodium v0.11": "https://github.com/primodiumxyz/primodium",
         },
       },
       {
@@ -97,6 +120,9 @@ export const TIMELINE: TimelineYear[] = [
         links: {
           github: "https://github.com/polareth/evmstate",
           docs: "https://evmstate.polareth.org",
+        },
+        descriptionLinks: {
+          "@polareth/evmstate": "https://npmjs.com/package/@polareth/evmstate",
         },
       },
       {
@@ -146,6 +172,11 @@ export const TIMELINE: TimelineYear[] = [
           "airdrop gas benchmarks: a series of tests to benchmark gas usage across ERC20/721/1155 patterns with batched, merkle, and claim style drops, picked from popular airdrop contracts — comes with an interactive dashboard to analyze costs based on airdrop parameters.",
           "gas metering comparison: cross-validated gas reports from popular tooling against live executions with Foundry, Hardhat, and Tevm on identical calldata sets, and documented discrepancies.",
         ],
+        descriptionLinks: {
+          "airdrop gas benchmarks":
+            "https://polarzero.xyz/gas-visualizer?author=0xpolarzero&repo=airdrop-gas-benchmarks",
+          "gas metering comparison": "https://github.com/0xpolarzero/gas-metering-comparison",
+        },
       },
     ],
   },
@@ -163,6 +194,11 @@ export const TIMELINE: TimelineYear[] = [
           "storage collision: a reference research for verifying smart contract assumptions using fuzzing & formal verification tools (here exhibiting storage collision) with Foundry, Halmos, and Certora.",
           "ERC1155A: a reference fuzzing test suite on a token extension to verify assumptions and surface edge cases.",
         ],
+        descriptionLinks: {
+          Glider: "https://glide.r.xyz",
+          "storage collision": "https://github.com/0xpolarzero/storage-collision-formal-verification",
+          ERC1155A: "https://github.com/0xpolarzero/superform-erc1155a-fuzzing/",
+        },
       },
       {
         title: "Experiments: web-based 3D & spatial audio",
@@ -176,6 +212,12 @@ export const TIMELINE: TimelineYear[] = [
           "metaverse: a virtual world on the browser with interactive 3D audio sources — built while alpha-testing Atmoky spatial audio engine and as part of a research paper on immersive audio in virtual worlds.",
           "esthesis: a multi-platform 3D visualizer for music NFTs.",
         ],
+        descriptionLinks: {
+          echoes: "https://echoes.polarzero.xyz/",
+          poligraph: "https://poligraph.polarzero.xyz/",
+          metaverse: "https://immersiveaudio.polarzero.xyz/",
+          esthesis: "https://esthesis.polarzero.xyz/",
+        },
       },
       {
         title: "cascade",
@@ -210,6 +252,12 @@ export const TIMELINE: TimelineYear[] = [
           website: "https://chain.link/functions",
           docs: "https://youtu.be/N5jvHRSJVME",
         },
+        descriptionLinks: {
+          "Next.js starter": "https://github.com/0xpolarzero/chainlink-functions-next-starter",
+          "cross-chain ERC20 balance verification":
+            "https://github.com/0xpolarzero/cross-chain-ERC20-balance-verification",
+          "onchain Twitter verifier": "https://github.com/0xpolarzero/twitter-verifier-chainlink-functions",
+        },
       },
       {
         title: "Blockchain, but for real",
@@ -223,6 +271,11 @@ export const TIMELINE: TimelineYear[] = [
         ],
         links: {
           article: "https://medium.com/@0xpolarzero/blockchain-but-for-real-e1d8c0e0ebfc",
+        },
+        descriptionLinks: {
+          "Blockchain, but for real (EN)": "https://medium.com/@0xpolarzero/blockchain-but-for-real-e1d8c0e0ebfc",
+          "La blockchain, mais pour de vrai (FR)":
+            "https://medium.com/@0xpolarzero/la-blockchain-mais-pour-de-vrai-0fed9b951af9",
         },
       },
       {
@@ -383,6 +436,11 @@ export const TIMELINE: TimelineYear[] = [
         ],
         links: {
           website: "https://www.sae.edu/fra/courses/master-musique/",
+        },
+        descriptionLinks: {
+          "Paper (online)":
+            "https://polarzero.notion.site/M-moire-de-M2-Antton-Lepretre-51e31e37f8124a09a948322dac59a124",
+          "Paper (PDF)": "https://drive.google.com/file/d/1r0_ZjVGLb32tfxoBmrERJypyCV6No36u/view",
         },
       },
     ],

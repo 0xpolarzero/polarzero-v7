@@ -1,38 +1,21 @@
 ---
-import ProjectCard from "@/components/ProjectCard.astro";
+import PinnedRepoCard from "@/components/PinnedRepoCard.astro";
 import SectionHeader from "@/components/SectionHeader.astro";
 import Sidebar from "@/components/Sidebar.astro";
 import TimelineEntry from "@/components/TimelineEntry.astro";
+import pinnedRepos from "@/data/pinned-repos.json";
 import { PROFILE } from "@/data/profile";
 import { TIMELINE, type TimelineCategory } from "@/data/timeline";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const allItems = TIMELINE.flatMap((group) => group.items.map((item) => ({ ...item, year: group.year })));
-const nonEducation = allItems.filter((item) => item.category !== "education");
-const featured = nonEducation.slice(0, 4);
-const latestWriting = allItems.filter((item) => item.category === "writing").slice(0, 5);
-const latestResearch = allItems.filter((item) => item.category === "research").slice(0, 4);
-const latestExperiments = allItems.filter((item) => item.category === "experiments").slice(0, 5);
-
-const categories: TimelineCategory[] = ["work", "experiments", "research", "writing", "education"];
-const categoryCounts = categories.map((category) => ({
-  category,
-  count: allItems.filter((item) => item.category === category).length,
-}));
-
-const maxYearCount = Math.max(...TIMELINE.map((group) => group.items.length));
-const activityBars = TIMELINE.map((group) => ({
-  year: group.year,
-  count: group.items.length,
-  bar: "█".repeat(Math.max(1, Math.round((group.items.length / maxYearCount) * 12))),
-}));
-
-const lastUpdated = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-  timeZone: "Europe/Paris",
-}).format(new Date());
+const activityFilters: Array<TimelineCategory | "all"> = [
+  "all",
+  "work",
+  "experiments",
+  "research",
+  "writing",
+  "education",
+];
 ---
 
 <BaseLayout title="PolarZero — research + build">
@@ -43,142 +26,44 @@ const lastUpdated = new Intl.DateTimeFormat("en-GB", {
     <main id="content" class="content">
       <section id="profile" class="hero section-block" aria-labelledby="profile-title">
         <div class="hero-copy">
-          <p class="eyebrow">https://polarzero.xyz</p>
           <h1 id="profile-title">POLARZERO</h1>
-          <p class="subtitle">{PROFILE.title} / Research Notes</p>
+          <p class="subtitle">{PROFILE.title}</p>
 
           <div class="manifesto">
             {PROFILE.summary.map((paragraph) => <p>{paragraph}</p>)}
           </div>
         </div>
-
-        <aside class="terminal-panel" aria-label="identity terminal">
-          <p>$ whoami</p>
-          <dl>
-            <div>
-              <dt>handle</dt>
-              <dd>{PROFILE.handle}</dd>
-            </div>
-            <div>
-              <dt>role</dt>
-              <dd>engineer / researcher</dd>
-            </div>
-            <div>
-              <dt>scope</dt>
-              <dd>interfaces, systems, onchain tooling</dd>
-            </div>
-            <div>
-              <dt>bias</dt>
-              <dd>first principles</dd>
-            </div>
-          </dl>
-          <p class="cursor">$ _</p>
-        </aside>
       </section>
 
-      <section class="section-block compact-grid" aria-label="site facts">
-        <div class="fact-card">
-          <p class="prompt">&gt; operating mode</p>
-          <strong>{PROFILE.operatingMode}</strong>
-          <span>build the thing, measure the thing, explain the thing</span>
-        </div>
-        <div class="fact-card">
-          <p class="prompt">&gt; timeline entries</p>
-          <strong>{allItems.length}</strong>
-          <span>work / experiments / writing / research / education</span>
-        </div>
-        <div class="fact-card">
-          <p class="prompt">&gt; last build</p>
-          <strong>{lastUpdated}</strong>
-          <span>static HTML, no client framework shipped</span>
-        </div>
-      </section>
-
-      <section id="activity" class="section-block" aria-labelledby="selected-title">
+      <section id="pinned" class="section-block" aria-label="Pinned">
         <SectionHeader
-          id="selected-title"
-          eyebrow="selected"
-          title="Current and recent technical work"
-          href="#changelog"
-          linkLabel="full changelog →"
+          eyebrow="Pinned"
+          href="#activity"
+          linkLabel="all activity →"
         />
 
-        <div class="project-grid">
-          {featured.map((item, index) => <ProjectCard item={item} index={index} />)}
+        <div class="pinned-repo-grid">
+          {pinnedRepos.repos.map((repo) => <PinnedRepoCard repo={repo} />)}
         </div>
       </section>
 
-      <section class="section-block split-section" aria-label="activity indexes">
-        <div>
-          <SectionHeader eyebrow="index" title="Activity by category" />
-          <div class="category-grid">
-            {
-              categoryCounts.map(({ category, count }) => (
-                <div class="category-card">
-                  <span class="tag" data-category={category}>[{category}]</span>
-                  <strong>{count}</strong>
-                </div>
-              ))
-            }
-          </div>
+      <section id="activity" class="section-block" aria-labelledby="activity-title">
+        <SectionHeader id="activity-title" eyebrow="All" title="Activity" />
+
+        <div class="activity-filters" aria-label="Activity filters">
+          {
+            activityFilters.map((filter) => (
+              <button
+                aria-pressed={filter === "all" ? "true" : "false"}
+                class="activity-filter"
+                data-filter={filter}
+                type="button"
+              >
+                {filter}
+              </button>
+            ))
+          }
         </div>
-
-        <div>
-          <SectionHeader eyebrow="density" title="Changelog shape" />
-          <ol class="activity-bars" aria-label="Timeline entries per year">
-            {
-              activityBars.map(({ year, count, bar }) => (
-                <li>
-                  <span>{year}</span>
-                  <code>{bar}</code>
-                  <span>{count}</span>
-                </li>
-              ))
-            }
-          </ol>
-        </div>
-      </section>
-
-      <section class="section-block split-section" aria-label="writing and research">
-        <div>
-          <SectionHeader eyebrow="notes" title="Writing" />
-          <div class="list-panel">
-            {
-              latestWriting.map((item) => (
-                <a class="list-row" href={item.links?.article ?? item.links?.website ?? "#changelog"}>
-                  <span>{item.title}</span>
-                  <time>{item.from}</time>
-                </a>
-              ))
-            }
-          </div>
-        </div>
-
-        <div>
-          <SectionHeader eyebrow="research" title="Research / experiments" />
-          <div class="list-panel">
-            {
-              [...latestResearch, ...latestExperiments].slice(0, 6).map((item) => (
-                <a class="list-row" href="#changelog">
-                  <span>{item.title}</span>
-                  <time>{item.from}</time>
-                </a>
-              ))
-            }
-          </div>
-        </div>
-      </section>
-
-      <section class="section-block principles" aria-label="principles">
-        <pre>principles := clarity &gt; cleverness; rigor &gt; theater; shipping &gt; signaling;</pre>
-        <p>
-          The interface stays intentionally plain: typography, links, borders, dates, and enough structure to
-          make the work inspectable. Nothing hides behind motion or ornamental depth.
-        </p>
-      </section>
-
-      <section id="changelog" class="section-block" aria-labelledby="changelog-title">
-        <SectionHeader id="changelog-title" eyebrow="archive" title="Changelog" />
 
         <div class="timeline">
           {
@@ -194,10 +79,39 @@ const lastUpdated = new Intl.DateTimeFormat("en-GB", {
         </div>
       </section>
 
+      <script>
+        const filters = Array.from(document.querySelectorAll<HTMLButtonElement>(".activity-filter"));
+        const entries = Array.from(document.querySelectorAll<HTMLElement>(".timeline-entry"));
+        const years = Array.from(document.querySelectorAll<HTMLElement>(".timeline-year"));
+        const status = document.querySelector<HTMLElement>('[data-section-eyebrow="activity-title"]');
+
+        const applyFilter = (filter: string) => {
+          filters.forEach((button) => {
+            button.setAttribute("aria-pressed", String(button.dataset.filter === filter));
+          });
+
+          if (status) {
+            status.textContent = filter[0].toUpperCase() + filter.slice(1);
+          }
+
+          entries.forEach((entry) => {
+            entry.hidden = filter !== "all" && entry.dataset.category !== filter;
+          });
+
+          years.forEach((year) => {
+            year.hidden = !year.querySelector(".timeline-entry:not([hidden])");
+          });
+        };
+
+        filters.forEach((button) => {
+          button.addEventListener("click", () => {
+            applyFilter(button.dataset.filter ?? "all");
+          });
+        });
+      </script>
+
       <footer class="site-footer">
-        <span>Built by hand.</span>
-        <span>Astro / Bun / Oxlint / Oxfmt.</span>
-        <span>Accent: {PROFILE.accent}.</span>
+        <span>...</span>
       </footer>
     </main>
   </div>

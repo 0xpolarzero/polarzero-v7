@@ -3,17 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "bun@1.2.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
+    "update:pinned-repos": "node scripts/update-pinned-repos.mjs",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
     "format": "oxfmt .",
     "format:check": "oxfmt . --list-different"
   },
   "dependencies": {
+    "@primer/octicons": "^19.25.0",
     "astro": "^6.2.2"
   },
   "devDependencies": {
@@ -26,5 +27,6 @@
   "engines": {
     "bun": ">=1.2.0",
     "node": ">=22.12.0"
-  }
+  },
+  "packageManager": "bun@1.2.0"
 }

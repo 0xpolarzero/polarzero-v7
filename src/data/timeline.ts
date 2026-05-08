@@ -83,7 +83,8 @@ export const TIMELINE: TimelineYear[] = [
         category: "work",
         from: "2024-04",
         to: "2025-03",
-        caption: "Worked at a startup exploring onchain games and crypto user-facing products",
+        caption:
+          "Worked at a startup backed by Alliance, Paradigm, and A16Z Games, exploring onchain games and crypto user-facing products",
         description: [
           "DEX Indexer: shipped a Yellowstone gRPC Typescript indexer for Solana DEX trades.",
           "DEX GraphQL: shipped a Hasura + Timescale GraphQL client for querying DEX activity & analytics on Solana.",

@@ -582,21 +582,21 @@ const pinnedReposMarkdown = (pinnedRepos) => {
 };
 
 const main = async () => {
-    const [
-      instructions,
-      profileSource,
-      timelineSource,
-      socialsSource,
-      pinnedReposSource,
-      sharedDescriptionLinksSource,
-    ] = await Promise.all([
-      readText(instructionsPath),
-      readText(profilePath),
-      readText(timelinePath),
-      readText(socialsPath),
-      readText(pinnedReposPath),
-      readText(sharedDescriptionLinksPath),
-    ]);
+  const [
+    instructions,
+    profileSource,
+    timelineSource,
+    socialsSource,
+    pinnedReposSource,
+    sharedDescriptionLinksSource,
+  ] = await Promise.all([
+    readText(instructionsPath),
+    readText(profilePath),
+    readText(timelinePath),
+    readText(socialsPath),
+    readText(pinnedReposPath),
+    readText(sharedDescriptionLinksPath),
+  ]);
 
   const profile = evaluateConst(profileSource, "PROFILE");
   const timeline = evaluateConst(timelineSource, "TIMELINE");

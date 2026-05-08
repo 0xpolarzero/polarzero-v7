@@ -57,19 +57,19 @@ The exclusion matters because the local repository has 1,375 commits reachable f
 
 ### Issues
 
-| Issue | State | Created | Area | Evidence |
-| --- | --- | ---: | --- | --- |
-| #33 `bug: zig build` | Open | 2025-11-07 15:36:12 UTC | Build failure triage | Reported `zig build` failing in the `wasm32-wasi` executable link with `undefined symbol: main`. |
-| #34 `bug: zig build test` | Open | 2025-11-07 15:36:41 UTC | Test failure triage | Reported `zig build test` with 452/513 passed, 61 failed, and 19 leaked. |
+| Issue                     | State |                 Created | Area                 | Evidence                                                                                         |
+| ------------------------- | ----- | ----------------------: | -------------------- | ------------------------------------------------------------------------------------------------ |
+| #33 `bug: zig build`      | Open  | 2025-11-07 15:36:12 UTC | Build failure triage | Reported `zig build` failing in the `wasm32-wasi` executable link with `undefined symbol: main`. |
+| #34 `bug: zig build test` | Open  | 2025-11-07 15:36:41 UTC | Test failure triage  | Reported `zig build test` with 452/513 passed, 61 failed, and 19 leaked.                         |
 
 Issue #33 directly lines up with the later WASI build fix in PR #36.
 
 ### Pull requests
 
-| PR | State | Created | Merged | Files | Net diff | Area |
-| --- | --- | ---: | ---: | --- | ---: | --- |
-| #35 `chore: add ci` | Merged | 2025-11-07 18:12:50 UTC | 2026-02-06 10:43:35 UTC | `.github/workflows/ci.yml` | +30 / -0 | CI workflow |
-| #36 `fix: WASI build` | Merged | 2025-11-07 18:22:18 UTC | 2026-02-06 10:42:57 UTC | `src/root_c.zig` | +13 / -0 | WASI/WASM build |
+| PR                    | State  |                 Created |                  Merged | Files                      | Net diff | Area            |
+| --------------------- | ------ | ----------------------: | ----------------------: | -------------------------- | -------: | --------------- |
+| #35 `chore: add ci`   | Merged | 2025-11-07 18:12:50 UTC | 2026-02-06 10:43:35 UTC | `.github/workflows/ci.yml` | +30 / -0 | CI workflow     |
+| #36 `fix: WASI build` | Merged | 2025-11-07 18:22:18 UTC | 2026-02-06 10:42:57 UTC | `src/root_c.zig`           | +13 / -0 | WASI/WASM build |
 
 No PRs authored by `Polarzero` were found.
 
@@ -81,10 +81,10 @@ Both PRs had no comments, reviews, or status check rollup entries returned by `g
 
 These commits are reachable from `upstream/main` and have author `0xpolarzero <0xpolarzero@gmail.com>`.
 
-| Commit | Authored | Subject | Files | Net diff | Contribution area |
-| --- | ---: | --- | --- | ---: | --- |
-| `5566035833b23f97931a49c944462cbdc399b306` | 2025-11-07 19:11:45 +01:00 | `chore: add ci workflow` | `.github/workflows/ci.yml` | +30 / -0 | Added GitHub Actions CI on push and PR, running on `macos-latest`, checking out submodules recursively, installing Zig 0.15.1, caching cargo, then running `zig build` and `zig build test`. |
-| `2bd1b5f72950b9bdb9ff8b71374b125342d606c5` | 2025-11-07 19:19:40 +01:00 | `fix: export main function for wasi` | `src/root_c.zig` | +13 / -0 | Added a WASI-only no-op `main(int, char**)` export so the WASI libc link succeeds while leaving non-WASI builds untouched. |
+| Commit                                     |                   Authored | Subject                              | Files                      | Net diff | Contribution area                                                                                                                                                                            |
+| ------------------------------------------ | -------------------------: | ------------------------------------ | -------------------------- | -------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `5566035833b23f97931a49c944462cbdc399b306` | 2025-11-07 19:11:45 +01:00 | `chore: add ci workflow`             | `.github/workflows/ci.yml` | +30 / -0 | Added GitHub Actions CI on push and PR, running on `macos-latest`, checking out submodules recursively, installing Zig 0.15.1, caching cargo, then running `zig build` and `zig build test`. |
+| `2bd1b5f72950b9bdb9ff8b71374b125342d606c5` | 2025-11-07 19:19:40 +01:00 | `fix: export main function for wasi` | `src/root_c.zig`           | +13 / -0 | Added a WASI-only no-op `main(int, char**)` export so the WASI libc link succeeds while leaving non-WASI builds untouched.                                                                   |
 
 Upstream merge commits present in local `upstream/main`:
 
@@ -97,15 +97,15 @@ There is a minor GitHub/local mismatch: `gh pr list` returned different `mergeCo
 
 These strict `0xpolarzero <0xpolarzero@gmail.com>` commits are visible locally or in the user fork but are not reachable from `upstream/main` as of the fetched state on 2026-05-08.
 
-| Commit | Authored | Branch/ref evidence | Files | Net diff | Area |
-| --- | ---: | --- | --- | ---: | --- |
-| `289748a5b88eb42b6b90eb951d19e64d8b52f4ef` | 2026-03-19 11:04:02 +01:00 | `codex/fix-engine-quantity-reexport`, `codex/fix-engine-quantity-alias` | `client/engine/api.zig` | +23 / -21 | Restored engine `Quantity` struct alias. |
-| `0edd37264aa3e53d3f07cdbd280c7c4053a87a09` | 2026-03-19 11:15:41 +01:00 | `codex/fix-trie-empty-root-effect-mismatch` | `client-ts/trie/NodeLoader.ts`, `client-ts/trie/NodeStorage.ts` | +5 / -4 | Restored pure empty trie root checks in the TypeScript trie implementation. |
-| `6daee0f38184def3e9bcc175499122cbaaca7a31` | 2026-03-19 11:17:46 +01:00 | `codex/fix-txpool-invalid-config-expectation`, `codex/fix-engine-api-quantity-test-construction` | `client-ts/txpool/TxPool.test.ts` | +1 / -3 | Kept invalid txpool config assertion on `TxPoolLive`. |
-| `506693a9bb937af4957b9e3b93522e2fb67afd7c` | 2026-03-19 11:28:58 +01:00 | `codex/fix-spec-runner-secret-key-sender`, `codex/fix-engine-transition-config-jsonrpc-quantity` | `client/engine/api.zig` | +26 / -22 | Built engine API JSON-RPC wrappers through the typed parser. |
-| `db39f8fad16a00382138dd93091c41ad7b88d400` | 2026-03-19 11:58:30 +01:00 | `origin/codex/fix-state-spec-secretkey-sender-derivation`, local same branch | `test/specs/runner.zig` | +50 / -44 | Derived spec sender from secret key in the spec runner. |
-| `76d822463c6637b675fc5d583b54ae982b51b1cf` | 2026-03-19 12:03:16 +01:00 | `codex/fix-system-call-buffer-lifetime` | `src/instructions/handlers_system.zig` | +0 / -18 | Removed early frees/deferred buffer release in system handlers so call/init buffers live for the frame lifetime. |
-| `6a35c872b4ad81307cde798bf2824afe1dccbc01` | 2026-03-19 12:06:00 +01:00 | `HEAD -> codex/fix-create-address-multibyte-nonce` | `src/evm.zig` | +1 / -55 | Replaced manual CREATE address RLP/keccak logic with shared `computeCreateAddress`, specifically addressing multi-byte nonce behavior. |
+| Commit                                     |                   Authored | Branch/ref evidence                                                                              | Files                                                           |  Net diff | Area                                                                                                                                   |
+| ------------------------------------------ | -------------------------: | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | --------: | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `289748a5b88eb42b6b90eb951d19e64d8b52f4ef` | 2026-03-19 11:04:02 +01:00 | `codex/fix-engine-quantity-reexport`, `codex/fix-engine-quantity-alias`                          | `client/engine/api.zig`                                         | +23 / -21 | Restored engine `Quantity` struct alias.                                                                                               |
+| `0edd37264aa3e53d3f07cdbd280c7c4053a87a09` | 2026-03-19 11:15:41 +01:00 | `codex/fix-trie-empty-root-effect-mismatch`                                                      | `client-ts/trie/NodeLoader.ts`, `client-ts/trie/NodeStorage.ts` |   +5 / -4 | Restored pure empty trie root checks in the TypeScript trie implementation.                                                            |
+| `6daee0f38184def3e9bcc175499122cbaaca7a31` | 2026-03-19 11:17:46 +01:00 | `codex/fix-txpool-invalid-config-expectation`, `codex/fix-engine-api-quantity-test-construction` | `client-ts/txpool/TxPool.test.ts`                               |   +1 / -3 | Kept invalid txpool config assertion on `TxPoolLive`.                                                                                  |
+| `506693a9bb937af4957b9e3b93522e2fb67afd7c` | 2026-03-19 11:28:58 +01:00 | `codex/fix-spec-runner-secret-key-sender`, `codex/fix-engine-transition-config-jsonrpc-quantity` | `client/engine/api.zig`                                         | +26 / -22 | Built engine API JSON-RPC wrappers through the typed parser.                                                                           |
+| `db39f8fad16a00382138dd93091c41ad7b88d400` | 2026-03-19 11:58:30 +01:00 | `origin/codex/fix-state-spec-secretkey-sender-derivation`, local same branch                     | `test/specs/runner.zig`                                         | +50 / -44 | Derived spec sender from secret key in the spec runner.                                                                                |
+| `76d822463c6637b675fc5d583b54ae982b51b1cf` | 2026-03-19 12:03:16 +01:00 | `codex/fix-system-call-buffer-lifetime`                                                          | `src/instructions/handlers_system.zig`                          |  +0 / -18 | Removed early frees/deferred buffer release in system handlers so call/init buffers live for the frame lifetime.                       |
+| `6a35c872b4ad81307cde798bf2824afe1dccbc01` | 2026-03-19 12:06:00 +01:00 | `HEAD -> codex/fix-create-address-multibyte-nonce`                                               | `src/evm.zig`                                                   |  +1 / -55 | Replaced manual CREATE address RLP/keccak logic with shared `computeCreateAddress`, specifically addressing multi-byte nonce behavior. |
 
 Two additional non-upstream commit hashes are PR-head equivalents of merged changes:
 

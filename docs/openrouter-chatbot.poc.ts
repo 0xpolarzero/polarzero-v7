@@ -106,9 +106,7 @@ class ChatSessionStore {
   }
 
   get activeChat() {
-    const chat = this.#state.chats.find(
-      (candidate) => candidate.id === this.#state.activeChatId,
-    );
+    const chat = this.#state.chats.find((candidate) => candidate.id === this.#state.activeChatId);
 
     if (!chat) {
       throw new Error("Active chat is missing.");
@@ -195,18 +193,13 @@ class ChatSessionStore {
 
   appendAssistantChunk(messageId: string, chunk: string) {
     const chat = this.activeChat;
-    const message = chat.messages.find(
-      (candidate) => candidate.id === messageId,
-    );
+    const message = chat.messages.find((candidate) => candidate.id === messageId);
 
     if (!message || message.role !== "assistant") {
       throw new Error(`Unknown assistant message: ${messageId}`);
     }
 
-    message.content = `${message.content}${chunk}`.slice(
-      0,
-      MAX_STORED_MESSAGE_CHARS,
-    );
+    message.content = `${message.content}${chunk}`.slice(0, MAX_STORED_MESSAGE_CHARS);
     message.status = "streaming";
     chat.updatedAt = new Date().toISOString();
     this.#schedulePersist();
@@ -218,9 +211,7 @@ class ChatSessionStore {
 
   failAssistantMessage(messageId: string, fallbackContent: string) {
     const chat = this.activeChat;
-    const message = chat.messages.find(
-      (candidate) => candidate.id === messageId,
-    );
+    const message = chat.messages.find((candidate) => candidate.id === messageId);
 
     if (!message || message.role !== "assistant") {
       throw new Error(`Unknown assistant message: ${messageId}`);
@@ -236,9 +227,7 @@ class ChatSessionStore {
 
   boundedActiveMessages() {
     return this.activeChat.messages
-      .filter(
-        (message) => message.role === "user" || message.role === "assistant",
-      )
+      .filter((message) => message.role === "user" || message.role === "assistant")
       .filter((message) => message.content.trim())
       .slice(-SERVER_MESSAGE_WINDOW)
       .map((message) => ({
@@ -251,9 +240,7 @@ class ChatSessionStore {
 
   #setAssistantStatus(messageId: string, status: MessageStatus) {
     const chat = this.activeChat;
-    const message = chat.messages.find(
-      (candidate) => candidate.id === messageId,
-    );
+    const message = chat.messages.find((candidate) => candidate.id === messageId);
 
     if (!message || message.role !== "assistant") {
       throw new Error(`Unknown assistant message: ${messageId}`);
@@ -275,11 +262,7 @@ class ChatSessionStore {
     }, STREAM_PERSIST_INTERVAL_MS);
   }
 
-  #createMessage(
-    role: Role,
-    content: string,
-    status: MessageStatus,
-  ): StoredMessage {
+  #createMessage(role: Role, content: string, status: MessageStatus): StoredMessage {
     return {
       id: crypto.randomUUID(),
       role,
@@ -351,17 +334,12 @@ class ChatSessionStore {
         break;
       }
 
-      this.#state.chats = this.#state.chats.filter(
-        (chat) => chat.id !== oldestNonActive.id,
-      );
+      this.#state.chats = this.#state.chats.filter((chat) => chat.id !== oldestNonActive.id);
     }
 
     let serialized = JSON.stringify(this.#state);
 
-    while (
-      byteLength(serialized) > MAX_SERIALIZED_STORAGE_BYTES &&
-      this.#state.chats.length > 1
-    ) {
+    while (byteLength(serialized) > MAX_SERIALIZED_STORAGE_BYTES && this.#state.chats.length > 1) {
       const oldestNonActive = [...this.#state.chats]
         .filter((chat) => chat.id !== this.#state.activeChatId)
         .sort((a, b) => a.updatedAt.localeCompare(b.updatedAt))[0];
@@ -370,9 +348,7 @@ class ChatSessionStore {
         break;
       }
 
-      this.#state.chats = this.#state.chats.filter(
-        (chat) => chat.id !== oldestNonActive.id,
-      );
+      this.#state.chats = this.#state.chats.filter((chat) => chat.id !== oldestNonActive.id);
       serialized = JSON.stringify(this.#state);
     }
 
@@ -391,9 +367,7 @@ class ChatSessionStore {
 const isIsoDateString = (value: unknown) =>
   typeof value === "string" && !Number.isNaN(Date.parse(value));
 
-const normalizeStoredChatState = (
-  value: unknown,
-): StoredChatState | undefined => {
+const normalizeStoredChatState = (value: unknown): StoredChatState | undefined => {
   if (!value || typeof value !== "object") {
     return undefined;
   }
@@ -405,16 +379,10 @@ const normalizeStoredChatState = (
   }
 
   const chats = candidate.chats
-    .filter((chat): chat is StoredChat =>
-      Boolean(chat && typeof chat === "object"),
-    )
+    .filter((chat): chat is StoredChat => Boolean(chat && typeof chat === "object"))
     .map((chat) => {
-      const createdAt = isIsoDateString(chat.createdAt)
-        ? chat.createdAt
-        : new Date().toISOString();
-      const updatedAt = isIsoDateString(chat.updatedAt)
-        ? chat.updatedAt
-        : createdAt;
+      const createdAt = isIsoDateString(chat.createdAt) ? chat.createdAt : new Date().toISOString();
+      const updatedAt = isIsoDateString(chat.updatedAt) ? chat.updatedAt : createdAt;
       const messages = Array.isArray(chat.messages)
         ? chat.messages
             .filter((message): message is StoredMessage =>
@@ -431,10 +399,7 @@ const normalizeStoredChatState = (
             )
             .slice(-MAX_MESSAGES_PER_CHAT)
             .map((message) => ({
-              id:
-                typeof message.id === "string"
-                  ? message.id.slice(0, 128)
-                  : crypto.randomUUID(),
+              id: typeof message.id === "string" ? message.id.slice(0, 128) : crypto.randomUUID(),
               role: message.role,
               content: message.content.slice(0, MAX_STORED_MESSAGE_CHARS),
               status: message.status,
@@ -443,12 +408,8 @@ const normalizeStoredChatState = (
         : [];
 
       return {
-        id:
-          typeof chat.id === "string"
-            ? chat.id.slice(0, 128)
-            : crypto.randomUUID(),
-        title:
-          typeof chat.title === "string" ? chat.title.slice(0, 80) : "New chat",
+        id: typeof chat.id === "string" ? chat.id.slice(0, 128) : crypto.randomUUID(),
+        title: typeof chat.title === "string" ? chat.title.slice(0, 80) : "New chat",
         messages,
         createdAt,
         updatedAt,
@@ -479,8 +440,7 @@ const titleFromFirstMessage = (content: string) => {
   return clean.length > 48 ? `${clean.slice(0, 48)}...` : clean || "New chat";
 };
 
-const byteLength = (value: string) =>
-  new TextEncoder().encode(value).byteLength;
+const byteLength = (value: string) => new TextEncoder().encode(value).byteLength;
 
 const configuredModel = () => process.env.OPENROUTER_MODEL ?? DEFAULT_MODEL;
 
@@ -489,9 +449,7 @@ const configuredReasoningEffort = () =>
 
 const configuredMaxOutputTokens = () => {
   const value = Number(process.env.OPENROUTER_MAX_OUTPUT_TOKENS);
-  return Number.isInteger(value) && value > 0
-    ? value
-    : DEFAULT_MAX_OUTPUT_TOKENS;
+  return Number.isInteger(value) && value > 0 ? value : DEFAULT_MAX_OUTPUT_TOKENS;
 };
 
 const loadEnv = async () => {
@@ -548,9 +506,7 @@ const loadChatInstructions = async () => {
   return cachedChatInstructions;
 };
 
-type ServerMessage = ReturnType<
-  ChatSessionStore["boundedActiveMessages"]
->[number];
+type ServerMessage = ReturnType<ChatSessionStore["boundedActiveMessages"]>[number];
 
 const validateServerRequest = (body: unknown) => {
   if (!body || typeof body !== "object") {
@@ -604,16 +560,11 @@ const validateServerRequest = (body: unknown) => {
     chatId,
     messages: messages.slice(-SERVER_MESSAGE_WINDOW).map(
       (message): ServerMessage => ({
-        id:
-          typeof message.id === "string"
-            ? message.id.slice(0, 128)
-            : crypto.randomUUID(),
+        id: typeof message.id === "string" ? message.id.slice(0, 128) : crypto.randomUUID(),
         role: message.role,
         content: message.content.slice(0, MAX_MESSAGE_CHARS),
         createdAt:
-          typeof message.createdAt === "string"
-            ? message.createdAt
-            : new Date().toISOString(),
+          typeof message.createdAt === "string" ? message.createdAt : new Date().toISOString(),
       }),
     ),
   };
@@ -730,21 +681,15 @@ async function main() {
   const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey) {
-    throw new Error(
-      "Missing OPENROUTER_API_KEY in .env.local, .env, or the process environment.",
-    );
+    throw new Error("Missing OPENROUTER_API_KEY in .env.local, .env, or the process environment.");
   }
 
   const instructions = await loadChatInstructions();
   const context = await loadChatContext();
   const store = new ChatSessionStore(new MemoryStorage());
 
-  console.log(
-    `Loaded chat instructions: ${instructions.length.toLocaleString()} characters`,
-  );
-  console.log(
-    `Loaded chat context: ${context.length.toLocaleString()} characters`,
-  );
+  console.log(`Loaded chat instructions: ${instructions.length.toLocaleString()} characters`);
+  console.log(`Loaded chat context: ${context.length.toLocaleString()} characters`);
   console.log(`Created initial chat: ${store.activeChat.id}`);
 
   await askActiveChat(
@@ -781,9 +726,7 @@ async function main() {
 
   store.switchChat(secondChatId);
   store.deleteChat(firstChatId);
-  console.log(
-    `Deleted first chat. Remaining chats: ${store.state.chats.length}`,
-  );
+  console.log(`Deleted first chat. Remaining chats: ${store.state.chats.length}`);
 }
 
 await main();

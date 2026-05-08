@@ -4,5 +4,7 @@ import vercel from "@astrojs/vercel";
 export default defineConfig({
   site: "https://polarzero.xyz",
   output: "static",
-  adapter: vercel(),
+  adapter: vercel({
+    maxDuration: 300,
+  }),
 });

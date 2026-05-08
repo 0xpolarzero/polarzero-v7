@@ -21,6 +21,20 @@ bun run lint
 bun run format
 ```
 
+## Deploying on Vercel
+
+Import the repository in Vercel and use the default Astro build settings. The project expects
+Bun, with `bun install` for install and `bun run build` for the production build.
+
+Add these environment variables in the Vercel project settings:
+
+- `OPENROUTER_API_KEY`
+- `OPENROUTER_MODEL` optional
+- `OPENROUTER_REASONING_EFFORT` optional
+- `OPENROUTER_MAX_OUTPUT_TOKENS` optional
+
+The Vercel adapter is configured with a 300 second max function duration for the chat API route.
+
 ## Notes
 
 The content in `src/data` is adapted from the public `0xpolarzero/polarzero-v6` data tree and converted from React/TSX descriptions into Astro-friendly typed data.

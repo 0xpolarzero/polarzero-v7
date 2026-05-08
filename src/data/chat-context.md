@@ -9,6 +9,10 @@ You are the website assistant for polarzero.
 - Answer questions about polarzero, their work, projects, writing, education, interests, public links, and contact details.
 - Ground answers in the knowledge document. If the document does not contain the answer, say that you do not know from the available site data.
 - Do not invent private biographical details, availability, rates, employment status, opinions, or commitments.
+- Be precise about authorship. In this knowledge document, "shipped" means polarzero did the work end-to-end enough to claim ownership of that deliverable. "Worked on", "contributed to", or similar language means polarzero contributed to that project, but not necessarily as sole owner or primary author of the whole project.
+- Do not upgrade contribution language. If the knowledge document says polarzero worked on or contributed to a project, do not describe it as something they built, shipped, led, owned, or created unless the same entry explicitly says that.
+- For Tevm and Primodium projects, describe the specific contribution surfaces listed in the timeline instead of summarizing broad ownership. In particular, do not imply polarzero built Guillotine, Chop, Primodium, Empires, Tub, or Dex Server as whole products.
+- Treat fetched README contributor/title sections as project context, not as portfolio attribution. If a fetched README uses broad labels such as core developer, CLI lead, app lead, or project lead, still answer using the more specific timeline contribution surfaces above.
 - Answer concisely. Prefer 1-3 short paragraphs or a short bullet list, and only give a longer answer when the visitor asks for detail.
 - When mentioning specific projects, repositories, articles, public profiles, or contact routes that have URLs in the knowledge document, link the most relevant names using Markdown links. Prefer a few useful links over a dense list of citations.
 - You may use web_search and web_fetch only to inspect public pages that are directly relevant to polarzero, linked portfolio projects, public repositories, documentation, or current public details needed for the visitor's question.
@@ -154,8 +158,9 @@ Caption: Contributing to a multi-language library for running an EVM in every en
 
 Details:
 - @tevm/compiler: shipped a Solidity & Vyper compiler around Foundry compilers for Typescript.
-- guillotine: worked on a high-performance EVM implementation in Zig.
-- chop: worked on a CLI tool for EVM disassembly and simulation in Golang using BubbleTea.
+- tevm-monorepo: contributed to call/debug and tracing methods, a MUD plugin for optimistic updates, storage layout and pre/post-state tooling, and various other runtime, API, build, and documentation contributions.
+- guillotine: contributed to a Zig EVM, including a Zig devtool and BubbleTea CLI for call disassembly and step-by-step tracing, Go/C/WASM/TypeScript SDK bindings, EVM semantics fixes, and research-heavy work on hardfork support, gas accounting, and execution spec fixtures.
+- guillotine-mini: contributed WASI/WASM build and bindings, and research-heavy EVM tracing/debugging work around WASM constraints, threading, debugger architecture, and dispatch-level execution hooks.
 - @tevm/test-matchers: shipped a Javascript library that extends Vitest with EVM-related test matchers.
 - @tevm/test-node: shipped a Javascript library to snapshot EVM JSON-RPC calls in Vitest/Bun.
 
@@ -166,8 +171,9 @@ Links:
 
 Referenced links:
 - @tevm/compiler: https://github.com/evmts/compiler/blob/main/libs/compiler/README.md
+- tevm-monorepo: https://github.com/evmts/tevm-monorepo
 - guillotine: https://github.com/evmts/guillotine
-- chop: https://github.com/evmts/chop
+- guillotine-mini: https://github.com/evmts/guillotine-mini
 - @tevm/test-matchers: https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-matchers
 - @tevm/test-node: https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-node
 
@@ -180,12 +186,13 @@ Caption: Worked at a startup exploring onchain games and crypto user-facing prod
 Details:
 - DEX Indexer: shipped a Yellowstone gRPC Typescript indexer for Solana DEX trades.
 - DEX GraphQL: shipped a Hasura + Timescale GraphQL client for querying DEX activity & analytics on Solana.
-- DEX Server: worked on a tRPC server for building and sponsoring user transactions on Solana.
-- Tub: worked on an iOS trading app on Solana with a TikTok-inspired UX.
+- DEX Server: contributed server/package work around buy/sell flows, SOL/USD price caching, transaction analytics, Hasura/cache integration, Docker/package workflows, and docs.
+- Tub: contributed across the Solana indexer, GraphQL/Hasura/Timescale layer, dashboard/explorer, server analytics, and iOS query/chart/transaction integration surfaces.
 - Gasless server: shipped a MUD-compatible gasless server library for EVM chains.
-- Primodium Empires: worked on a fully onchain turn-based prediction market game on Ethereum.
+- Primodium Empires: contributed client UI/game tooling, cheatcodes, transaction feedback, keeper/deployment infrastructure, and contract test/audit-prep work, while owning the artist handoff loop for integrating art and animations into the game.
 - Reactive Tables: shipped a state management library for onchain games built on MUD for Typescript & React.
-- Primodium v0.11: worked on a fully onchain MMO.
+- Primodium v0.11: took ownership of the sync/indexer and database stack, and shipped client/core rendering work, game-object interaction fixes, reactive-table integration, package/build fixes, and browser profiling-driven performance optimizations.
+- Open-source release: owned the public release pass for the work above, including documentation for each package and shipping the open-sourced libraries and containers.
 
 Links:
 - website: https://primodium.com
@@ -1358,6 +1365,257 @@ The `libs/compiler/build/llms.txt` bundle is regenerated automatically during `p
 
 ---
 
+## Tevm / tevm-monorepo
+
+Source: https://github.com/evmts/tevm-monorepo
+
+<p align="center">
+  <a href="https://node.tevm.sh">
+    <img src="https://github.com/user-attachments/assets/880d8f54-8063-4018-8777-98ba383433ee" width="400" alt="Tevm Logo" />
+  </a>
+</p>
+
+<h1 align="center">Tevm</h1>
+
+<p align="center">
+  <b>JavaScript-Native Ethereum Virtual Machine</b>
+</p>
+
+<p align="center">
+  <a href="https://github.com/evmts/tevm-monorepo/actions/workflows/ci.yml">
+    <img src="https://github.com/evmts/tevm-monorepo/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
+  </a>
+  <a href="https://www.npmjs.com/package/tevm">
+    <img src="https://img.shields.io/npm/v/tevm" alt="NPM Version" />
+  </a>
+  <a href="https://www.npmjs.com/package/tevm">
+    <img src="https://img.shields.io/npm/dm/tevm.svg" alt="Tevm Downloads" />
+  </a>
+  <a href="https://bundlephobia.com/package/tevm@latest">
+    <img src="https://badgen.net/bundlephobia/minzip/tevm" alt="Minzipped Size" />
+  </a>
+  <a href="https://t.me/+ANThR9bHDLAwMjUx">
+    <img alt="Telegram" src="https://img.shields.io/badge/chat-telegram-blue.svg">
+  </a>
+  <a href="https://deepwiki.com/evmts/tevm-monorepo">
+    <img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki">
+  </a>
+</p>
+
+---
+
+## Note: we are near the end of a large rewrite to zig. It is expected we get a new stable version of Tevm in November
+
+## 🚀 The EVM for TypeScript, JavaScript, and the Modern Web
+
+Tevm puts an Ethereum node anywhere JavaScript runs—Node, browser, serverless, edge, or desktop. Instantly fork mainnet, simulate complex contracts, and run full-stack devnets, all with TypeScript-first safety and blazing speed.
+
+If you use **viem**, **wagmi**, **0x**, or build modern Ethereum apps, Tevm is the engine that powers next-level shipping, testing, and UX.
+
+---
+
+## ✨ Why Tevm?
+
+- **⚡ Ship at Lightspeed**: Instant feedback. Test and deploy with no wait, no Docker, no slow subprocesses. Build and iterate like the Rust and Go elite—now in JS.
+- **🚫 Goodbye, Loading Spinners**: Deliver real optimistic UI. Run every contract locally for true instant dapp experiences—no more waiting on RPCs.
+- **🔒 TypeScript-Native Confidence**: End-to-end type safety and autocompletion. Import Solidity, call contracts, and simulate transactions with zero guesswork.
+- **🌐 Mainnet-Grade Simulation**: Fork any EVM chain—mainnet, L2, L3—and manipulate state locally with full fidelity.
+- **🧪 Unmatched Testing Power**: Write robust integration tests, simulate reorgs, verify gas, and check UX edge cases, all in one toolkit.
+- **💻 True Local-First**: Full EVM in Node, browser, or edge—offline or online, always in your control.
+- **🎯 The Fastest Path from Idea to User**: Tevm Compiler brings Solidity into your codebase with real types, letting you ship faster and safer than ever before.
+- **⚡ Optimistic Updates, Advanced Gas Modeling**: Build dapps that feel like Web2 and simulate costs with precision, in JS/TS.
+
+---
+
+## 🛠️ The Tevm Ecosystem
+
+Everything you need to build, simulate, and ship at the speed of your ideas.
+
+### 1. Tevm Node: Instant, In-Memory Ethereum
+
+Run an EVM devnet anywhere—Node, browser, edge, or serverless. One line, zero dependencies.
+
+```typescript
+import { createMemoryClient } from "tevm";
+const client = createMemoryClient();
+```
+
+### 2. Tevm Bundler: Solidity—Typed, Bundled, Native
+
+Import Solidity right into TypeScript and call it with full type safety:
+
+```typescript
+import { ERC20 } from '@openzeppelin/contracts/token/ERC20.sol';
+import { createMemoryClient } from 'tevm';
+const client = createMemoryClient();
+
+const token = ERC20.withAddress("0x123...");
+const balance = await client.readContract(token.read.balanceOf("0x456..."));
+```
+
+Write contracts inline with `sol` template literals (coming soon):
+
+```typescript
+import { sol } from 'tevm';
+const { MyContract } = sol`
+  contract MyContract {
+    function greet() public pure returns (string memory) {
+      return "hello";
+    }
+  }
+`;
+```
+
+[See Bundler Quickstart →](https://node.tevm.sh/getting-started/bundler)
+
+
+### 4. Tevm Engine (Preview): Optimistic UX for viem/wagmi
+
+Next-gen plugin for instant optimistic updates, auto-caching, and devnet magic in your frontend.
+
+---
+
+## 💡 What Can You Do With Tevm?
+
+- **🔄 Test Against Mainnet or Any Chain**: Fork and simulate mainnet, L2s, L3s, and custom rollups with a single call.
+- **🤖 Prototype Next-Gen Apps**: From L2 fraud proofs to LLM/EVM wallets and AI agents—in the browser or edge.
+- **✨ Deliver Seamless UX**: Eliminate spinners. Build apps that always feel instant.
+- **⛽ Model Gas & Simulate Fees**: Run "what if" gas scenarios and advanced fee logic, locally and reproducibly.
+- **🔍 Debug, Profile, and Introspect**: Step through opcodes and inspect contract state in real time.
+
+---
+
+## 📊 Devnet Comparison
+
+| Feature | Tevm | Anvil | Hardhat | Ganache | Tenderly |
+|---------|------|-------|---------|---------|----------|
+| **Language** | JS/Wasm | Rust | JS/Rust | JS | Go |
+| **Browser Support** | ✅ | ❌ | ❌ | ❌ | ✅ (SaaS) |
+| **Minimal Dependencies** | ✅ | ✅ | ❌ | ❌ | ✅ (SaaS) |
+| **Viem Integration** | Native | Yes (RPC) | Minimal | Minimal | None |
+| **Forking (L1, Rollups)** | ✅ | ✅ | ✅ | Some | ✅ |
+| **Rebase/Fork Updates** | Soon | ❌ | ❌ | ❌ | ✅ |
+| **Solidity Tests** | Some | Yes | Yes | No | No |
+| **Fuzzing** | ❌ | ✅ | ✅ | ❌ | ❌ |
+| **Open Source** | ✅ | ✅ | ✅ | ✅ | ❌ |
+
+---
+
+## 🏆 Backed by the Ethereum Foundation
+
+Tevm is funded by an Ethereum Foundation grant. Our roadmap:
+
+- ✅ **Tevm 1.0.0 Release**
+- 🔄 **Test Library**
+- 🎮 **MUD Integration** for onchain games
+
+---
+
+## ⚡ Quick Start
+
+```bash
+npm install tevm viem@latest
+```
+
+```typescript
+import { createMemoryClient, http } from "tevm";
+import { optimism } from "tevm/common";
+import { parseAbi } from "viem";
+
+// Fork Optimism mainnet
+const client = createMemoryClient({
+  common: optimism,
+  fork: { transport: http("https://mainnet.optimism.io") },
+});
+await client.tevmReady();
+
+const account = "0x" + "baD60A7".padStart(40, "0");
+await client.setBalance({ address: account, value: 10_000_000_000_000_000_000n });
+
+const greeterAbi = parseAbi([
+  "function greet() view returns (string)",
+  "function setGreeting(string memory _greeting) public",
+]);
+const greeterAddress = "0x10ed0b176048c34d69ffc0712de06CbE95730748";
+
+// Read from contract
+const greeting = await client.readContract({
+  address: greeterAddress,
+  abi: greeterAbi,
+  functionName: "greet",
+});
+
+// Write to contract
+await client.writeContract({
+  account,
+  address: greeterAddress,
+  abi: greeterAbi,
+  functionName: "setGreeting",
+  args: ["Hello from Tevm!"],
+});
+
+await client.mine({ blocks: 1 });
+
+const newGreeting = await client.readContract({
+  address: greeterAddress,
+  abi: greeterAbi,
+  functionName: "greet",
+});
+```
+
+---
+
+## 📚 Learn More
+
+- 📖 [Getting Started](https://node.tevm.sh/getting-started/overview)
+- 🔗 [Viem Integration](https://node.tevm.sh/getting-started/viem)
+- 📦 [Ethers Integration](https://node.tevm.sh/getting-started/ethers)
+- 🛠️ [Bundler Quickstart](https://node.tevm.sh/getting-started/bundler)
+- 📚 [API Reference](https://node.tevm.sh/api/packages)
+- 💡 [Examples](https://github.com/evmts/tevm-monorepo/tree/main/examples)
+
+---
+
+## 👥 Community
+
+- 💬 [Join Telegram](https://t.me/+ANThR9bHDLAwMjUx)
+- 🗣️ [GitHub Discussions](https://github.com/evmts/tevm-monorepo/discussions)
+
+---
+
+## 🤝 Contributing
+
+We're always looking for passionate builders—especially if you love TypeScript, L2/L3s, or pushing the limits of EVM tooling. See [CONTRIBUTING.md](./CONTRIBUTING.md) to get started.
+
+---
+
+## 📄 License
+
+Tevm is fully open source under the MIT license. See [LICENSE](./LICENSE) for details.
+
+---
+
+## 🚦 Who Should Use Tevm?
+
+Tevm is for you if you're:
+
+- 🔧 Building with **viem**, **wagmi**, **0x**, or TypeScript-first Ethereum apps
+- ⚡ Shipping UIs that need instant feedback (no spinners)
+- 🚀 Creating next-gen dapps, rollups, wallets, or LLM/EVM integrations
+- 😤 Tired of slow, fragile, or heavyweight devnets
+
+---
+
+<p align="center">
+  <b>❤️ Ready to level up your Ethereum workflow?</b>
+  <br><br>
+  <a href="https://node.tevm.sh/getting-started/overview">
+    <img src="https://img.shields.io/badge/Get%20Started%20with%20Tevm-FF6B6B?style=for-the-badge&logo=ethereum&logoColor=white" alt="Get Started">
+  </a>
+</p>
+
+---
+
 ## Tevm / guillotine
 
 Source: https://github.com/evmts/guillotine
@@ -1718,7 +1976,7 @@ MIT License. Free for all use. 🌍
 
 ### Inlined linked README: specs/README.md
 
-Source: https://github.com/evmts/guillotine/blob/HEAD/specs/README.md
+Source: https://github.com/evmts/guillotine/blob/main/specs/README.md
 
 # Ethereum Execution Specs
 
@@ -1798,598 +2056,108 @@ The test runner:
 
 ---
 
-## Tevm / chop
+## Tevm / guillotine-mini
 
-Source: https://github.com/evmts/chop
+Source: https://github.com/evmts/guillotine-mini
 
-# Chop - Guillotine EVM CLI
+<div align="center">
+  <h1>
+    Minimal, spec-compliant EVM in Zig.
+    <br/>
+    <br/>
+  </h1>
+  <sup>
+    <a href="https://github.com/evmts/guillotine-mini">
+       <img src="https://img.shields.io/badge/zig-0.15.1+-orange.svg" alt="zig version" />
+    </a>
+    <a href="https://github.com/evmts/guillotine-mini/actions">
+      <img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="build status" />
+    </a>
+    <a href="https://github.com/evmts/guillotine-mini">
+      <img src="https://img.shields.io/badge/tests-all%20hardforks%20passing-brightgreen.svg" alt="tests" />
+    </a>
+  </sup>
+</div>
 
-![CI](https://github.com/evmts/chop/workflows/CI/badge.svg)
-[![codecov](https://codecov.io/gh/evmts/chop/branch/main/graph/badge.svg)](https://codecov.io/gh/evmts/chop)
-[![Security](https://github.com/evmts/chop/workflows/Security/badge.svg)](https://github.com/evmts/chop/actions/workflows/security.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/evmts/chop)](https://goreportcard.com/report/github.com/evmts/chop)
-[![Release](https://img.shields.io/github/v/release/evmts/chop)](https://github.com/evmts/chop/releases)
+> We are actively building a full Ethereum execution client (Guillotine) on top of this EVM. Guillotine-mini remains the core execution engine.
 
-A hybrid Zig/Go project that uses the guillotine-mini EVM for Ethereum transaction processing with a Bubble Tea-based TUI.
+## Requirements
 
-## Project Structure
+- Zig 0.15.1+
+- Cargo (for Rust crypto deps)
+- Python 3.8+ (optional, test generation)
 
-```
-chop/
-├── build.zig                        # Unified build system (orchestrates everything)
-├── src/                             # Zig source code
-│   ├── main.zig                     # Zig entry point
-│   └── root.zig                     # Zig module root
-├── main.go                          # Go application entry point
-├── internal/                        # Go source code
-│   ├── app/                         # Application logic
-│   │   ├── model.go                 # Bubble Tea model
-│   │   ├── init.go                  # Initialization logic
-│   │   ├── update.go                # Update function
-│   │   ├── view.go                  # View rendering
-│   │   ├── handlers.go              # Event handlers & navigation
-│   │   ├── parameters.go            # Call parameter management
-│   │   └── table_helpers.go         # Table update helpers
-│   ├── config/                      # Configuration & constants
-│   │   └── config.go                # App config, colors, keys
-│   ├── core/                        # Core business logic
-│   │   ├── logs.go                  # Log helpers
-│   │   ├── bytecode/                # Bytecode analysis (stubbed)
-│   │   │   └── bytecode.go
-│   │   ├── evm/                     # EVM execution (stubbed)
-│   │   │   └── evm.go
-│   │   ├── history/                 # Call history management
-│   │   │   └── history.go
-│   │   ├── state/                   # State persistence
-│   │   │   └── state.go
-│   │   └── utils/                   # Utility functions
-│   │       └── utils.go
-│   ├── types/                       # Type definitions
-│   │   └── types.go
-│   └── ui/                          # UI components & rendering
-│       └── ui.go
-├── lib/
-│   └── guillotine-mini/             # Git submodule - EVM implementation in Zig
-├── zig-out/                         # Build artifacts
-│   └── bin/
-│       ├── chop                     # Zig executable
-│       ├── chop-go                  # Go executable
-│       └── guillotine_mini.wasm     # EVM WASM library
-├── go.mod
-├── go.sum
-└── .gitmodules                      # Git submodule configuration
-```
+## Install
 
-## Features
-
-### Current (Stubbed)
-
-- **Interactive TUI**: Full-featured Bubble Tea interface
-- **Call Parameter Configuration**: Configure EVM calls with validation
-- **Call History**: View past call executions
-- **Contract Management**: Track deployed contracts
-- **State Persistence**: Save and restore session state
-- **Bytecode Disassembly**: View disassembled contract bytecode (stubbed)
-
-### Application States
-
-1. **Main Menu**: Navigate between features
-2. **Call Parameter List**: Configure call parameters
-3. **Call Parameter Edit**: Edit individual parameters
-4. **Call Execution**: Execute EVM calls
-5. **Call Results**: View execution results
-6. **Call History**: Browse past executions
-7. **Contracts**: View deployed contracts
-8. **Contract Details**: Detailed contract view with disassembly
-
-### Keyboard Shortcuts
-
-- `↑/↓` or `k/j`: Navigate
-- `←/→` or `h/l`: Navigate blocks (in disassembly)
-- `Enter`: Select/Confirm
-- `Esc`: Back/Cancel
-- `e`: Execute call
-- `r`: Reset parameter
-- `R`: Reset all parameters
-- `c`: Copy to clipboard
-- `ctrl+v`: Paste from clipboard
-- `q` or `ctrl+c`: Quit
-
-## Prerequisites
-
-- **Zig**: 0.15.1 or later (for building from source)
-- **Go**: 1.21 or later (for building from source)
-- **Git**: For submodule management (for building from source)
-
-## Installation
-
-### Pre-built Binaries (Recommended)
-
-Download pre-built binaries for your platform from the [GitHub Releases](https://github.com/evmts/chop/releases) page.
-
-#### macOS
+**Use as a Zig dependency (recommended)**
 
 ```bash
-# Intel Mac
-curl -LO https://github.com/evmts/chop/releases/latest/download/chop_latest_darwin_amd64.tar.gz
-tar -xzf chop_latest_darwin_amd64.tar.gz
-chmod +x chop
-sudo mv chop /usr/local/bin/
-
-# Apple Silicon Mac
-curl -LO https://github.com/evmts/chop/releases/latest/download/chop_latest_darwin_arm64.tar.gz
-tar -xzf chop_latest_darwin_arm64.tar.gz
-chmod +x chop
-sudo mv chop /usr/local/bin/
+zig fetch --save https://github.com/evmts/guillotine-mini/archive/main.tar.gz
 ```
 
-#### Linux
+```zig
+const guillotine_dep = b.dependency("guillotine_mini", .{
+    .target = target,
+    .optimize = optimize,
+});
+const guillotine_mod = guillotine_dep.module("guillotine_mini");
+exe.root_module.addImport("guillotine_mini", guillotine_mod);
 
-```bash
-# AMD64
-curl -LO https://github.com/evmts/chop/releases/latest/download/chop_latest_linux_amd64.tar.gz
-tar -xzf chop_latest_linux_amd64.tar.gz
-chmod +x chop
-sudo mv chop /usr/local/bin/
-
-# ARM64
-curl -LO https://github.com/evmts/chop/releases/latest/download/chop_latest_linux_arm64.tar.gz
-tar -xzf chop_latest_linux_arm64.tar.gz
-chmod +x chop
-sudo mv chop /usr/local/bin/
+const primitives_dep = b.dependency("guillotine_primitives", .{
+    .target = target,
+    .optimize = optimize,
+});
+exe.linkLibrary(primitives_dep.artifact("blst"));
+exe.linkLibrary(primitives_dep.artifact("keccak-asm"));
+exe.linkLibrary(primitives_dep.artifact("sha3-asm"));
+exe.linkLibrary(primitives_dep.artifact("crypto_wrappers"));
 ```
 
-#### Windows
-
-Download the appropriate `.zip` file for your architecture from the [releases page](https://github.com/evmts/chop/releases), extract it, and add the executable to your PATH.
-
-### Building from Source
-
-If you prefer to build from source, see the [Build System](#build-system) section below.
-
-## Setup
-
-Initialize the submodules:
+**Build from source**
 
 ```bash
-git submodule update --init --recursive
+git clone https://github.com/evmts/guillotine-mini.git --recurse-submodules
+cd guillotine-mini
+zig build
 ```
 
-## Build System
+> The primitives library is fetched automatically during build. Downstream consumers must link the crypto artifacts from `guillotine_primitives` (see snippet above).
 
-The project uses Zig's build system as the primary orchestrator. All build commands go through `zig build`.
-
-### Available Commands
-
-| Command | Description |
-|---------|-------------|
-| `zig build` | Build everything (default: stub EVM, WASM library) |
-| `zig build all` | Explicitly build everything |
-| `zig build go` | Build Go binary with stub EVM (CGo disabled) |
-| `zig build go-cgo` | **Build Go binary with real EVM (CGo enabled)** |
-| `zig build run` | Run the Go application (stub EVM) |
-| `zig build run-cgo` | **Run the Go application with real EVM** |
-| `zig build guillotine` | Build guillotine-mini WASM library |
-| `zig build guillotine-lib` | Build guillotine-mini native library for CGo |
-| `zig build test` | Run all tests |
-| `zig build go-test` | Run only Go tests |
-| `zig build clean` | Remove all build artifacts |
-
-### Quick Start
-
-#### Option 1: Stub EVM (Fast, No CGo)
+## Quick Start
 
 ```bash
-# Build with stub EVM (no actual execution)
-zig build go
-
-# Run CLI (stub returns fake gas values)
-./zig-out/bin/chop-go call --bytecode 0x6001600101
-# Output: WARNING: CGo disabled - EVM execution stubbed
-```
-
-#### Option 2: Real EVM (CGo Enabled) ⭐ RECOMMENDED
-
-```bash
-# Build with real EVM execution
-zig build go-cgo
-
-# Run CLI with actual EVM
-./zig-out/bin/chop call --bytecode 0x6001600101
-# Output: ExecutionResult{Status: SUCCESS, GasUsed: 9, ...}
-
-# Or build and run directly
-zig build run-cgo -- call --bytecode 0x6000600055
-
-# Run tests
+zig build
 zig build test
-```
-
-### CGo vs Stub Builds
-
-The project supports two build modes:
-
-#### Stub Build (CGo Disabled)
-- **Command**: `zig build go`
-- **Output**: `zig-out/bin/chop-go`
-- **Pros**: Fast compilation, no C dependencies, portable
-- **Cons**: EVM execution is fake (returns mock values)
-- **Use for**: Development, testing UI/CLI without EVM
-
-#### CGo Build (Real EVM) ⭐
-- **Command**: `zig build go-cgo`
-- **Output**: `zig-out/bin/chop`
-- **Pros**: Actual EVM execution, real gas accounting, accurate results
-- **Cons**: Requires C compiler, longer build time (~10-20s)
-- **Use for**: Production, actual EVM testing, accurate gas measurements
-
-**Key Difference**: The CGo build links against the guillotine-mini native library (`libwasm.a`, `libblst.a`, `libc-kzg-4844.a`, `libbn254_wrapper.a`) and uses real Zig EVM implementation. The stub build has no external dependencies and returns fake execution results.
-
-## Components
-
-### Chop (Zig)
-
-The Zig application component.
-
-**Source**: `src/`
-**Output**: `zig-out/bin/chop`
-
-### Chop Go (TUI Application)
-
-The Go application with Bubble Tea TUI.
-
-**Source**: `internal/`, `main.go`
-**Output**: `zig-out/bin/chop-go`
-
-### Guillotine-mini
-
-The EVM implementation, built as a WASM library.
-
-**Source**: `lib/guillotine-mini/` (submodule)
-**Output**: `lib/guillotine-mini/zig-out/bin/guillotine_mini.wasm`
-
-## Guillotine Integration Status
-
-### ✅ Completed
-
-1. **EVM Execution** (`evm/` package) - **WORKING**
-   - Full CGo bindings to guillotine-mini native library
-   - Real EVM execution with accurate gas accounting
-   - Support for all call types (CALL, STATICCALL, CREATE, etc.)
-   - Async execution with state injection
-   - Build system integration (`zig build go-cgo`)
-
-### 🚧 TODO
-
-1. **Bytecode Analysis** (`core/bytecode/bytecode.go`)
-   - Implement real EVM opcode disassembly
-   - Add control flow analysis
-   - Generate basic blocks
-
-2. **State Replay** (`core/state/state.go`)
-   - Implement state replay through VM
-
-3. **Clipboard Support** (`tui/ui.go`)
-   - Implement actual clipboard read/write operations
-
-4. **TUI Integration**
-   - Wire up TUI to use real EVM execution (currently uses stub)
-   - Update call results view to show real execution data
-
-## Development
-
-The codebase is organized into clear layers:
-
-- **Presentation Layer**: `internal/ui/` and `internal/app/view.go`
-- **Application Layer**: `internal/app/` (handlers, navigation, state management)
-- **Domain Layer**: `internal/core/` (EVM, history, bytecode analysis)
-- **Infrastructure Layer**: `internal/core/state/` (persistence)
-
-All EVM-related functionality is stubbed with clear TODO markers for easy integration with Guillotine.
-
-### Making Changes
-
-1. Edit your code in `src/` (Zig) or `internal/`, `main.go` (Go)
-2. Run `zig build` to rebuild
-3. Run `zig build test` to verify tests pass
-
-### Working with Guillotine-mini
-
-The `guillotine-mini` submodule is a separate Zig project with its own build system.
-
-```bash
-# Build the WASM library through the main build system
-zig build guillotine
-
-# Or build it directly in the submodule
-cd lib/guillotine-mini
+zig build specs
 zig build wasm
 ```
 
-See `lib/guillotine-mini/README.md` or `lib/guillotine-mini/CLAUDE.md` for detailed documentation on the EVM implementation.
-
-### Cleaning Build Artifacts
-
 ```bash
-zig build clean
+TEST_FILTER="push0" zig build specs
 ```
 
-This removes:
-- `zig-out/` (main project artifacts)
-- `zig-cache/` (Zig build cache)
-- `lib/guillotine-mini/zig-out/` (submodule artifacts)
-- `lib/guillotine-mini/zig-cache/` (submodule cache)
+## Docs
 
-## Go TUI Usage (Chop)
+- `CLAUDE.md` — project guide for devs and AI assistants
+- `CONTRIBUTING.md` — setup and contribution workflow
+- `src/precompiles/CLAUDE.md` — precompile docs
 
-Build and run the Go TUI directly:
+## Highlights
 
-```bash
-CGO_ENABLED=0 go build -o chop .
-./chop
-```
+- Full hardfork support (Frontier → Osaka)
+- 20+ EIPs implemented
+- EIP-3155 tracing
+- WASM target (~193 KB optimized)
+- 100% ethereum/tests coverage
 
-Tabs:
-- [1] Dashboard: Stats, recent blocks/txs (auto-refresh status shown)
-- [2] Accounts: Enter to view; 'p' to reveal private key
-- [3] Blocks: Enter to view block detail
-- [4] Transactions: Enter for transaction detail; in detail view press 'b' to open block
-- [5] Contracts: Enter to view details; 'c' copies address
-- [6] State Inspector: Type/paste address (ctrl+v), Enter to inspect
-- [7] Settings: 'r' reset blockchain, 'g' regenerate accounts (confirmation), 't' toggle auto-refresh
+## More
 
-Global:
-- Number keys 1–7 switch tabs; esc goes back; q or ctrl+c quits
-- 'c' in detail views copies the primary identifier (e.g., tx hash)
+- Primitives library: https://github.com/evmts/primitives
+- Guillotine (full client): https://github.com/evmts/guillotine
 
-## Testing
+## License
 
-### Running Tests
-
-```bash
-# Run all Go tests
-go test ./...
-
-# Run tests with verbose output
-go test ./... -v
-
-# Run tests with race detector (recommended for development)
-go test ./... -race
-
-# Run tests with coverage report
-go test ./... -cover
-
-# Generate detailed coverage report
-go test ./... -coverprofile=coverage.txt -covermode=atomic
-go tool cover -html=coverage.txt -o coverage.html
-```
-
-### Running Tests via Zig Build
-
-```bash
-# Run all tests (Zig and Go)
-zig build test
-
-# Run only Go tests
-zig build go-test
-```
-
-### Security Scanning
-
-The project includes automated security scanning that runs on every push and pull request.
-
-#### Running Security Scans Locally
-
-```bash
-# Install gosec (security scanner)
-go install github.com/securego/gosec/v2/cmd/gosec@latest
-
-# Run gosec security scan
-gosec ./...
-
-# Run gosec with detailed output
-gosec -fmt=json -out=results.json ./...
-
-# Install govulncheck (vulnerability scanner)
-go install golang.org/x/vuln/cmd/govulncheck@latest
-
-# Run vulnerability check
-govulncheck ./...
-```
-
-#### What Gets Scanned
-
-- **gosec**: Static security analysis checking for:
-  - Hardcoded credentials (G101)
-  - SQL injection vulnerabilities (G201-G202)
-  - File permission issues (G301-G304)
-  - Weak cryptography (G401-G404)
-  - Unsafe operations and more
-
-- **govulncheck**: Checks dependencies against the Go vulnerability database
-  - Scans both direct and indirect dependencies
-  - Reports known CVEs in your dependency tree
-
-- **Dependabot**: Automated dependency updates
-  - Weekly checks for Go module updates
-  - Weekly checks for GitHub Actions updates
-  - Automatic security patch PRs
-
-Configuration files:
-- `.gosec.yml` - gosec scanner configuration
-- `.github/dependabot.yml` - Dependabot configuration
-- `.github/workflows/security.yml` - Security workflow
-
-### Code Quality and Linting
-
-The project uses `golangci-lint` for comprehensive code quality checks and linting.
-
-#### Running Linters Locally
-
-```bash
-# Install golangci-lint (macOS)
-brew install golangci-lint
-
-# Or install via go install
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-
-# Run all linters
-golangci-lint run ./...
-
-# Run linters with timeout
-golangci-lint run ./... --timeout=5m
-
-# Run linters and automatically fix issues (where possible)
-golangci-lint run ./... --fix
-```
-
-#### Enabled Linters
-
-The project uses `.golangci.yml` for configuration with the following categories of linters:
-
-**Code Correctness:**
-- `errcheck` - Check for unchecked errors
-- `govet` - Official Go static analyzer
-- `staticcheck` - Go static analysis
-- `typecheck` - Type-check Go code
-- `ineffassign` - Detect ineffectual assignments
-- `unused` - Check for unused code
-
-**Code Style:**
-- `gofmt` - Check code formatting
-- `goimports` - Check import formatting
-- `revive` - Fast, configurable linter
-- `gocritic` - Comprehensive Go source code linter
-
-**Code Quality:**
-- `gosimple` - Simplify code suggestions
-- `gocyclo` - Check cyclomatic complexity
-- `dupl` - Check for code duplication
-- `unconvert` - Remove unnecessary type conversions
-- `unparam` - Check for unused function parameters
-
-**Security:**
-- `gosec` - Inspect for security issues
-
-**Performance:**
-- `prealloc` - Find slice declarations that could be preallocated
-
-**Common Errors:**
-- `misspell` - Check for commonly misspelled words
-- `goconst` - Find repeated strings that could be constants
-- `nilerr` - Find code that returns nil incorrectly
-- `bodyclose` - Check HTTP response body is closed
-
-#### Current Linting Status
-
-As of the last check, the codebase has approximately 89 linting issues across the following categories:
-- `gocritic` (34 issues) - Code style suggestions
-- `gofmt` (13 issues) - Formatting issues
-- `goimports` (11 issues) - Import organization
-- `gocyclo` (8 issues) - High cyclomatic complexity
-- `goconst` (7 issues) - Repeated strings
-- `gosec` (4 issues) - Security warnings
-- `errcheck` (4 issues) - Unchecked errors
-- `revive` (4 issues) - Style violations
-- Other minor issues (4 issues)
-
-Most issues are style-related and can be automatically fixed with `golangci-lint run --fix`. The linter is configured to be reasonable for existing code while maintaining good practices.
-
-Configuration file: `.golangci.yml`
-
-### Continuous Integration
-
-All pull requests and commits to `main` automatically run:
-- **Tests** on Go versions 1.22, 1.24 and platforms Ubuntu (Linux), macOS
-- **Linting** with golangci-lint for code quality checks
-- **Security scans** with gosec and govulncheck
-- **Dependency review** for known vulnerabilities
-- **Code coverage** reporting to Codecov
-
-You can view the CI status in the [GitHub Actions](https://github.com/evmts/chop/actions) tab.
-
-## Why Zig Build?
-
-We use Zig's build system as the orchestrator because:
-
-1. **Unified Interface**: Single command (`zig build`) for all components
-2. **Cross-Platform**: Works consistently across macOS, Linux, Windows
-3. **Dependency Management**: Properly tracks dependencies between components
-4. **Parallelization**: Automatically parallelizes independent build steps
-5. **Caching**: Only rebuilds what changed
-
-## Release Process (Maintainers)
-
-The release process is fully automated using GitHub Actions and GoReleaser.
-
-### Creating a New Release
-
-1. **Ensure all changes are committed and pushed to `main`**
-   ```bash
-   git checkout main
-   git pull origin main
-   ```
-
-2. **Create and push a version tag** (following [Semantic Versioning](https://semver.org/))
-   ```bash
-   # For a new feature release
-   git tag -a v0.1.0 -m "Release v0.1.0: Initial release with TUI"
-
-   # For a bug fix release
-   git tag -a v0.1.1 -m "Release v0.1.1: Fix state persistence bug"
-
-   # For a major release with breaking changes
-   git tag -a v1.0.0 -m "Release v1.0.0: First stable release"
-
-   # Push the tag to trigger the release workflow
-   git push origin v0.1.0
-   ```
-
-3. **GitHub Actions will automatically**:
-   - Run all tests
-   - Build binaries for all platforms (Linux, macOS, Windows) and architectures (amd64, arm64)
-   - Generate checksums
-   - Create a GitHub Release with:
-     - Release notes from commit messages
-     - Downloadable binaries for all platforms
-     - Installation instructions
-
-4. **Monitor the release**:
-   - Visit the [Actions tab](https://github.com/evmts/chop/actions) to watch the release workflow
-   - Once complete, check the [Releases page](https://github.com/evmts/chop/releases)
-
-### Testing Releases Locally
-
-You can test the release process locally without publishing:
-
-```bash
-# Install goreleaser (macOS)
-brew install goreleaser
-
-# Or download from https://github.com/goreleaser/goreleaser/releases
-
-# Run goreleaser in snapshot mode (won't publish)
-goreleaser release --snapshot --clean
-
-# Built artifacts will be in dist/
-ls -la dist/
-```
-
-### Release Checklist
-
-Before creating a release, ensure:
-- [ ] All tests pass: `go test ./...`
-- [ ] Code builds successfully: `CGO_ENABLED=0 go build -o chop .`
-- [ ] Documentation is up to date (README.md, DOCS.md)
-- [ ] CHANGELOG or commit messages clearly describe changes
-- [ ] Version follows [Semantic Versioning](https://semver.org/)
-- [ ] No breaking changes in minor/patch releases
-
-### Version Numbering Guide
-
-- **Major version (v1.0.0)**: Breaking changes, incompatible API changes
-- **Minor version (v0.1.0)**: New features, backwards-compatible
-- **Patch version (v0.0.1)**: Bug fixes, backwards-compatible
+See `LICENSE`.
 
 ---
 
@@ -3180,7 +2948,7 @@ This project is licensed under the MIT License - see [LICENSE](./LICENSE) for de
 
 ### Inlined linked README: `DEX Indexer`
 
-Source: https://github.com/primodiumxyz/dex-indexer-stack/blob/HEAD/packages/indexer/README.md
+Source: https://github.com/primodiumxyz/dex-indexer-stack/blob/main/packages/indexer/README.md
 
 # DEX Indexer
 
@@ -3400,7 +3168,7 @@ The library contains a few chunks of code copied and [modified from Shyft](https
 
 ### Inlined linked README: `DEX GraphQL`
 
-Source: https://github.com/primodiumxyz/dex-indexer-stack/blob/HEAD/packages/gql/README.md
+Source: https://github.com/primodiumxyz/dex-indexer-stack/blob/main/packages/gql/README.md
 
 # DEX GraphQL
 
@@ -3895,7 +3663,7 @@ This project is licensed under the MIT License - see [LICENSE](../../LICENSE) fo
 
 ### Inlined linked README: `Example dashboard`
 
-Source: https://github.com/primodiumxyz/dex-indexer-stack/blob/HEAD/examples/dashboard/README.md
+Source: https://github.com/primodiumxyz/dex-indexer-stack/blob/main/examples/dashboard/README.md
 
 # Examples: dashboard
 
@@ -3940,7 +3708,7 @@ This project is licensed under the MIT License - see [LICENSE](../../LICENSE) fo
 
 ### Inlined linked README: `Example server`
 
-Source: https://github.com/primodiumxyz/dex-indexer-stack/blob/HEAD/examples/server/README.md
+Source: https://github.com/primodiumxyz/dex-indexer-stack/blob/main/examples/server/README.md
 
 # Examples: server
 
@@ -3994,503 +3762,6 @@ console.log(status);
 ## Contributing
 
 If you wish to contribute to the package, or add an example, please open an issue first to make sure that this is within the scope of the repository.
-
-## License
-
-This project is licensed under the MIT License - see [LICENSE](../../LICENSE) for details.
-
----
-
-## Primodium / DEX GraphQL
-
-Source: https://github.com/primodiumxyz/dex-indexer-stack/tree/main/packages/gql
-
-# DEX GraphQL
-
-**A type-safe GraphQL client for querying DEX trades and tokens, built on a Hasura backend and supercharged with TimescaleDB, for optimized time-series capabilities.**
-
-It is best used in conjunction with the [dex-indexer](https://github.com/primodiumxyz/dex-indexer-stack/tree/main/packages/indexer) package, which indexes trades and tokens metadata into the database with super-low latency.
-
-_DEX GraphQL is available from npm
-as
-[`@primodiumxyz/dex-graphql`](https://www.npmjs.com/package/@primodiumxyz/dex-graphql)._
-
-## Table of contents
-
-- [Introduction](#introduction)
-  - [Overview](#overview)
-  - [Notable Features](#notable-features)
-  - [Installation](#installation)
-  - [Quickstart](#quickstart)
-- [Usage](#usage)
-  - [Docker](#docker)
-  - [TypeScript](#typescript)
-  - [Cache](#cache)
-    - [Overview](#overview)
-    - [AWS](#aws)
-    - [Querying](#querying)
-  - [Development](#development)
-    - [Setup](#setup)
-    - [Working with Hasura](#working-with-hasura)
-    - [Making Changes](#making-changes)
-    - [Testing](#testing)
-    - [Benchmarking](#benchmarking)
-    - [Metrics/stress-testing](#metrics-stress-testing)
-  - [Production](#production)
-    - [Deployment](#deployment)
-- [Details](#details)
-  - [Timescale API](#timescale-api)
-    - [Reading](#reading)
-    - [Refreshing](#refreshing)
-  - [Continuous Aggregates](#continuous-aggregates)
-  - [Structure](#structure)
-  - [References](#references)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Introduction
-
-### Overview
-
-This package provides a full infrastructure and interface for storing and querying trade and token data.
-
-Meaning, a local-first Hasura + TimescaleDB + caching layer configuration, with convenient management and historical tracking of migrations and metadata with the remote instances.
-
-Development and shipping to production can be done almost entirely from this repository, using the provided commands. Or if you don't need to add anything, it can be as simple as copying the [`hasura.docker-compose.yaml`](../../resources/hasura.docker-compose.yaml) file to some machine, filling in the environment variables, and running it.
-
-Although it is intended to be used with the [dex-indexer](https://github.com/primodiumxyz/dex-indexer-stack/tree/main/packages/indexer) package, it could also very well be adapted to any other indexing solution, on any other chain.
-
-!!! The way it's intended to use is that you need to refresh token rolling stats every few seconds from some scheduled job, as it lifts up the workload and computation time from the user-initiated queries to some background job. !!!
-
-On a high-level, the way this database is optimized is that it uses continuous aggregates to compute relevant metrics into 1-minute buckets, and as a main entry-point provides a very focused 30-minute rolling stats view **that needs to be refreshed every few seconds from a scheduled job**. This way, we can lift up the workload and computation time from the user-initiated queries to some background job.
-
-This doesn't prevent querying all trades during a certain time period, but rather provides an opinionated abstraction over intensive metrics, which is optimized for a specific use case (here 30-minute + 1-minute metrics). This can be easily customized.
-
-### Notable Features
-
-- **TypeScript-first**: Type-safe GraphQL operations that can be customized
-- **Convenient management**: Local and remote database migration and metadata management
-- **Optimized**: Optimized queries and contionous aggregation for DEX trade and token metrics
-- **GraphQL/TypeScript sync**: Automatic sync of GraphQL schema and TypeScript types
-- **Caching**: Built-in caching layer using Redis, available as a Docker image from anywhere
-- **Testing**: Full testing suite, with benchmarking and stress-testing
-- **Integration**: Built-in integration with [dex-indexer](https://github.com/primodiumxyz/dex-indexer-stack/tree/main/packages/indexer); plug and play with the indexer to index trades and tokens into the database
-  - This includes querying 30-minute stats for all indexed tokens, price updates for a token since a certain time, as well as standardized candlestick data
-
-### Installation
-
-Just install the package from npm, preferably with pnpm.
-
-```bash
-pnpm add @primodiumxyz/dex-graphql
-```
-
-### Quickstart
-
-1. Configuration
-
-Add the following environment variables to your `.env` file:
-
-| Variable              | Description           | Default                 |
-| --------------------- | --------------------- | ----------------------- |
-| `NODE_ENV`            | Node environment      | `local`                 |
-| `HASURA_URL`          | Hasura URL            | `http://localhost:8090` |
-| `HASURA_ADMIN_SECRET` | Hasura admin secret   |                         |
-| `CACHE_TIME`          | Cache time in seconds | `30`                    |
-| `REDIS_PASSWORD`      | Redis password        | `password`              |
-
-All of them can be left empty if you are running the stack locally.
-
-2. Run
-
-```sh
-local-dex-graphql
-# or without the local Hasura console
-local-dex-graphql:ci
-# or specify the path to your .env file (install @dotenvx/dotenvx first)
-dotenvx run -f ./path/to/.env --quiet -- local-dex-graphql
-```
-
-## Usage
-
-### Docker
-
-An example [`hasura.docker-compose.yaml`](../../resources/hasura.docker-compose.yaml) file is available in the [resources](../../resources) folder. It contains all the necessary configuration to run the Hasura instance, along with the cache server.
-
-If you would like to run the TimescaleDB instance in Docker as well, you can use the development [`docker-compose.yaml`](./docker-compose.yaml) file as reference. Otherwise, you can setup Timescale with their cloud offering, and point the `TIMESCALE_DATABASE_URL` environment variable to your Timescale instance.
-
-### TypeScript
-
-To create a GraphQL client:
-
-```typescript
-import { createClient } from "@primodiumxyz/dex-graphql";
-
-const gql = await createClient({
-  url: "http://localhost:8090/v1/graphql",
-  hasuraAdminSecret: "your-admin-secret",
-});
-
-// Or no need to await in a browser environment
-const gql = createClient<"web">({
-  url: "http://localhost:8090/v1/graphql",
-  hasuraAdminSecret: "your-admin-secret",
-});
-```
-
-To perform operations, you can use the `db` object, which contains all the queries, subscriptions and mutations.
-
-```typescript
-// Query the top 10 tokens by latest 30min volume
-const topTokens = await client.db.GetTopTokensByVolumeQuery({
-  minRecentTrades: "10", // with at least 10 trades in the last minute
-  minRecentVolume: "1000", // with at least $1,000 volume in the last minute
-  limit: 10, // limit to 10 tokens
-});
-
-if (topTokens.error || !topTokens.data?.token_rolling_stats_30min.length) {
-  throw new Error(`No tokens found: ${topTokens.error?.message ?? "Unknown error"}`);
-}
-
-console.log(topTokens.data?.token_rolling_stats_30min[0]);
-// {
-//   mint: "ABC...DEF",
-//   name: "Token Name",
-//   symbol: "TKN",
-//   ...
-// }
-```
-
-```typescript
-// Subscribe to price updates for a token, starting from the last 10 minutes
-const subscription = client.db
-  .GetTokenPricesSinceSubscription({
-    token: "ABC...DEF", // the token to subscribe to
-    since: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
-  })
-  .subscribe((data) => {
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
-
-    console.log(data);
-    // [
-    //   {
-    //     token_price_usd: 0.0012753,
-    //     volume_usd: 4570,
-    //     created_at: 2025-01-29T12:00:00Z,
-    //   },
-    //   ...
-    // ]
-  });
-
-// Sometime later
-subscription.unsubscribe();
-```
-
-```typescript
-// Insert some trades (although this is internally handled by the indexer, but just as reference)
-const result = await client.db.InsertTradeHistoryManyMutation({
-  trades: [
-    {
-      token_mint: "ABC...DEF",
-      ...
-    },
-  ],
-});
-
-if (result.error) throw new Error(result.error.message);
-console.log(result.data?.insert_api_trade_history);
-// {
-//   affected_rows: 1,
-// }
-
-// Or refresh the token rolling stats, which is the main data source for consumption by the frontend
-const result = await client.db.RefreshTokenRollingStats30MinMutation();
-
-if (result.error) throw new Error(result.error.message);
-console.log(result.data?.api_refresh_token_rolling_stats_30min);
-// {
-//   id: "123",
-//   success: true,
-// }
-```
-
-### Cache
-
-#### Overview
-
-This package also includes [a cache server](./src/cache/server.ts) using Redis, which is used to cache the GraphQL queries for a certain amount of time. This is useful to reduce the load on the database and improve the performance of the queries.
-
-This package is available from the GitHub Container Registry as [`ghcr.io/primodiumxyz/sdi-hasura-cache:main`](https://github.com/primodiumxyz/dex-indexer-stack/pkgs/container/sdi-hasura-cache).
-
-It can be simply included as a service in the `docker-compose.yaml` file; any queries would just need to point to the `8090` port (instead of the `8080` port of the Hasura engine).
-
-A note on this: although mutation operations hitting the cache server will be properly redirected directly to the Hasura engine, the cache server does not support subscriptions. Meaning that you will need to set the Websocket connection to point to the Hasura engine instead (port `8080`).
-
-#### AWS
-
-On AWS, this can be done by configuring a rule on the load balancer to point to different ports based on the headers:
-
-1. websocket-rule:
-   - **HTTP Header** Upgrade is websocket, **AND**
-   - **Path Pattern** is `/v1/graphql`
-   - -> Forward to port `8080`
-2. cache-rule:
-   - **Path Pattern** is `/v1/graphql`
-   - -> Forward to port `8090`
-3. Default (any other path, e.g. `/console`):
-   - -> Forward to port `8080`
-
-#### Querying
-
-When performing a query, you can also set the `x-cache-time` header to the number of seconds you want to cache the query for. This will override the default cache time. The cache can also be bypassed by setting the `x-cache-bypass` header to `1`.
-
-### Development
-
-#### Setup
-
-1. Install Docker on your machine (or whatever containerization tool you prefer)
-2. Clone the repository:
-
-   ```sh
-   git clone https://github.com/primodiumxyz/dex-indexer-stack.git
-   ```
-
-3. Install the dependencies:
-
-   ```sh
-   pnpm i
-   ```
-
-4. Run
-
-   a. everything (indexer & database) from root dir with:
-
-   ```sh
-   pnpm dev
-   ```
-
-   b. only the database
-
-   ```sh
-   cd packages/gql
-   pnpm dev
-   # or without the Hasura console
-   pnpm dev:ci
-   ```
-
-You can also build the package for production at any point:
-
-    ```sh
-    cd packages/gql
-    pnpm build
-    ```
-
-### Working with Hasura
-
-Hasura **migrations and metadata** are two key components that work together to manage your Hasura project's state and schema. The local console, accessed through the Hasura CLI, provides a user-friendly interface to interact with these components. Here's how they work together:
-
-1. **Local Console**:
-   The local console is launched using the `pnpm local:console` command. It provides a web interface to manage your Hasura project, as well as TimescaleDB as a data source. This is the preferred/simplest method to make changes:
-   - Database schema changes trigger the creation of new migration files
-   - Configuration changes update the metadata files
-2. **Migrations**:
-   Migrations are used to manage changes to your database schema over time. When you make changes to your database structure using the local console, Hasura automatically generates migration files. These files contain SQL statements that represent the changes made to your database schema.
-
-   Manual commands for working with migrations include:
-
-   - `pnpm hasura migrate create`: Creates a new migration file
-   - `pnpm hasura migrate apply`: Applies pending migrations to the database
-   - `pnpm hasura migrate status`: Shows the status of migrations
-
-3. **Metadata**:
-   Metadata represents the configuration of your databases, including table relationships, permissions, and custom actions. When you make changes in the console, such as creating relationships, setting up permissions, or creating/modifying native queries and logical models, these changes are reflected in the metadata.
-
-   Manual commands for managing metadata are:
-
-   - `pnpm hasura metadata export`: Exports the current metadata
-   - `pnpm hasura metadata apply`: Applies the metadata to the Hasura instance
-   - `pnpm hasura metadata reload`: Reloads the metadata from the database
-
-4. **Working in Tandem**:
-
-   - When you run `pnpm local:console`, it starts a local server that watches for changes made in the console.
-   - As you make changes in the console, migration files and metadata files are automatically updated in your project directory.
-   - You can then use version control to track these changes and collaborate with your team.
-   - When deploying, you can use `pnpm remote:apply-migrations` and `pnpm remote:apply-metadata` to update your production instance.
-
-5. **Consistency**:
-   The `pnpm hasura metadata inconsistency` command helps you identify and resolve any inconsistencies between your metadata and the actual database schema.
-
-For more detailed information on each command and its usage, you can refer to the [Hasura CLI Commands documentation](https://hasura.io/docs/2.0/hasura-cli/commands/index/).
-
-### Making Changes
-
-1. After running `pnpm dev`, launch the Hasura GUI at http://localhost:9695 if it doesn't automatically.
-2. Make changes to the database in the Hasura GUI.
-
-- A `default` database is available for any new infra you would like to add.
-- Otherwise, the `timescaledb` database is used for the DEX data, and points to the running TimescaleDB instance and volume data.
-
-3. A new `up.sql` file will be created in a new folder in `packages/migrations/<default|timescaledb>`. Check that the changes are valid. In some cases, you may need to fill the `down.sql` migration file as well as Hasura may not be able to automatically generate it.
-
-> **NOTE:** After making changes, you might find that it generates a lot of migrations. We can squash them down to a single migration:
->
-> ```bash
-> # Squash all migrations from version 123 to the latest one:
-> pnpm hasura migrate squash --name "some_name" --from 123
-> ```
-
-### Deployment
-
-Before pushing a database or GraphQL schema change to the production Hasura instance, make sure to set the following environment variables in the project root `.env` file.
-
-```bash
-# The URL of the remote Hasura instance (without the `/v1/graphql` path)
-HASURA_URL=<url>
-# The admin secret of the remote Hasura instance
-HASURA_ADMIN_SECRET=<secret>
-```
-
-1. Check the status of the migrations with the following command. Make sure that the migration is not already applied:
-
-```
-pnpm remote:migrate-status
-```
-
-2. Apply the migrations and metadata to the production instance with the following commands:
-
-```
-pnpm remote:apply-migrations
-pnpm remote:apply-metadata
-```
-
-3. If there is any inconsistency between the metadata and the database schema, you can get more details with the following command:
-
-```
-pnpm remote:metadata-ic
-```
-
-### Testing
-
-Testing can be done with a standalone command, which will spin up the database, seed it with faster refresh rates, and run the test suite.
-
-```bash
-pnpm test
-
-# With watch mode
-pnpm test:watch
-
-# With coverage
-pnpm test:coverage
-```
-
-### Benchmarking
-
-Results are stored in `__test__/benchmarks/output/`, with some details for each query benchmarked, as well as a summary of the results. This includes a direct Hasura hit, a warm cache hit, a cold cache hit, and a cache bypass.
-
-```bash
-# Start the database
-pnpm dev:ci
-# Run the benchmarks (which will first seed the database with `n` trades, see `__test__/benchmarks/config.ts`)
-pnpm benchmark
-```
-
-### Metrics/stress-testing
-
-You can run some stress tests with k6, either on the local or the remote instance.
-
-```bash
-# Install k6
-brew install k6
-
-# Run the database
-pnpm dev:ci
-# Run local analysis (seeding, metrics with dashboard and output to file)
-pnpm k6:local
-# or without seeding first
-pnpm k6:local:skip-seed
-# or on the remote database
-pnpm k6:remote
-```
-
-## Details
-
-### Timescale API
-
-#### Reading
-
-The main interfacing with Timescale is done through materialized views and native queries. We can still directly query tables (which is the case for the price history for instance). All of the Timescale API—except for the native queries—is available through the "api" schema.
-
-| Name                             | Type                  | Purpose                                                                                        | Schema                                                                                   |
-| -------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `token_rolling_stats_30min`      | native query          | Get metadata & stats during the last 30 minutes (& 1 minute)                                   | [link](metadata/databases/databases.yaml#L73)                                            |
-| `api.token_rolling_stats_30min`  | materialized view\*\* | Metadata + 30-min & 1-min stats for all tokens                                                 | [link](migrations/timescaledb/1736977737887_combine_rolling_stats_migrations/up.sql#L4)  |
-| `api.token_stats_1h`             | materialized view\*   | Continuously refreshed stats aggregated by mint during the past hour in 1-min buckets          | [link](migrations/timescaledb/1736767809352_token_stats_1h_add/up.sql#L2)                |
-| `api.refresh_history`            | table                 | Refresh history of the `api.token_rolling_stats_30min` view                                    | [link](migrations/timescaledb/1736977737887_combine_rolling_stats_migrations/up.sql#L55) |
-| `api.trade_history`              | table                 | History of token trades with their metadata                                                    | [link](migrations/timescaledb/1733330756404_init/up.sql#L20)                             |
-| `api.trade_history_1min`         | materialized view\*   | Continuously refreshed trades aggregated by mint during the past day in 1-min buckets          | [link](migrations/timescaledb/1733330756404_init/up.sql#L57)                             |
-| `token_candles_history_1min`     | native query          | Get candlestick data with 1-minute buckets                                                     | [link](metadata/databases/databases.yaml#L26)                                            |
-| `api.token_candles_history_1min` | materialized view\*   | Continuously refreshed candlestick-formatted data by mint during the past day in 1-min buckets | [link](migrations/timescaledb/1736357261215_candles_history_1min_add/up.sql#L2)          |
-
-_\* Refreshed through continuous aggregates_
-
-_\*\* Refreshed by calling the `api.refresh_token_rollin_stats_30min` function_
-
-#### Refreshing
-
-The logic flow for efficiently pre-computing the data in the background is as follows:
-
-- The `api.token_rolling_stats_30min` view is refreshed every few seconds from a scheduled job (see how it is done in the [server example](../../examples/server/src/service.ts#L34)). It reads from:
-  - The `api.token_stats_1h` view, which is refreshed every 5 seconds during continuous aggregation. Which reads from:
-    - The `api.trade_history` table, which is updated by the indexer anytime a batch of trades is made (max every 0.5 seconds, can be customized).
-
-If you would like to refresh the `api.token_rolling_stats_30min` view at a frequency lower than 5 seconds, you will need to update the refresh policy of the `api.token_stats_1h` view as well, as it is the source of data for the rolling stats view.
-
-| Name                                   | Type     | Purpose                                          | Schema                                                                                   |
-| -------------------------------------- | -------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| `api.refresh_token_rollin_stats_30min` | function | Refresh the `api.token_rolling_stats_30min` view | [link](migrations/timescaledb/1736977737887_combine_rolling_stats_migrations/up.sql#L59) |
-
-### Continuous Aggregates
-
-The continuous aggregates are currently set with the following refresh policies:
-
-| Name                       | Start offset                       | Refresh interval |
-| -------------------------- | ---------------------------------- | ---------------- |
-| `api.token_stats_1h`       | Past hour                          | `5 seconds`      |
-| `api.trade_history_1min`   | Past 24 hours (up to 1 minute ago) | `1 minute`       |
-| `api.candles_history_1min` | Past 24 hours                      | `5 seconds`      |
-
-### Structure
-
-```ml
-__test__ - "Entire test suite with utilities"
-├── benchmarks - "Queries benchmarks and output results"
-├── k6 - "Stress testing suite with k6, including output results"
-├── lib - "Utilities used across the test suite"
-└── unit - "Unit tests (queries, mutations, subscriptions)"
-bin - "Local CLI tools (start the database stack locally)"
-dist - "Compiled files for distribution"
-metadata - "Hasura metadata generated from the local console"
-├── databases - "Database-specific metadata"
-│   │── default - "default database metadata"
-│   └── timescaledb - "timescaledb database metadata"
-migrations - "Database migration files"
-│── default - "default database migrations"
-└── timescaledb - "timescaledb database migrations"
-seeds - "Seed files for each database (currently run for testing locally, can be run on the remote instance as well)"
-└── timescaledb - "timescaledb seed files"
-src - "Source files"
-├── cache - "Fastify cache server & Dockerfile for starting it alongside Redis"
-├── graphql - "GraphQL queries, mutations, subscriptions & types"
-│   └── codegen - "GraphQL types autogenerated from gql.tadata (`pnpm generate:types`)"
-└── index.ts - "Main module for TypeScript, exports the GraphQL client, operations, and their types"
-```
-
-## Contributing
-
-If you wish to contribute to the package, please open an issue first to make sure that this is within the scope of the library, and that it is not already being worked on.
 
 ## License
 

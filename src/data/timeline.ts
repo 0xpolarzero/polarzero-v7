@@ -56,8 +56,9 @@ export const TIMELINE: TimelineYear[] = [
         caption: "Contributing to a multi-language library for running an EVM in every environment",
         description: [
           "@tevm/compiler: shipped a Solidity & Vyper compiler around Foundry compilers for Typescript.",
-          "guillotine: worked on a high-performance EVM implementation in Zig.",
-          "chop: worked on a CLI tool for EVM disassembly and simulation in Golang using BubbleTea.",
+          "tevm-monorepo: contributed to call/debug and tracing methods, a MUD plugin for optimistic updates, storage layout and pre/post-state tooling, and various other runtime, API, build, and documentation contributions.",
+          "guillotine: contributed to a Zig EVM, including a Zig devtool and BubbleTea CLI for call disassembly and step-by-step tracing, Go/C/WASM/TypeScript SDK bindings, EVM semantics fixes, and research-heavy work on hardfork support, gas accounting, and execution spec fixtures.",
+          "guillotine-mini: contributed WASI/WASM build and bindings, and research-heavy EVM tracing/debugging work around WASM constraints, threading, debugger architecture, and dispatch-level execution hooks.",
           "@tevm/test-matchers: shipped a Javascript library that extends Vitest with EVM-related test matchers.",
           "@tevm/test-node: shipped a Javascript library to snapshot EVM JSON-RPC calls in Vitest/Bun.",
         ],
@@ -68,10 +69,13 @@ export const TIMELINE: TimelineYear[] = [
         },
         descriptionLinks: {
           "@tevm/compiler": "https://github.com/evmts/compiler/blob/main/libs/compiler/README.md",
+          "tevm-monorepo": "https://github.com/evmts/tevm-monorepo",
           guillotine: "https://github.com/evmts/guillotine",
-          chop: "https://github.com/evmts/chop",
-          "@tevm/test-matchers": "https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-matchers",
-          "@tevm/test-node": "https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-node",
+          "guillotine-mini": "https://github.com/evmts/guillotine-mini",
+          "@tevm/test-matchers":
+            "https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-matchers",
+          "@tevm/test-node":
+            "https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-node",
         },
       },
       {
@@ -83,12 +87,13 @@ export const TIMELINE: TimelineYear[] = [
         description: [
           "DEX Indexer: shipped a Yellowstone gRPC Typescript indexer for Solana DEX trades.",
           "DEX GraphQL: shipped a Hasura + Timescale GraphQL client for querying DEX activity & analytics on Solana.",
-          "DEX Server: worked on a tRPC server for building and sponsoring user transactions on Solana.",
-          "Tub: worked on an iOS trading app on Solana with a TikTok-inspired UX.",
+          "DEX Server: contributed server/package work around buy/sell flows, SOL/USD price caching, transaction analytics, Hasura/cache integration, Docker/package workflows, and docs.",
+          "Tub: contributed across the Solana indexer, GraphQL/Hasura/Timescale layer, dashboard/explorer, server analytics, and iOS query/chart/transaction integration surfaces.",
           "Gasless server: shipped a MUD-compatible gasless server library for EVM chains.",
-          "Primodium Empires: worked on a fully onchain turn-based prediction market game on Ethereum.",
+          "Primodium Empires: contributed client UI/game tooling, cheatcodes, transaction feedback, keeper/deployment infrastructure, and contract test/audit-prep work, while owning the artist handoff loop for integrating art and animations into the game.",
           "Reactive Tables: shipped a state management library for onchain games built on MUD for Typescript & React.",
-          "Primodium v0.11: worked on a fully onchain MMO.",
+          "Primodium v0.11: took ownership of the sync/indexer and database stack, and shipped client/core rendering work, game-object interaction fixes, reactive-table integration, package/build fixes, and browser profiling-driven performance optimizations.",
+          "Open-source release: owned the public release pass for the work above, including documentation for each package and shipping the open-sourced libraries and containers.",
         ],
         links: {
           website: "https://primodium.com",
@@ -196,7 +201,8 @@ export const TIMELINE: TimelineYear[] = [
         ],
         descriptionLinks: {
           Glider: "https://glide.r.xyz",
-          "storage collision": "https://github.com/0xpolarzero/storage-collision-formal-verification",
+          "storage collision":
+            "https://github.com/0xpolarzero/storage-collision-formal-verification",
           ERC1155A: "https://github.com/0xpolarzero/superform-erc1155a-fuzzing/",
         },
       },
@@ -256,7 +262,8 @@ export const TIMELINE: TimelineYear[] = [
           "Next.js starter": "https://github.com/0xpolarzero/chainlink-functions-next-starter",
           "cross-chain ERC20 balance verification":
             "https://github.com/0xpolarzero/cross-chain-ERC20-balance-verification",
-          "onchain Twitter verifier": "https://github.com/0xpolarzero/twitter-verifier-chainlink-functions",
+          "onchain Twitter verifier":
+            "https://github.com/0xpolarzero/twitter-verifier-chainlink-functions",
         },
       },
       {
@@ -273,7 +280,8 @@ export const TIMELINE: TimelineYear[] = [
           article: "https://medium.com/@0xpolarzero/blockchain-but-for-real-e1d8c0e0ebfc",
         },
         descriptionLinks: {
-          "Blockchain, but for real (EN)": "https://medium.com/@0xpolarzero/blockchain-but-for-real-e1d8c0e0ebfc",
+          "Blockchain, but for real (EN)":
+            "https://medium.com/@0xpolarzero/blockchain-but-for-real-e1d8c0e0ebfc",
           "La blockchain, mais pour de vrai (FR)":
             "https://medium.com/@0xpolarzero/la-blockchain-mais-pour-de-vrai-0fed9b951af9",
         },
@@ -458,7 +466,8 @@ export const TIMELINE: TimelineYear[] = [
           "Bachelor's degree in music and sound engineering, musicology, harmony, acoustics, recording, sound design.",
         ],
         links: {
-          website: "https://lact.univ-gustave-eiffel.fr/formations/licences/musique-et-metiers-du-son",
+          website:
+            "https://lact.univ-gustave-eiffel.fr/formations/licences/musique-et-metiers-du-son",
         },
       },
     ],

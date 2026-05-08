@@ -5,225 +5,443 @@ import { TIMELINE, type TimelineCategory, type TimelineItem } from "@/data/timel
 
 const PAGE = {
   size: "A4" as const,
-  margin: 42,
   width: 595.28,
   height: 841.89,
+  margin: 30,
 };
 
 const COLORS = {
+  paper: "#fbf7ef",
   ink: "#17191f",
-  muted: "#666a73",
-  line: "#b9b1a4",
+  muted: "#626772",
+  quiet: "#8b8173",
+  line: "#d5cab9",
   accent: "#f97316",
   link: "#1f4da8",
-  wash: "#f8f2e8",
+};
+
+const BODY_WIDTH = PAGE.width - PAGE.margin * 2;
+const COLUMN_GAP = 22;
+const COLUMN_WIDTH = (BODY_WIDTH - COLUMN_GAP) / 2;
+const BOTTOM = PAGE.height - PAGE.margin - 16;
+const TOP = 35;
+
+type PdfDoc = InstanceType<typeof PDFDocument>;
+type TimelineItemWithYear = TimelineItem & { year: string };
+type PdfEntry = {
+  title: string;
+  date: string;
+  caption: string;
+  bullets: string[];
+  links?: TimelineItem["links"];
+};
+type Flow = {
+  column: 0 | 1;
+  y: number;
+};
+type PdfSummary = {
+  caption?: string;
+  bullets?: string[];
 };
 
 const CATEGORY_LABELS: Record<TimelineCategory, string> = {
   work: "Work",
-  experiments: "Experiments",
   research: "Research",
+  experiments: "Experiments",
   writing: "Writing",
   education: "Education",
 };
 
-const CATEGORY_ORDER: TimelineCategory[] = [
-  "work",
-  "experiments",
-  "research",
-  "writing",
-  "education",
-];
-
-type PdfDoc = InstanceType<typeof PDFDocument>;
-
-const contentWidth = PAGE.width - PAGE.margin * 2;
-
-const range = (item: TimelineItem) => {
-  if (!item.to || item.to === item.from) return item.from;
-  return `${item.from} - ${item.to}`;
+const PDF_SUMMARIES: Record<string, PdfSummary> = {
+  svvy: {
+    caption: "Agent coding workbench for bounded, workflow-backed implementation",
+    bullets: [
+      "Built svvy with Electrobun, Svelte, Pi, and Smithers to route implementation through bounded, inspectable agent workflows.",
+      "Shipped Electrobun browser tooling and E2E infra for headless desktop app inspection, driving, logs, screenshots, and tests.",
+    ],
+  },
+  Tevm: {
+    caption: "Multi-language EVM tooling across TypeScript, Zig, WASM, Go, and C",
+    bullets: [
+      "Shipped @tevm/compiler: Solidity and Vyper compilation around Foundry compilers for TypeScript.",
+      "Contributed Tevm call/debug, tracing, MUD optimistic updates, storage layout, pre/post-state tooling, APIs, builds, and docs.",
+      "Contributed to Zig EVM guillotine: tracing CLI/devtool, Go/C/WASM/TS SDK bindings, semantics, hardforks, gas, fixtures.",
+    ],
+  },
+  Primodium: {
+    caption:
+      "Onchain games and crypto products at Alliance, Paradigm, and A16Z-backed startup",
+    bullets: [
+      "Shipped Solana DEX indexer, Hasura + Timescale GraphQL client, and server work for buy/sell flows, analytics, caching, Docker.",
+      "Built across Tub indexer, GraphQL, dashboard/explorer, server analytics, and iOS query, chart, and transaction surfaces.",
+      "Owned Primodium sync/indexer and DB stack; shipped React/MUD state tools, gasless server, game UI/tooling, perf, docs, release.",
+    ],
+  },
+  "Chainlink Functions": {
+    caption: "Alpha and beta testing for Chainlink Functions with public developer examples",
+    bullets: [
+      "Tested Alpha/Beta releases and published examples: Next.js starter, cross-chain ERC20 balance verification, and Twitter verifier.",
+    ],
+  },
+  evmstate: {
+    caption: "EVM state tracing and visualization library for transaction diffs",
+    bullets: [
+      "Traces local VM or live block transactions, labels storage slots, and outputs semantic state diffs.",
+    ],
+  },
+  nightwatch: {
+    caption: "Public research archive for onchain scam investigations",
+    bullets: [
+      "Catalogs Twitter and Telegram sleuth research in a Remix, Neon, and Deno research tool.",
+    ],
+  },
+  savvy: {
+    caption: "Browser tool for simulating and visualizing EVM activity",
+    bullets: [
+      "Built with Tevm, Whatsabi, and Next.js to fork EVM chains and visualize interactions and gas usage.",
+    ],
+  },
+  "Research: EVM gas benchmarks": {
+    caption: "EVM gas benchmarking across airdrops and tooling",
+    bullets: [
+      "Benchmarked ERC20/721/1155 airdrops and cross-validated Foundry, Hardhat, and Tevm gas reports.",
+    ],
+  },
+  "Research: EVM security": {
+    caption: "EVM security research using fuzzing and formal verification",
+    bullets: [
+      "Tested Glider, storage collision, and ERC1155A cases with Foundry, Halmos, and Certora.",
+    ],
+  },
+  "Experiments: web-based 3D & spatial audio": {
+    caption: "Web 3D and spatial audio experiments",
+    bullets: [
+      "Built Three.js/R3F projects for onchain collectibles, political graphs, virtual worlds, and music NFT visuals.",
+    ],
+  },
+  cascade: {
+    caption: "Decentralized crowdfunding with automated recurring payments",
+    bullets: [
+      "Built a Chainlink Fall 2023 hackathon app for secured, flexible contributor payments to founders.",
+    ],
+  },
+  promise: {
+    caption: "Onchain accountability app for founder commitments",
+    bullets: [
+      "Built a dapp that records founder promises onchain and ties them to identity.",
+      "Won Chainlink Top Quality Projects and QuickNode 1st Prize.",
+    ],
+  },
+  "Blockchain, but for real": {
+    caption: "Blockchain fundamentals, misconceptions, and future outlooks",
+    bullets: ["Bilingual publication: English and French versions."],
+  },
+  "Decentralized systems, end the cycle of indifference": {
+    caption: "Decentralized governance, delegation, and civic participation",
+    bullets: [],
+  },
+  "Chainlink's new dawn": {
+    caption: "Developer perspective on Chainlink after CCIP",
+    bullets: [],
+  },
+  "Smart contract security, terminology of a review": {
+    caption: "Smart contract security review terminology for newcomers",
+    bullets: [],
+  },
+  "Lesson #0, fundamentals of Solidity storage": {
+    caption: "Solidity storage layout and EVM data management fundamentals",
+    bullets: [],
+  },
+  "What is the metaverse anyway?": {
+    caption: "Research-based explainer on immersive virtual worlds",
+    bullets: [],
+  },
+  "Alchemy University": {
+    caption: "Ethereum bootcamp: cryptography, data structures, EVM, smart contracts",
+    bullets: ["Seven-week online Ethereum bootcamp with public GitHub coursework."],
+  },
+  "Three.js Journey": {
+    caption: "WebGL/Three.js course: R3F, shaders, physics, optimization",
+    bullets: ["Built web-based 3D projects with React Three Fiber and Drei."],
+  },
+  "Fullstack Solidity/JavaScript course": {
+    caption: "Solidity/JavaScript smart contract course by Patrick Collins",
+    bullets: ["Covered core blockchain concepts and fullstack smart contract development."],
+  },
+  "The Odin Project": {
+    caption: "Open-source fullstack JavaScript curriculum: Node, Express, React",
+    bullets: ["Covered JavaScript, Node.js, Express, MongoDB, and React."],
+  },
+  "Master in Music and Music Production": {
+    caption: "Master's degree, SAE Institute Paris: music and music production",
+    bullets: ["Thesis on immersive audio integration in virtual worlds and Web 3.0."],
+  },
+  "Bachelor in Music and Sound Engineering": {
+    caption: "Bachelor's degree, Universite Gustave Eiffel: music and sound engineering",
+    bullets: ["Musicology, harmony, acoustics, recording, and sound design."],
+  },
+  "Advanced Technician Certificate in Audiovisual Production": {
+    caption: "Advanced Technician Certificate, Lycee Suger: audiovisual production",
+    bullets: ["Sound engineering major with recording, sound design, post-production, and acoustics."],
+  },
 };
 
-const collectTimelineItems = () => {
+const range = (item: TimelineItem) => {
+  return `${item.from}\n${item.to ?? "now"}`;
+};
+
+const timelineItems = (): TimelineItemWithYear[] => {
   return TIMELINE.flatMap((group) => group.items.map((item) => ({ ...item, year: group.year })));
 };
 
-const categoryItems = (category: TimelineCategory) => {
-  return collectTimelineItems().filter((item) => item.category === category);
-};
+const entriesFor = (category: TimelineCategory): PdfEntry[] => {
+  return timelineItems()
+    .filter((item) => item.category === category)
+    .map((item) => {
+      const summary = PDF_SUMMARIES[item.title];
 
-const writeRule = (doc: PdfDoc, y = doc.y) => {
-  doc
-    .save()
-    .moveTo(PAGE.margin, y)
-    .lineTo(PAGE.width - PAGE.margin, y)
-    .lineWidth(0.8)
-    .strokeColor(COLORS.line)
-    .stroke()
-    .restore();
-};
-
-const ensureSpace = (doc: PdfDoc, needed: number) => {
-  if (doc.y + needed > PAGE.height - PAGE.margin - 26) {
-    doc.addPage();
-  }
-};
-
-const drawHeader = (doc: PdfDoc) => {
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(9)
-    .fillColor(COLORS.accent)
-    .text(PROFILE.handle, PAGE.margin, 28, { continued: true })
-    .fillColor(COLORS.muted)
-    .font("Helvetica")
-    .text(`  ${PROFILE.email}`);
-
-  writeRule(doc, 48);
-  doc.y = PAGE.margin + 20;
-};
-
-const drawFooter = (doc: PdfDoc, pageNumber: number, totalPages: number) => {
-  const y = PAGE.height - 30;
-  writeRule(doc, y - 10);
-  doc
-    .font("Helvetica")
-    .fontSize(7.5)
-    .fillColor(COLORS.muted)
-    .text("polarzero.xyz", PAGE.margin, y, { width: contentWidth / 2 })
-    .text(`${pageNumber} / ${totalPages}`, PAGE.margin, y, {
-      align: "right",
-      width: contentWidth,
+      return {
+        title: item.title,
+        date: range(item),
+        caption: summary?.caption ?? item.caption,
+        bullets: category === "writing" ? [] : (summary?.bullets ?? item.description),
+        links: category === "writing" ? undefined : item.links,
+      };
     });
 };
 
-const writeSectionHeading = (doc: PdfDoc, label: string) => {
-  ensureSpace(doc, 58);
-  doc.moveDown(0.5);
-  writeRule(doc);
-  doc.moveDown(0.65);
-  doc.font("Helvetica-Bold").fontSize(16).fillColor(COLORS.ink).text(label);
-  doc.moveDown(0.45);
+const columnX = (column: Flow["column"]) => {
+  return PAGE.margin + column * (COLUMN_WIDTH + COLUMN_GAP);
 };
 
-const writeLinkedDescription = (
-  doc: PdfDoc,
-  text: string,
-  links: TimelineItem["descriptionLinks"] | undefined,
-  x: number,
-  y: number,
-  options: PDFKit.Mixins.TextOptions,
-) => {
-  const linkedLabel = Object.keys(links ?? {}).find(
-    (label) => text.startsWith(`${label}:`) || text === label,
-  );
+const writeBackground = (doc: PdfDoc) => {
+  doc.rect(0, 0, PAGE.width, PAGE.height).fill(COLORS.paper);
+};
 
-  if (!linkedLabel || !links?.[linkedLabel]) {
-    doc.fillColor(COLORS.ink).text(text, x, y, options);
+const newPage = (doc: PdfDoc, flow: Flow) => {
+  doc.addPage();
+  writeBackground(doc);
+  flow.column = 0;
+  flow.y = TOP;
+};
+
+const nextColumn = (doc: PdfDoc, flow: Flow) => {
+  if (flow.column === 0) {
+    flow.column = 1;
+    flow.y = TOP;
     return;
   }
 
-  const rest = text.slice(linkedLabel.length);
-  doc
-    .fillColor(COLORS.link)
-    .text(linkedLabel, x, y, {
-      ...options,
-      continued: true,
-      link: links[linkedLabel],
-      underline: true,
-    })
-    .fillColor(COLORS.ink)
-    .text(rest);
+  newPage(doc, flow);
 };
 
-const writeTimelineItem = (doc: PdfDoc, item: TimelineItem) => {
-  const estimatedHeight =
-    56 +
-    item.caption.length / 2.7 +
-    item.description.reduce((height, text) => height + 12 + text.length / 4.7, 0);
+const ensureSpace = (doc: PdfDoc, flow: Flow, needed: number) => {
+  if (flow.y + needed > BOTTOM) {
+    nextColumn(doc, flow);
+  }
+};
 
-  ensureSpace(doc, Math.min(estimatedHeight, 230));
-
-  const startY = doc.y;
-  const dateWidth = 88;
-  const bodyX = PAGE.margin + dateWidth + 18;
-  const bodyWidth = contentWidth - dateWidth - 18;
-
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(8.5)
-    .fillColor(COLORS.accent)
-    .text(range(item), PAGE.margin, startY + 3, { width: dateWidth });
-
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(11.5)
-    .fillColor(COLORS.ink)
-    .text(item.title, bodyX, startY, { width: bodyWidth });
-
-  doc
-    .font("Helvetica")
-    .fontSize(8.8)
-    .fillColor(COLORS.muted)
-    .text(item.caption, bodyX, doc.y + 2, { width: bodyWidth });
-
-  doc.moveDown(0.35);
-
-  item.description.forEach((text) => {
-    const bulletY = doc.y + 4;
-    doc
-      .circle(bodyX + 2, bulletY, 1.5)
-      .fillColor(COLORS.accent)
-      .fill();
-    doc.font("Helvetica").fontSize(8.8);
-    writeLinkedDescription(doc, text, item.descriptionLinks, bodyX + 14, doc.y, {
-      width: bodyWidth - 14,
-      indent: 0,
-      lineGap: 1.3,
-    });
-    doc.moveDown(0.18);
+const writeHeader = (doc: PdfDoc) => {
+  doc.font("Helvetica-Bold").fontSize(42).fillColor(COLORS.ink).text(PROFILE.name, PAGE.margin, 31, {
+    width: BODY_WIDTH,
+    lineGap: -8,
   });
 
-  const linkedItems = Object.entries(item.links ?? {});
-  if (linkedItems.length > 0) {
-    doc.moveDown(0.08);
-    linkedItems.forEach(([label, url], index) => {
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(8)
-        .fillColor(COLORS.link)
-        .text(label, bodyX + index * 58, doc.y, {
-          continued: index < linkedItems.length - 1,
-          link: url,
-          underline: true,
-        });
-      if (index < linkedItems.length - 1) {
-        doc.fillColor(COLORS.muted).font("Helvetica").text("  ");
-      }
-    });
-  }
+  const meta = `${PROFILE.title} / ${PROFILE.location}`;
+  const headerY = 72;
+  let cursorX = PAGE.margin;
 
-  doc.y = Math.max(doc.y + 14, startY + 42);
+  doc.font("Helvetica").fontSize(8.5).fillColor(COLORS.muted).text(meta, cursorX, headerY);
+  cursorX += doc.widthOfString(meta) + 10;
+
+  const links = [
+    [PROFILE.handle, "https://github.com/0xpolarzero"],
+    [PROFILE.email, `mailto:${PROFILE.email}`],
+    ["polarzero.xyz", "https://polarzero.xyz"],
+  ] as const;
+
+  links.forEach(([label, url], index) => {
+    if (index > 0) {
+      doc.font("Helvetica").fontSize(8.5).fillColor(COLORS.quiet).text("/", cursorX, headerY);
+      cursorX += doc.widthOfString("/") + 8;
+    }
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(8.5)
+      .fillColor(COLORS.link)
+      .text(label, cursorX, headerY, {
+        link: url,
+        underline: true,
+      });
+    cursorX += doc.widthOfString(label) + 8;
+  });
+
+  doc
+    .moveTo(PAGE.margin, 91)
+    .lineTo(PAGE.width - PAGE.margin, 91)
+    .lineWidth(0.8)
+    .strokeColor(COLORS.line)
+    .stroke();
 };
 
 const writeIntro = (doc: PdfDoc) => {
-  doc.font("Helvetica-Bold").fontSize(44).fillColor(COLORS.ink).text(PROFILE.name, { lineGap: -6 });
+  doc.y = 106;
+  PROFILE.summary.forEach((paragraph, index) => {
+    doc.font("Helvetica").fontSize(8.3).fillColor(index === 0 ? COLORS.ink : COLORS.muted).text(paragraph, PAGE.margin, doc.y, {
+      width: BODY_WIDTH,
+      lineGap: 1.7,
+      align: "justify",
+    });
+    doc.moveDown(0.32);
+  });
+
+  return doc.y + 8;
+};
+
+const sectionHeight = () => 24;
+
+const writeSection = (doc: PdfDoc, flow: Flow, title: string) => {
+  ensureSpace(doc, flow, sectionHeight());
+
+  const x = columnX(flow.column);
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(8.2)
+    .fillColor(COLORS.accent)
+    .text(title.toUpperCase(), x, flow.y, {
+      characterSpacing: 0.7,
+      width: COLUMN_WIDTH,
+    });
+  doc
+    .moveTo(x, doc.y + 4)
+    .lineTo(x + COLUMN_WIDTH, doc.y + 4)
+    .lineWidth(0.55)
+    .strokeColor(COLORS.line)
+    .stroke();
+
+  flow.y = doc.y + 10;
+};
+
+const textHeight = (doc: PdfDoc, text: string, width: number, fontSize: number, lineGap = 0) => {
+  doc.font("Helvetica").fontSize(fontSize);
+  return doc.heightOfString(text, { width, lineGap });
+};
+
+const entryHeight = (doc: PdfDoc, item: PdfEntry) => {
+  const dateWidth = 56;
+  const bodyWidth = COLUMN_WIDTH - dateWidth - 9;
+  const captionHeight = textHeight(doc, item.caption, bodyWidth, 7.25, 0.8);
+  const bulletHeight = item.bullets.reduce(
+    (total, bullet) => total + 4 + textHeight(doc, bullet, bodyWidth - 8, 7.1, 0.8),
+    0,
+  );
+  const linksHeight = Object.keys(item.links ?? {}).length > 0 ? 10 : 0;
+
+  return Math.max(30, 10 + captionHeight + bulletHeight + linksHeight);
+};
+
+const writeLinks = (doc: PdfDoc, links: TimelineItem["links"], x: number, y: number) => {
+  Object.entries(links ?? {})
+    .slice(0, 5)
+    .forEach(([label, url], index) => {
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(6.3)
+        .fillColor(COLORS.link)
+        .text(label, x + index * 34, y, {
+          link: url,
+          underline: true,
+        });
+    });
+};
+
+const writeEntry = (doc: PdfDoc, flow: Flow, item: PdfEntry) => {
+  ensureSpace(doc, flow, Math.min(entryHeight(doc, item), BOTTOM - TOP));
+
+  const x = columnX(flow.column);
+  const dateWidth = 56;
+  const bodyX = x + dateWidth + 9;
+  const bodyWidth = COLUMN_WIDTH - dateWidth - 9;
+  const startY = flow.y;
 
   doc
-    .font("Helvetica")
-    .fontSize(10)
-    .fillColor(COLORS.muted)
-    .text(`${PROFILE.title} / ${PROFILE.location}`, { characterSpacing: 0.2 });
+    .font("Helvetica-Bold")
+    .fontSize(6.2)
+    .fillColor(COLORS.quiet)
+    .text(item.date, x, startY + 2, { width: dateWidth });
 
-  doc.moveDown(1.2);
-
-  PROFILE.summary.forEach((paragraph) => {
-    doc.font("Helvetica").fontSize(9.4).fillColor(COLORS.ink).text(paragraph, {
-      width: contentWidth,
-      lineGap: 2.2,
-    });
-    doc.moveDown(0.65);
+  doc.font("Helvetica-Bold").fontSize(8.4).fillColor(COLORS.ink).text(item.title, bodyX, startY, {
+    width: bodyWidth,
+    lineGap: 0.2,
   });
+
+  doc.font("Helvetica").fontSize(7.25).fillColor(COLORS.muted).text(item.caption, bodyX, doc.y + 1, {
+    width: bodyWidth,
+    lineGap: 0.8,
+    align: "justify",
+  });
+
+  item.bullets.forEach((bullet) => {
+    if (doc.y + textHeight(doc, bullet, bodyWidth - 8, 7.1, 0.8) + 6 > BOTTOM) {
+      flow.y = doc.y + 5;
+      nextColumn(doc, flow);
+      doc.y = flow.y;
+    }
+
+    doc.moveDown(0.1);
+    doc.circle(bodyX + 1.8, doc.y + 3.4, 1).fillColor(COLORS.accent).fill();
+    doc.font("Helvetica").fontSize(7.1).fillColor(COLORS.ink).text(bullet, bodyX + 8, doc.y, {
+      width: bodyWidth - 8,
+      lineGap: 0.8,
+      align: "justify",
+    });
+  });
+
+  if (Object.keys(item.links ?? {}).length > 0) {
+    writeLinks(doc, item.links, bodyX, doc.y + 2);
+    doc.y += 8;
+  }
+
+  flow.y = Math.max(doc.y + 8, startY + 30);
+};
+
+const writeCategory = (doc: PdfDoc, flow: Flow, category: TimelineCategory) => {
+  writeSection(doc, flow, CATEGORY_LABELS[category]);
+  entriesFor(category).forEach((item) => writeEntry(doc, flow, item));
+  flow.y += 4;
+};
+
+const writePageOne = (doc: PdfDoc) => {
+  writeBackground(doc);
+  writeHeader(doc);
+  const top = writeIntro(doc);
+
+  writeCategory(doc, { column: 0, y: top }, "work");
+  writeCategory(doc, { column: 1, y: top }, "research");
+};
+
+const writePageTwo = (doc: PdfDoc) => {
+  writeBackground(doc);
+
+  const left: Flow = { column: 0, y: TOP };
+  writeCategory(doc, left, "experiments");
+  left.y += 8;
+  writeCategory(doc, left, "writing");
+
+  writeCategory(doc, { column: 1, y: TOP }, "education");
+};
+
+const drawFooter = (doc: PdfDoc, pageNumber: number, totalPages: number) => {
+  doc
+    .font("Helvetica")
+    .fontSize(6.8)
+    .fillColor(COLORS.quiet)
+    .text("polarzero.xyz", PAGE.margin, BOTTOM + 8, { width: BODY_WIDTH / 2 })
+    .text(`${pageNumber} / ${totalPages}`, PAGE.margin, BOTTOM + 8, {
+      align: "right",
+      width: BODY_WIDTH,
+    });
 };
 
 export async function generateProfilePdf() {
@@ -240,32 +458,15 @@ export async function generateProfilePdf() {
 
   const chunks: Buffer[] = [];
   doc.on("data", (chunk: Buffer) => chunks.push(chunk));
-  doc.on("pageAdded", () => {
-    doc.rect(0, 0, PAGE.width, PAGE.height).fill(COLORS.wash);
-    drawHeader(doc);
-  });
 
-  doc.rect(0, 0, PAGE.width, PAGE.height).fill(COLORS.wash);
-  doc.fillColor(COLORS.ink);
-  drawHeader(doc);
-  writeIntro(doc);
+  writePageOne(doc);
+  doc.addPage();
+  writePageTwo(doc);
 
-  CATEGORY_ORDER.forEach((category) => {
-    const items = categoryItems(category);
-    if (items.length === 0) return;
-
-    writeSectionHeading(doc, CATEGORY_LABELS[category]);
-    items.forEach((item) => writeTimelineItem(doc, item));
-  });
-
-  const rangeInfo = doc.bufferedPageRange();
-  for (
-    let pageIndex = rangeInfo.start;
-    pageIndex < rangeInfo.start + rangeInfo.count;
-    pageIndex += 1
-  ) {
+  const pageRange = doc.bufferedPageRange();
+  for (let pageIndex = pageRange.start; pageIndex < pageRange.start + pageRange.count; pageIndex += 1) {
     doc.switchToPage(pageIndex);
-    drawFooter(doc, pageIndex + 1, rangeInfo.count);
+    drawFooter(doc, pageIndex + 1, pageRange.count);
   }
 
   doc.end();

@@ -1,9 +1,9 @@
 ---
 const suggestions = [
-  "What kind of work does polarzero do?",
-  "Summarize the EVM tooling experience.",
-  "What has polarzero built recently?",
-  "How can I contact polarzero?",
+  "Which projects best show polarzero's technical range?",
+  "What would make polarzero a strong fit for a technical product team?",
+  "Explain the EVM tooling work with concrete project links.",
+  "What is the fastest way to understand polarzero's work?",
 ];
 
 const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
@@ -120,6 +120,7 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
   const MAX_STORED_MESSAGE_CHARS = 8_000;
   const MAX_SERIALIZED_STORAGE_BYTES = 1_000_000;
   const STREAM_PERSIST_INTERVAL_MS = 300;
+  const AUTO_SCROLL_THRESHOLD_PX = 48;
   const GENERIC_FAILURE = "I could not reach the assistant right now. Please try again in a moment.";
   const TEMPORARY_FAILURE = "The assistant is temporarily unavailable. Please try again in a moment.";
 
@@ -377,13 +378,17 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
     return fragment;
   };
 
-  const render = () => {
+  const isNearTranscriptBottom = (element: HTMLElement) =>
+    element.scrollHeight - element.scrollTop - element.clientHeight <= AUTO_SCROLL_THRESHOLD_PX;
+
+  const render = (options: { forceScrollToBottom?: boolean } = {}) => {
     if (!root || !list || !status || !statusText || !empty || !transcript || !input || !send || !stop) {
       return;
     }
 
     const activeChat = getActiveChat();
     const isStreaming = Boolean(abortController);
+    const shouldScrollToBottom = options.forceScrollToBottom || isNearTranscriptBottom(transcript);
 
     status.hidden = !isStreaming;
     statusText.textContent = isStreaming ? "streaming" : "ready";
@@ -418,7 +423,7 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
           abortActiveStream();
           state.activeChatId = chat.id;
           persist();
-          render();
+          render({ forceScrollToBottom: true });
           input.focus();
         });
 
@@ -455,7 +460,9 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
       }),
     );
 
-    transcript.scrollTop = transcript.scrollHeight;
+    if (shouldScrollToBottom) {
+      transcript.scrollTop = transcript.scrollHeight;
+    }
   };
 
   const createMessage = (role: Role, content: string, status: MessageStatus): StoredMessage => ({
@@ -626,7 +633,7 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
     chat.updatedAt = assistantMessage.createdAt;
     input!.value = "";
     persist();
-    render();
+    render({ forceScrollToBottom: true });
 
     try {
       await handleStream(assistantMessage.id);
@@ -667,7 +674,7 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
     state.chats.unshift(chat);
     state.activeChatId = chat.id;
     persist();
-    render();
+    render({ forceScrollToBottom: true });
     input?.focus();
   });
 
@@ -683,7 +690,7 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
     }
 
     persist();
-    render();
+    render({ forceScrollToBottom: true });
     input?.focus();
   });
 
@@ -698,7 +705,7 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
     }
 
     persist();
-    render();
+    render({ forceScrollToBottom: true });
     input?.focus();
   });
 
@@ -707,7 +714,7 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
     void submitQuestion(input?.value ?? "");
   });
 
-  input?.addEventListener("input", render);
+  input?.addEventListener("input", () => render());
 
   input?.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
@@ -754,5 +761,5 @@ const agentPrompt = "Let's chat about https://polarzero.xyz/llms.txt";
 
   state = loadState();
   persist();
-  render();
+  render({ forceScrollToBottom: true });
 </script>

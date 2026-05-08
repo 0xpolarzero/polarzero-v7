@@ -338,8 +338,7 @@ export const TIMELINE: TimelineYear[] = [
           "The storage layout in the EVM, how data is meticulously stored and managed with Solidity.",
         ],
         links: {
-          website: "https://medium.com/@0xpolarzero/fundamentals-of-solidity-storage-581ba0551b3",
-          twitter: "https://twitter.com/0xpolarzero",
+          article: "https://medium.com/@0xpolarzero/fundamentals-of-solidity-storage-581ba0551b3",
         },
       },
       {

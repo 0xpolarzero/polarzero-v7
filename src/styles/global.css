@@ -235,6 +235,10 @@ samp,
   fill: currentColor;
 }
 
+.sidebar-pdf-icon {
+  fill: none;
+}
+
 .kv-list {
   display: grid;
   gap: 8px;
@@ -274,12 +278,25 @@ samp,
   color: var(--accent-strong);
 }
 
-.theme-toggle span:first-child {
+.theme-toggle [data-theme-icon] {
   display: inline-grid;
   width: 14px;
   place-items: center;
   color: var(--accent-strong);
   font-size: 0.78rem;
+}
+
+.theme-separator {
+  color: var(--muted);
+}
+
+.theme-toggle [data-theme-option] {
+  color: var(--muted);
+}
+
+.theme-toggle [data-theme-option][data-active] {
+  color: var(--ink);
+  font-weight: 700;
 }
 
 .content {
@@ -1131,7 +1148,23 @@ h1 {
   }
 
   .hero-meta a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     color: var(--blue-link);
+  }
+
+  .hero-meta-icon {
+    flex: 0 0 auto;
+    fill: currentColor;
+  }
+
+  .hero-meta-pdf-icon {
+    fill: none;
+  }
+
+  .hero-timezone {
+    flex-basis: 100%;
   }
 
   .pinned-repo-grid {

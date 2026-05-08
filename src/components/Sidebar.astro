@@ -4,9 +4,17 @@ import { NAV } from "@/data/nav";
 import { PROFILE } from "@/data/profile";
 import { SOCIALS } from "@/data/socials";
 
+const pdfIcon = `
+  <svg aria-hidden="true" class="sidebar-link-icon sidebar-pdf-icon" height="14" viewBox="0 0 16 16" width="14" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3.25 1.25h5.9l3.6 3.6v9.9h-9.5V1.25Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.35"/>
+    <path d="M9.15 1.25v3.6h3.6" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.35"/>
+    <text fill="currentColor" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="3.7" font-weight="800" letter-spacing="-.15" x="4.35" y="11.7">PDF</text>
+  </svg>
+`;
 const socialIcons = {
   Email: octicons.mail.toSVG({ "aria-hidden": "true", class: "sidebar-link-icon", height: 14, width: 14 }),
   GitHub: octicons["mark-github"].toSVG({ "aria-hidden": "true", class: "sidebar-link-icon", height: 14, width: 14 }),
+  Resume: pdfIcon,
   Twitter: octicons.mention.toSVG({ "aria-hidden": "true", class: "sidebar-link-icon", height: 14, width: 14 }),
 };
 ---
@@ -16,7 +24,7 @@ const socialIcons = {
 
   <nav class="sidebar-block" aria-label="Primary navigation">
     <ul class="nav-list sidebar-primary-nav">
-      {NAV.map((item) => <li><a data-nav-link href={item.href}>[{item.label}]</a></li>)}
+      {NAV.map((item) => <li><a data-nav-link href={item.href}>{item.label}</a></li>)}
     </ul>
   </nav>
 
@@ -33,11 +41,17 @@ const socialIcons = {
               target={social.href.startsWith("mailto:") ? undefined : "_blank"}
             >
               <span set:html={socialIcons[social.label]} />
-              [{social.label}]
+              {social.label.toLowerCase()}
             </a>
           </li>
         ))
       }
+      <li>
+        <a href="/pdf" target="_blank" aria-label="Open PDF resume">
+          <span set:html={socialIcons.Resume} />
+          resume
+        </a>
+      </li>
     </ul>
   </div>
 
@@ -63,15 +77,17 @@ const socialIcons = {
       data-theme-toggle
     >
       <span aria-hidden="true" data-theme-icon>◐</span>
-      <span data-theme-label>[dark]</span>
+      <span data-theme-option="light">light</span>
+      <span aria-hidden="true" class="theme-separator">/</span>
+      <span data-theme-option="dark">dark</span>
     </button>
   </div>
 </aside>
 
 <script>
   const themeToggle = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
-  const themeLabel = document.querySelector<HTMLElement>("[data-theme-label]");
   const themeIcon = document.querySelector<HTMLElement>("[data-theme-icon]");
+  const themeOptions = Array.from(document.querySelectorAll<HTMLElement>("[data-theme-option]"));
   const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
   const storageKey = "polarzero.theme";
 
@@ -89,9 +105,9 @@ const socialIcons = {
     themeToggle?.setAttribute("aria-pressed", String(isDark));
     themeToggle?.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} mode`);
 
-    if (themeLabel) {
-      themeLabel.textContent = isDark ? "[light]" : "[dark]";
-    }
+    themeOptions.forEach((option) => {
+      option.toggleAttribute("data-active", option.dataset.themeOption === theme);
+    });
 
     if (themeIcon) {
       themeIcon.textContent = isDark ? "◑" : "◐";

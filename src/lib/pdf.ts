@@ -11,7 +11,7 @@ const PAGE = {
 };
 
 const COLORS = {
-  paper: "#fbf7ef",
+  paper: "#ffffff",
   ink: "#17191f",
   muted: "#626772",
   quiet: "#8b8173",
@@ -33,10 +33,12 @@ type PdfEntry = {
   date: string;
   caption: string;
   bullets: string[];
-  links?: TimelineItem["links"];
+  descriptionLinks?: Record<string, string>;
+  links?: Record<string, string>;
 };
 type Flow = {
   column: 0 | 1;
+  top?: number;
   y: number;
 };
 type PdfSummary = {
@@ -199,13 +201,23 @@ const entriesFor = (category: TimelineCategory): PdfEntry[] => {
     .filter((item) => item.category === category)
     .map((item) => {
       const summary = PDF_SUMMARIES[item.title];
+      const useOriginalText = category === "work";
 
       return {
         title: item.title,
         date: range(item),
-        caption: summary?.caption ?? item.caption,
-        bullets: category === "writing" ? [] : (summary?.bullets ?? item.description),
-        links: category === "writing" ? undefined : item.links,
+        caption: useOriginalText ? item.caption : (summary?.caption ?? item.caption),
+        bullets: useOriginalText ? item.description : category === "writing" ? [] : (summary?.bullets ?? item.description),
+        descriptionLinks: item.descriptionLinks,
+        links: {
+          ...(item.links ?? {}),
+          ...(item.title === "Master in Music and Music Production"
+            ? {
+                thesis: item.descriptionLinks?.["Paper (online)"] ?? "",
+                pdf: item.descriptionLinks?.["Paper (PDF)"] ?? "",
+              }
+            : {}),
+        },
       };
     });
 };
@@ -228,7 +240,7 @@ const newPage = (doc: PdfDoc, flow: Flow) => {
 const nextColumn = (doc: PdfDoc, flow: Flow) => {
   if (flow.column === 0) {
     flow.column = 1;
-    flow.y = TOP;
+    flow.y = flow.top ?? TOP;
     return;
   }
 
@@ -247,22 +259,27 @@ const writeHeader = (doc: PdfDoc) => {
     lineGap: -8,
   });
 
-  const meta = `${PROFILE.title} / ${PROFILE.location}`;
-  const headerY = 72;
+  const titleY = 77;
+  const locationY = 90;
+  const linksY = 104;
   let cursorX = PAGE.margin;
 
-  doc.font("Helvetica").fontSize(8.5).fillColor(COLORS.muted).text(meta, cursorX, headerY);
-  cursorX += doc.widthOfString(meta) + 10;
+  doc
+    .font("Helvetica")
+    .fontSize(8.5)
+    .fillColor(COLORS.muted)
+    .text(PROFILE.title, cursorX, titleY)
+    .text(PROFILE.location, cursorX, locationY);
 
   const links = [
-    [PROFILE.handle, "https://github.com/0xpolarzero"],
+    [`GitHub (${PROFILE.handle})`, "https://github.com/0xpolarzero"],
+    [`Twitter (${PROFILE.handle})`, "https://x.com/0xpolarzero"],
     [PROFILE.email, `mailto:${PROFILE.email}`],
-    ["polarzero.xyz", "https://polarzero.xyz"],
   ] as const;
 
   links.forEach(([label, url], index) => {
     if (index > 0) {
-      doc.font("Helvetica").fontSize(8.5).fillColor(COLORS.quiet).text("/", cursorX, headerY);
+      doc.font("Helvetica").fontSize(8.5).fillColor(COLORS.quiet).text("/", cursorX, linksY);
       cursorX += doc.widthOfString("/") + 8;
     }
 
@@ -270,7 +287,7 @@ const writeHeader = (doc: PdfDoc) => {
       .font("Helvetica-Bold")
       .fontSize(8.5)
       .fillColor(COLORS.link)
-      .text(label, cursorX, headerY, {
+      .text(label, cursorX, linksY, {
         link: url,
         underline: true,
       });
@@ -278,17 +295,17 @@ const writeHeader = (doc: PdfDoc) => {
   });
 
   doc
-    .moveTo(PAGE.margin, 91)
-    .lineTo(PAGE.width - PAGE.margin, 91)
+    .moveTo(PAGE.margin, 119)
+    .lineTo(PAGE.width - PAGE.margin, 119)
     .lineWidth(0.8)
     .strokeColor(COLORS.line)
     .stroke();
 };
 
 const writeIntro = (doc: PdfDoc) => {
-  doc.y = 106;
-  PROFILE.summary.forEach((paragraph, index) => {
-    doc.font("Helvetica").fontSize(8.3).fillColor(index === 0 ? COLORS.ink : COLORS.muted).text(paragraph, PAGE.margin, doc.y, {
+  doc.y = 134;
+  PROFILE.summary.forEach((paragraph) => {
+    doc.font("Helvetica").fontSize(8.3).fillColor(COLORS.ink).text(paragraph, PAGE.margin, doc.y, {
       width: BODY_WIDTH,
       lineGap: 1.7,
       align: "justify",
@@ -323,6 +340,25 @@ const writeSection = (doc: PdfDoc, flow: Flow, title: string) => {
   flow.y = doc.y + 10;
 };
 
+const writeSectionAt = (doc: PdfDoc, title: string, x: number, y: number, width: number) => {
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(8.2)
+    .fillColor(COLORS.accent)
+    .text(title.toUpperCase(), x, y, {
+      characterSpacing: 0.7,
+      width,
+    });
+  doc
+    .moveTo(x, doc.y + 4)
+    .lineTo(x + width, doc.y + 4)
+    .lineWidth(0.55)
+    .strokeColor(COLORS.line)
+    .stroke();
+
+  return doc.y + 10;
+};
+
 const textHeight = (doc: PdfDoc, text: string, width: number, fontSize: number, lineGap = 0) => {
   doc.font("Helvetica").fontSize(fontSize);
   return doc.heightOfString(text, { width, lineGap });
@@ -341,8 +377,31 @@ const entryHeight = (doc: PdfDoc, item: PdfEntry) => {
   return Math.max(30, 10 + captionHeight + bulletHeight + linksHeight);
 };
 
-const writeLinks = (doc: PdfDoc, links: TimelineItem["links"], x: number, y: number) => {
+const entryBoxHeight = (
+  doc: PdfDoc,
+  item: PdfEntry,
+  width: number,
+  options: { dense?: boolean } = {},
+) => {
+  const dense = options.dense ?? false;
+  const dateWidth = dense ? 50 : 56;
+  const bodyWidth = width - dateWidth - 9;
+  const captionSize = dense ? 6.8 : 7.25;
+  const bulletSize = dense ? 6.45 : 7.1;
+  const lineGap = dense ? 0.35 : 0.8;
+  const captionHeight = textHeight(doc, item.caption, bodyWidth, captionSize, lineGap);
+  const bulletHeight = item.bullets.reduce(
+    (total, bullet) => total + 3 + textHeight(doc, bullet, bodyWidth - 8, bulletSize, lineGap),
+    0,
+  );
+  const linksHeight = Object.keys(item.links ?? {}).length > 0 ? 9 : 0;
+
+  return Math.max(dense ? 24 : 30, 10 + captionHeight + bulletHeight + linksHeight);
+};
+
+const writeLinks = (doc: PdfDoc, links: PdfEntry["links"], x: number, y: number) => {
   Object.entries(links ?? {})
+    .filter(([, url]) => url.length > 0)
     .slice(0, 5)
     .forEach(([label, url], index) => {
       doc
@@ -353,6 +412,63 @@ const writeLinks = (doc: PdfDoc, links: TimelineItem["links"], x: number, y: num
           link: url,
           underline: true,
         });
+    });
+};
+
+const writeBulletText = (
+  doc: PdfDoc,
+  text: string,
+  descriptionLinks: PdfEntry["descriptionLinks"],
+  x: number,
+  y: number,
+  width: number,
+  fontSize: number,
+  lineGap: number,
+) => {
+  const match = text.match(/^([^:]{2,64}:)\s+(.*)$/);
+
+  if (!match) {
+    doc.font("Helvetica").fontSize(fontSize).fillColor(COLORS.ink).text(text, x, y, {
+      width,
+      lineGap,
+    });
+    return;
+  }
+
+  const [, label, rest] = match;
+  const link = descriptionLinks?.[label.slice(0, -1)];
+  const labelText = `${label} `;
+  const labelWidth = doc.font("Helvetica-Bold").fontSize(fontSize).widthOfString(labelText);
+  const underlineWidth = doc.widthOfString(label);
+
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(fontSize)
+    .fillColor(link ? COLORS.link : COLORS.ink)
+    .text(labelText, x, y, {
+      continued: true,
+      lineGap,
+      width,
+    });
+
+  if (link) {
+    doc
+      .save()
+      .moveTo(x, y + fontSize)
+      .lineTo(x + underlineWidth, y + fontSize)
+      .lineWidth(0.35)
+      .strokeColor(COLORS.link)
+      .stroke()
+      .restore()
+      .link(x, y, labelWidth, fontSize + 2, link);
+  }
+
+  doc
+    .font("Helvetica")
+    .fillColor(COLORS.ink)
+    .text(rest, {
+      width,
+      lineGap,
     });
 };
 
@@ -391,11 +507,7 @@ const writeEntry = (doc: PdfDoc, flow: Flow, item: PdfEntry) => {
 
     doc.moveDown(0.1);
     doc.circle(bodyX + 1.8, doc.y + 3.4, 1).fillColor(COLORS.accent).fill();
-    doc.font("Helvetica").fontSize(7.1).fillColor(COLORS.ink).text(bullet, bodyX + 8, doc.y, {
-      width: bodyWidth - 8,
-      lineGap: 0.8,
-      align: "justify",
-    });
+    writeBulletText(doc, bullet, item.descriptionLinks, bodyX + 8, doc.y, bodyWidth - 8, 7.1, 0.8);
   });
 
   if (Object.keys(item.links ?? {}).length > 0) {
@@ -404,6 +516,54 @@ const writeEntry = (doc: PdfDoc, flow: Flow, item: PdfEntry) => {
   }
 
   flow.y = Math.max(doc.y + 8, startY + 30);
+};
+
+const writeEntryBox = (
+  doc: PdfDoc,
+  item: PdfEntry,
+  x: number,
+  y: number,
+  width: number,
+  options: { dense?: boolean } = {},
+) => {
+  const dense = options.dense ?? false;
+  const dateWidth = dense ? 50 : 56;
+  const bodyX = x + dateWidth + 9;
+  const bodyWidth = width - dateWidth - 9;
+  const titleSize = dense ? 8 : 8.4;
+  const captionSize = dense ? 6.8 : 7.25;
+  const bulletSize = dense ? 6.45 : 7.1;
+  const lineGap = dense ? 0.35 : 0.8;
+
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(6.2)
+    .fillColor(COLORS.quiet)
+    .text(item.date, x, y + 2, { width: dateWidth });
+
+  doc.font("Helvetica-Bold").fontSize(titleSize).fillColor(COLORS.ink).text(item.title, bodyX, y, {
+    width: bodyWidth,
+    lineGap: 0.2,
+  });
+
+  doc.font("Helvetica").fontSize(captionSize).fillColor(COLORS.muted).text(item.caption, bodyX, doc.y + 1, {
+    width: bodyWidth,
+    lineGap,
+    align: "justify",
+  });
+
+  item.bullets.forEach((bullet) => {
+    doc.moveDown(0.08);
+    doc.circle(bodyX + 1.8, doc.y + 3.2, 0.9).fillColor(COLORS.accent).fill();
+    writeBulletText(doc, bullet, item.descriptionLinks, bodyX + 8, doc.y, bodyWidth - 8, bulletSize, lineGap);
+  });
+
+  if (Object.keys(item.links ?? {}).length > 0) {
+    writeLinks(doc, item.links, bodyX, doc.y + 2);
+    doc.y += 7;
+  }
+
+  return Math.max(doc.y + 6, y + entryBoxHeight(doc, item, width, { dense }));
 };
 
 const writeCategory = (doc: PdfDoc, flow: Flow, category: TimelineCategory) => {
@@ -416,9 +576,23 @@ const writePageOne = (doc: PdfDoc) => {
   writeBackground(doc);
   writeHeader(doc);
   const top = writeIntro(doc);
+  const leftX = PAGE.margin;
+  const rightX = PAGE.margin + COLUMN_WIDTH + COLUMN_GAP;
+  const work = entriesFor("work");
+  const research = entriesFor("research");
 
-  writeCategory(doc, { column: 0, y: top }, "work");
-  writeCategory(doc, { column: 1, y: top }, "research");
+  let y = writeSectionAt(doc, "work", PAGE.margin, top, BODY_WIDTH);
+
+  const firstRowY = y;
+  const svvyEnd = writeEntryBox(doc, work[0], leftX, firstRowY, COLUMN_WIDTH);
+  const primodiumEnd = writeEntryBox(doc, work[2], rightX, firstRowY, COLUMN_WIDTH);
+
+  const leftColumnEnd = writeEntryBox(doc, work[1], leftX, svvyEnd + 8, COLUMN_WIDTH);
+  const rightColumnEnd = writeEntryBox(doc, work[3], rightX, primodiumEnd + 8, COLUMN_WIDTH);
+
+  y = writeSectionAt(doc, "research", PAGE.margin, Math.max(leftColumnEnd, rightColumnEnd) + 2, BODY_WIDTH);
+  writeEntryBox(doc, research[0], leftX, y, COLUMN_WIDTH, { dense: true });
+  writeEntryBox(doc, research[1], rightX, y, COLUMN_WIDTH, { dense: true });
 };
 
 const writePageTwo = (doc: PdfDoc) => {
@@ -426,19 +600,43 @@ const writePageTwo = (doc: PdfDoc) => {
 
   const left: Flow = { column: 0, y: TOP };
   writeCategory(doc, left, "experiments");
-  left.y += 8;
+  left.y += 2;
   writeCategory(doc, left, "writing");
 
   writeCategory(doc, { column: 1, y: TOP }, "education");
 };
 
 const drawFooter = (doc: PdfDoc, pageNumber: number, totalPages: number) => {
+  const footerText = "Read a cleaner web version at ";
+  const footerY = BOTTOM - 2;
+  const footerSize = 6.8;
+  const linkLabel = "polarzero.xyz";
+  const linkX = PAGE.margin + doc.font("Helvetica").fontSize(footerSize).widthOfString(footerText);
+  const linkWidth = doc.font("Helvetica-Bold").fontSize(footerSize).widthOfString(linkLabel);
+
   doc
     .font("Helvetica")
-    .fontSize(6.8)
+    .fontSize(footerSize)
     .fillColor(COLORS.quiet)
-    .text("polarzero.xyz", PAGE.margin, BOTTOM + 8, { width: BODY_WIDTH / 2 })
-    .text(`${pageNumber} / ${totalPages}`, PAGE.margin, BOTTOM + 8, {
+    .text(footerText, PAGE.margin, footerY, { width: BODY_WIDTH / 2 })
+    .font("Helvetica-Bold")
+    .fillColor(COLORS.link)
+    .text(linkLabel, linkX, footerY);
+
+  doc
+    .save()
+    .moveTo(linkX, footerY + footerSize)
+    .lineTo(linkX + linkWidth, footerY + footerSize)
+    .lineWidth(0.35)
+    .strokeColor(COLORS.link)
+    .stroke()
+    .restore()
+    .link(linkX, footerY, linkWidth, footerSize + 2, "https://polarzero.xyz");
+
+  doc
+    .font("Helvetica")
+    .fillColor(COLORS.quiet)
+    .text(`${pageNumber} / ${totalPages}`, PAGE.margin, footerY, {
       align: "right",
       width: BODY_WIDTH,
     });

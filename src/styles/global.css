@@ -969,10 +969,45 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   gap: 12px 24px;
+  align-items: end;
   justify-content: space-between;
   padding: 22px 0 10px;
   color: var(--muted);
   font-size: 0.78rem;
+}
+
+.site-footer span {
+  display: block;
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-footer p {
+  margin-top: 6px;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.site-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 3px 9px;
+  border: 1px solid var(--line-soft);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.site-footer nav a:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
 }
 
 @media (max-width: 1180px) {

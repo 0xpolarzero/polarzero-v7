@@ -16,8 +16,9 @@ type ClientMessage = {
 };
 
 const DEFAULT_MODEL = "deepseek/deepseek-v4-flash";
-const DEFAULT_REASONING_EFFORT = "medium";
-const DEFAULT_MAX_OUTPUT_TOKENS = 1_000;
+const DEFAULT_REASONING_EFFORT = "high";
+const OPENROUTER_PROVIDER_ORDER = ["deepseek"];
+const DEFAULT_MAX_OUTPUT_TOKENS = 4_000;
 const MAX_BODY_BYTES = 128 * 1024;
 const SERVER_MAX_MESSAGES = 24;
 const SERVER_MESSAGE_WINDOW = 12;
@@ -168,7 +169,13 @@ export async function POST({ request }: APIContext) {
         });
 
         const result = streamText({
-          model: openrouter.chat(configuredModel()),
+          model: openrouter.chat(configuredModel(), {
+            provider: {
+              order: OPENROUTER_PROVIDER_ORDER,
+              allow_fallbacks: true,
+              data_collection: "allow",
+            },
+          }),
           system: `${instructions}\n\n# Knowledge document\n\n${context}`,
           messages: parsedRequest.messages,
           abortSignal: request.signal,

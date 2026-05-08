@@ -88,6 +88,8 @@ If `OPENROUTER_MODEL` is absent, the default model shall be:
 deepseek/deepseek-v4-flash
 ```
 
+The endpoint shall prefer the official DeepSeek provider path with provider data collection allowed, because that is the DeepSeek V4 Flash endpoint that supports implicit prompt caching. Fallbacks shall remain enabled so the chatbot can use non-cached third-party endpoints when the official DeepSeek endpoint is unavailable.
+
 The reasoning effort shall be configurable through:
 
 ```text
@@ -97,10 +99,10 @@ OPENROUTER_REASONING_EFFORT
 If `OPENROUTER_REASONING_EFFORT` is absent, the default reasoning effort shall be:
 
 ```text
-medium
+high
 ```
 
-The default is intentionally not `high`: this chatbot should mostly answer from a known document, so higher reasoning usually adds latency and cost without improving simple portfolio answers. `high` may be used as an environment override for experimentation.
+The default is `high` because `deepseek/deepseek-v4-flash` supports `high` and `xhigh` reasoning efforts, and `high` is the lower supported reasoning level for this model.
 
 The maximum assistant output shall be configurable through:
 
@@ -111,7 +113,7 @@ OPENROUTER_MAX_OUTPUT_TOKENS
 If `OPENROUTER_MAX_OUTPUT_TOKENS` is absent, the default maximum assistant output shall be:
 
 ```text
-1000
+4000
 ```
 
 As a rough human-scale guide, 1,000 output tokens is usually around 650-800 English words, or roughly 5-8 medium paragraphs. This is a ceiling, not a target. The chatbot shall answer concisely by default, preferably in 1-3 short paragraphs or a short bullet list, and only approach the cap when the visitor asks for detail.

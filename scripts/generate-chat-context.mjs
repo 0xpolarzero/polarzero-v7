@@ -26,6 +26,8 @@ const sourceHeaders = {
   ...(githubToken ? { Authorization: `Bearer ${githubToken}` } : {}),
 };
 
+const githubDefaultBranchCache = new Map();
+
 const readText = (path) => readFile(path, "utf8");
 
 const normalizeWhitespace = (value) => value.replace(/\r\n/g, "\n").trim();
@@ -158,6 +160,39 @@ const isAllowedGithubReadmeUrl = (url) => {
 const rawGithubUrlFromParts = ({ owner, repo, ref, path }) =>
   `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${path}`;
 
+const canonicalGithubReadmeRef = (ref) => (["HEAD", "main", "master"].includes(ref) ? "" : ref);
+
+const fetchGithubDefaultBranch = async (owner, repo) => {
+  const cacheKey = `${owner}/${repo}`;
+
+  if (githubDefaultBranchCache.has(cacheKey)) {
+    return githubDefaultBranchCache.get(cacheKey);
+  }
+
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      headers: sourceHeaders,
+      signal: AbortSignal.timeout(fetchTimeoutMs),
+    });
+
+    if (!response.ok) {
+      githubDefaultBranchCache.set(cacheKey, null);
+      return null;
+    }
+
+    const data = await response.json();
+    const defaultBranch = typeof data.default_branch === "string" ? data.default_branch : null;
+
+    githubDefaultBranchCache.set(cacheKey, defaultBranch);
+    return defaultBranch;
+  } catch {
+    githubDefaultBranchCache.set(cacheKey, null);
+    return null;
+  }
+};
+
 const canonicalGithubReadmeKey = (url) => {
   const github = githubPartsFromUrl(url);
 
@@ -166,17 +201,20 @@ const canonicalGithubReadmeKey = (url) => {
   }
 
   if (!github.mode) {
-    return `${github.owner}/${github.repo}/HEAD/README.md`;
+    return `${github.owner}/${github.repo}/README.md`;
   }
 
   if (github.mode === "tree") {
     const path = [github.path, "README.md"].filter(Boolean).join("/");
+    const ref = canonicalGithubReadmeRef(github.ref);
 
-    return `${github.owner}/${github.repo}/${github.ref}/${path}`;
+    return [github.owner, github.repo, ref, path].filter(Boolean).join("/");
   }
 
   if (github.mode === "blob" && /(^|\/)readme(\.[\w.-]+)?$/i.test(github.path)) {
-    return `${github.owner}/${github.repo}/${github.ref}/${github.path}`;
+    const ref = canonicalGithubReadmeRef(github.ref);
+
+    return [github.owner, github.repo, ref, github.path].filter(Boolean).join("/");
   }
 
   return url;
@@ -206,6 +244,7 @@ const tryFetch = async (url, headers = {}) => {
 
 const fetchGithubReadme = async (owner, repo) => {
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}/readme`;
+  const defaultBranch = await fetchGithubDefaultBranch(owner, repo);
   const response = await fetch(apiUrl, {
     headers: {
       ...sourceHeaders,
@@ -222,7 +261,7 @@ const fetchGithubReadme = async (owner, repo) => {
 
   return {
     markdown,
-    baseUrl: `https://github.com/${owner}/${repo}/blob/HEAD/README.md`,
+    baseUrl: `https://github.com/${owner}/${repo}/blob/${defaultBranch ?? "HEAD"}/README.md`,
     sourceUrl: contentUrl ?? apiUrl,
   };
 };

@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   --background: hsl(42 32% 96%);
   --surface: hsl(40 28% 98%);
   --surface-alt: hsl(37 24% 93%);
@@ -14,11 +14,44 @@
   --accent-strong: hsl(24 95% 42%);
   --blue-link: hsl(222 75% 38%);
   --green: hsl(142 39% 30%);
+  --grid-line-x: hsl(220 11% 20% / 0.03);
+  --grid-line-y: hsl(220 11% 20% / 0.025);
+  --shadow-color: hsl(220 18% 10% / 0.08);
+  --panel-lift: white;
+  --panel-lift-amount: 18%;
+  --panel-lift-strong: 24%;
+  --user-message-meta: oklch(98.1% 0.012 84 / 0.72);
+  --danger-surface: oklch(95% 0.035 25);
+  --danger-line: oklch(43% 0.12 25);
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --sans:
     "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --radius: 0;
-  --shadow: 0 18px 60px hsl(220 18% 10% / 0.08);
+  --shadow: 0 18px 60px var(--shadow-color);
+}
+
+:root[data-theme="dark"] {
+  --background: oklch(17% 0.018 252);
+  --surface: oklch(21.5% 0.021 252);
+  --surface-alt: oklch(25.5% 0.024 252);
+  --ink: oklch(92.5% 0.012 78);
+  --muted: oklch(78% 0.014 78);
+  --line: oklch(84% 0.014 78 / 0.58);
+  --line-soft: oklch(84% 0.014 78 / 0.17);
+  --accent: oklch(72% 0.16 47);
+  --accent-soft: oklch(72% 0.16 47 / 0.14);
+  --accent-strong: oklch(78% 0.145 55);
+  --blue-link: oklch(77% 0.1 236);
+  --green: oklch(73% 0.12 154);
+  --grid-line-x: oklch(84% 0.014 78 / 0.035);
+  --grid-line-y: oklch(84% 0.014 78 / 0.027);
+  --shadow-color: oklch(7% 0.015 252 / 0.36);
+  --panel-lift: oklch(34% 0.032 252);
+  --panel-lift-amount: 18%;
+  --panel-lift-strong: 22%;
+  --user-message-meta: oklch(17% 0.018 252 / 0.72);
+  --danger-surface: oklch(27% 0.052 25);
+  --danger-line: oklch(71% 0.13 25);
 }
 
 * {
@@ -38,19 +71,22 @@ body {
   min-width: 320px;
   margin: 0;
   background:
-    linear-gradient(90deg, hsl(220 11% 20% / 0.03) 1px, transparent 1px),
-    linear-gradient(hsl(220 11% 20% / 0.025) 1px, transparent 1px), var(--background);
+    linear-gradient(90deg, var(--grid-line-x) 1px, transparent 1px),
+    linear-gradient(var(--grid-line-y) 1px, transparent 1px), var(--background);
   background-size: 32px 32px;
   color: var(--ink);
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.55;
   text-rendering: optimizeLegibility;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
 }
 
 body::selection {
   background: var(--accent);
-  color: white;
+  color: oklch(17.2% 0.018 252);
 }
 
 a {
@@ -220,6 +256,32 @@ samp,
   margin: 0;
 }
 
+.theme-toggle {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--blue-link);
+  cursor: pointer;
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.92rem;
+}
+
+.theme-toggle:hover {
+  color: var(--accent-strong);
+}
+
+.theme-toggle span:first-child {
+  display: inline-grid;
+  width: 14px;
+  place-items: center;
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+}
+
 .content {
   min-width: 0;
 }
@@ -303,8 +365,8 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface), white 18%);
-  box-shadow: 3px 3px 0 hsl(220 18% 10% / 0.08);
+  background: color-mix(in oklch, var(--surface), var(--panel-lift) var(--panel-lift-amount));
+  box-shadow: 3px 3px 0 var(--shadow-color);
 }
 
 .agent-prompt-copy code {
@@ -333,10 +395,10 @@ h1 {
   height: clamp(620px, 78vh, 760px);
   overflow: hidden;
   background:
-    linear-gradient(135deg, hsl(24 95% 53% / 0.08), transparent 38%),
-    color-mix(in srgb, var(--surface), white 24%);
+    linear-gradient(135deg, var(--accent-soft), transparent 38%),
+    color-mix(in oklch, var(--surface), var(--panel-lift) var(--panel-lift-strong));
   border: 1px solid var(--line);
-  box-shadow: 6px 6px 0 hsl(220 18% 10% / 0.1);
+  box-shadow: 6px 6px 0 var(--shadow-color);
 }
 
 .chat-sidebar {
@@ -346,8 +408,8 @@ h1 {
   min-width: 0;
   border-right: 1px solid var(--line);
   background:
-    linear-gradient(hsl(220 18% 10% / 0.035) 1px, transparent 1px),
-    color-mix(in srgb, var(--surface-alt), white 12%);
+    linear-gradient(var(--grid-line-x) 1px, transparent 1px),
+    color-mix(in oklch, var(--surface-alt), var(--panel-lift) 12%);
   background-size: 100% 32px;
 }
 
@@ -410,7 +472,7 @@ h1 {
 .chat-list-item[aria-current="true"] {
   border-color: var(--line);
   background: var(--surface);
-  box-shadow: 3px 3px 0 hsl(220 18% 10% / 0.08);
+  box-shadow: 3px 3px 0 var(--shadow-color);
 }
 
 .chat-list-item span {
@@ -486,7 +548,7 @@ h1 {
   width: 8px;
   height: 8px;
   background: var(--green);
-  box-shadow: 0 0 0 4px hsl(142 39% 30% / 0.12);
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--green), transparent 84%);
 }
 
 .chat-empty-state {
@@ -496,7 +558,7 @@ h1 {
   gap: 16px;
   padding: 16px 18px;
   border-bottom: 1px solid var(--line-soft);
-  background: hsl(24 95% 53% / 0.06);
+  background: var(--accent-soft);
 }
 
 .chat-empty-state p {
@@ -543,7 +605,7 @@ h1 {
   padding: 14px 15px;
   border: 1px solid var(--line);
   background: var(--surface);
-  box-shadow: 3px 3px 0 hsl(220 18% 10% / 0.08);
+  box-shadow: 3px 3px 0 var(--shadow-color);
 }
 
 .chat-message-user {
@@ -562,8 +624,8 @@ h1 {
 
 .chat-message.is-error,
 .chat-message.is-interrupted {
-  background: hsl(0 84% 96%);
-  border-color: hsl(0 55% 38%);
+  background: var(--danger-surface);
+  border-color: var(--danger-line);
 }
 
 .chat-message-meta {
@@ -577,7 +639,7 @@ h1 {
 }
 
 .chat-message-user .chat-message-meta {
-  color: hsl(40 28% 98% / 0.72);
+  color: var(--user-message-meta);
 }
 
 .chat-message-content {
@@ -610,12 +672,12 @@ h1 {
 .chat-message pre {
   overflow-x: auto;
   padding: 10px;
-  background: hsl(220 18% 10% / 0.08);
+  background: color-mix(in oklch, var(--ink), transparent 92%);
 }
 
 .chat-message code {
   padding: 0.08em 0.3em;
-  background: hsl(220 18% 10% / 0.08);
+  background: color-mix(in oklch, var(--ink), transparent 92%);
   font-size: 0.9em;
 }
 
@@ -625,11 +687,11 @@ h1 {
 }
 
 .chat-message-user code {
-  background: hsl(40 28% 98% / 0.14);
+  background: color-mix(in oklch, var(--surface), transparent 86%);
 }
 
 .chat-message-user pre {
-  background: hsl(40 28% 98% / 0.14);
+  background: color-mix(in oklch, var(--surface), transparent 86%);
 }
 
 .chat-cursor {
@@ -646,7 +708,7 @@ h1 {
   min-height: 156px;
   padding: 14px;
   border-top: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface-alt), white 20%);
+  background: color-mix(in oklch, var(--surface-alt), var(--panel-lift) 20%);
 }
 
 .chat-composer label {
@@ -703,7 +765,7 @@ h1 {
 
 .chat-send-button {
   background: var(--accent);
-  color: white;
+  color: oklch(17.2% 0.018 252);
 }
 
 @keyframes chat-cursor-blink {
@@ -714,9 +776,9 @@ h1 {
 
 .pinned-repo-card,
 .timeline-entry {
-  background: color-mix(in srgb, var(--surface), white 18%);
+  background: color-mix(in oklch, var(--surface), var(--panel-lift) var(--panel-lift-amount));
   border: 1px solid var(--line);
-  box-shadow: 4px 4px 0 hsl(220 18% 10% / 0.08);
+  box-shadow: 4px 4px 0 var(--shadow-color);
 }
 
 .section-header {

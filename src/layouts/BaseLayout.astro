@@ -21,6 +21,24 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://polarzer
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <title>{title}</title>
+    <script is:inline>
+      const storedTheme = (() => {
+        try {
+          return localStorage.getItem("polarzero.theme");
+        } catch {
+          return null;
+        }
+      })();
+      const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+      const theme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : preferredTheme;
+
+      document.documentElement.dataset.theme = theme;
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", theme === "dark" ? "#d96f31" : "#f97316");
+    </script>
   </head>
   <body>
     <slot />

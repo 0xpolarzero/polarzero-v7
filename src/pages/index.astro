@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar.astro";
 import TimelineEntry from "@/components/TimelineEntry.astro";
 import pinnedRepos from "@/data/pinned-repos.json";
 import { PROFILE } from "@/data/profile";
+import { SOCIALS } from "@/data/socials";
 import { TIMELINE, type TimelineCategory } from "@/data/timeline";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
@@ -32,6 +33,16 @@ const activityFilters: Array<TimelineCategory | "all"> = [
 
           <div class="manifesto">
             {PROFILE.summary.map((paragraph) => <p>{paragraph}</p>)}
+          </div>
+
+          <div class="hero-meta" aria-label="Profile links">
+            <a href={`mailto:${PROFILE.email}`}>email</a>
+            {
+              SOCIALS.filter((social) => social.label !== "Email").map((social) => (
+                <a href={social.href} rel="noreferrer" target="_blank">{social.label.toLowerCase()}</a>
+              ))
+            }
+            <span>{PROFILE.timezone}</span>
           </div>
         </div>
       </section>

@@ -23,8 +23,11 @@ const COLORS = {
 const BODY_WIDTH = PAGE.width - PAGE.margin * 2;
 const COLUMN_GAP = 22;
 const COLUMN_WIDTH = (BODY_WIDTH - COLUMN_GAP) / 2;
-const BOTTOM = PAGE.height - PAGE.margin - 16;
-const TOP = 35;
+const FOOTER_SIZE = 7.2;
+const ENTRY_DATE_WIDTH = 44;
+const ENTRY_DATE_DENSE_WIDTH = 40;
+const ENTRY_DATE_GAP = 3;
+const ENTRY_VERTICAL_GAP = 5;
 
 type PdfDoc = InstanceType<typeof PDFDocument>;
 type TimelineItemWithYear = TimelineItem & { year: string };
@@ -36,22 +39,9 @@ type PdfEntry = {
   descriptionLinks?: Record<string, string>;
   links?: Record<string, string>;
 };
-type Flow = {
-  column: 0 | 1;
-  top?: number;
-  y: number;
-};
 type PdfSummary = {
   caption?: string;
   bullets?: string[];
-};
-
-const CATEGORY_LABELS: Record<TimelineCategory, string> = {
-  work: "Work",
-  research: "Research",
-  experiments: "Experiments",
-  writing: "Writing",
-  education: "Education",
 };
 
 const PDF_SUMMARIES: Record<string, PdfSummary> = {
@@ -71,8 +61,7 @@ const PDF_SUMMARIES: Record<string, PdfSummary> = {
     ],
   },
   Primodium: {
-    caption:
-      "Onchain games and crypto products at Alliance, Paradigm, and A16Z-backed startup",
+    caption: "Onchain games and crypto products at Alliance, Paradigm, and A16Z-backed startup",
     bullets: [
       "Shipped Solana DEX indexer, Hasura + Timescale GraphQL client, and server work for buy/sell flows, analytics, caching, Docker.",
       "Built across Tub indexer, GraphQL, dashboard/explorer, server analytics, and iOS query, chart, and transaction surfaces.",
@@ -184,7 +173,9 @@ const PDF_SUMMARIES: Record<string, PdfSummary> = {
   },
   "Advanced Technician Certificate in Audiovisual Production": {
     caption: "Advanced Technician Certificate, Lycee Suger: audiovisual production",
-    bullets: ["Sound engineering major with recording, sound design, post-production, and acoustics."],
+    bullets: [
+      "Sound engineering major with recording, sound design, post-production, and acoustics.",
+    ],
   },
 };
 
@@ -201,13 +192,17 @@ const entriesFor = (category: TimelineCategory): PdfEntry[] => {
     .filter((item) => item.category === category)
     .map((item) => {
       const summary = PDF_SUMMARIES[item.title];
-      const useOriginalText = category === "work";
+      const useOriginalText = category === "work" || category === "research";
 
       return {
         title: item.title,
         date: range(item),
         caption: useOriginalText ? item.caption : (summary?.caption ?? item.caption),
-        bullets: useOriginalText ? item.description : category === "writing" ? [] : (summary?.bullets ?? item.description),
+        bullets: useOriginalText
+          ? item.description
+          : category === "writing"
+            ? []
+            : (summary?.bullets ?? item.description),
         descriptionLinks: item.descriptionLinks,
         links: {
           ...(item.links ?? {}),
@@ -222,42 +217,19 @@ const entriesFor = (category: TimelineCategory): PdfEntry[] => {
     });
 };
 
-const columnX = (column: Flow["column"]) => {
-  return PAGE.margin + column * (COLUMN_WIDTH + COLUMN_GAP);
-};
-
 const writeBackground = (doc: PdfDoc) => {
   doc.rect(0, 0, PAGE.width, PAGE.height).fill(COLORS.paper);
 };
 
-const newPage = (doc: PdfDoc, flow: Flow) => {
-  doc.addPage();
-  writeBackground(doc);
-  flow.column = 0;
-  flow.y = TOP;
-};
-
-const nextColumn = (doc: PdfDoc, flow: Flow) => {
-  if (flow.column === 0) {
-    flow.column = 1;
-    flow.y = flow.top ?? TOP;
-    return;
-  }
-
-  newPage(doc, flow);
-};
-
-const ensureSpace = (doc: PdfDoc, flow: Flow, needed: number) => {
-  if (flow.y + needed > BOTTOM) {
-    nextColumn(doc, flow);
-  }
-};
-
 const writeHeader = (doc: PdfDoc) => {
-  doc.font("Helvetica-Bold").fontSize(42).fillColor(COLORS.ink).text(PROFILE.name, PAGE.margin, 31, {
-    width: BODY_WIDTH,
-    lineGap: -8,
-  });
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(42)
+    .fillColor(COLORS.ink)
+    .text(PROFILE.name, PAGE.margin, 31, {
+      width: BODY_WIDTH,
+      lineGap: -8,
+    });
 
   const titleY = 77;
   const locationY = 90;
@@ -283,14 +255,10 @@ const writeHeader = (doc: PdfDoc) => {
       cursorX += doc.widthOfString("/") + 8;
     }
 
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(8.5)
-      .fillColor(COLORS.link)
-      .text(label, cursorX, linksY, {
-        link: url,
-        underline: true,
-      });
+    doc.font("Helvetica-Bold").fontSize(8.5).fillColor(COLORS.link).text(label, cursorX, linksY, {
+      link: url,
+      underline: true,
+    });
     cursorX += doc.widthOfString(label) + 8;
   });
 
@@ -314,30 +282,6 @@ const writeIntro = (doc: PdfDoc) => {
   });
 
   return doc.y + 8;
-};
-
-const sectionHeight = () => 24;
-
-const writeSection = (doc: PdfDoc, flow: Flow, title: string) => {
-  ensureSpace(doc, flow, sectionHeight());
-
-  const x = columnX(flow.column);
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(8.2)
-    .fillColor(COLORS.accent)
-    .text(title.toUpperCase(), x, flow.y, {
-      characterSpacing: 0.7,
-      width: COLUMN_WIDTH,
-    });
-  doc
-    .moveTo(x, doc.y + 4)
-    .lineTo(x + COLUMN_WIDTH, doc.y + 4)
-    .lineWidth(0.55)
-    .strokeColor(COLORS.line)
-    .stroke();
-
-  flow.y = doc.y + 10;
 };
 
 const writeSectionAt = (doc: PdfDoc, title: string, x: number, y: number, width: number) => {
@@ -364,19 +308,6 @@ const textHeight = (doc: PdfDoc, text: string, width: number, fontSize: number, 
   return doc.heightOfString(text, { width, lineGap });
 };
 
-const entryHeight = (doc: PdfDoc, item: PdfEntry) => {
-  const dateWidth = 56;
-  const bodyWidth = COLUMN_WIDTH - dateWidth - 9;
-  const captionHeight = textHeight(doc, item.caption, bodyWidth, 7.25, 0.8);
-  const bulletHeight = item.bullets.reduce(
-    (total, bullet) => total + 4 + textHeight(doc, bullet, bodyWidth - 8, 7.1, 0.8),
-    0,
-  );
-  const linksHeight = Object.keys(item.links ?? {}).length > 0 ? 10 : 0;
-
-  return Math.max(30, 10 + captionHeight + bulletHeight + linksHeight);
-};
-
 const entryBoxHeight = (
   doc: PdfDoc,
   item: PdfEntry,
@@ -384,8 +315,8 @@ const entryBoxHeight = (
   options: { dense?: boolean } = {},
 ) => {
   const dense = options.dense ?? false;
-  const dateWidth = dense ? 50 : 56;
-  const bodyWidth = width - dateWidth - 9;
+  const dateWidth = dense ? ENTRY_DATE_DENSE_WIDTH : ENTRY_DATE_WIDTH;
+  const bodyWidth = width - dateWidth - ENTRY_DATE_GAP;
   const captionSize = dense ? 6.8 : 7.25;
   const bulletSize = dense ? 6.45 : 7.1;
   const lineGap = dense ? 0.35 : 0.8;
@@ -431,6 +362,7 @@ const writeBulletText = (
     doc.font("Helvetica").fontSize(fontSize).fillColor(COLORS.ink).text(text, x, y, {
       width,
       lineGap,
+      align: "justify",
     });
     return;
   }
@@ -463,59 +395,11 @@ const writeBulletText = (
       .link(x, y, labelWidth, fontSize + 2, link);
   }
 
-  doc
-    .font("Helvetica")
-    .fillColor(COLORS.ink)
-    .text(rest, {
-      width,
-      lineGap,
-    });
-};
-
-const writeEntry = (doc: PdfDoc, flow: Flow, item: PdfEntry) => {
-  ensureSpace(doc, flow, Math.min(entryHeight(doc, item), BOTTOM - TOP));
-
-  const x = columnX(flow.column);
-  const dateWidth = 56;
-  const bodyX = x + dateWidth + 9;
-  const bodyWidth = COLUMN_WIDTH - dateWidth - 9;
-  const startY = flow.y;
-
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(6.2)
-    .fillColor(COLORS.quiet)
-    .text(item.date, x, startY + 2, { width: dateWidth });
-
-  doc.font("Helvetica-Bold").fontSize(8.4).fillColor(COLORS.ink).text(item.title, bodyX, startY, {
-    width: bodyWidth,
-    lineGap: 0.2,
-  });
-
-  doc.font("Helvetica").fontSize(7.25).fillColor(COLORS.muted).text(item.caption, bodyX, doc.y + 1, {
-    width: bodyWidth,
-    lineGap: 0.8,
+  doc.font("Helvetica").fillColor(COLORS.ink).text(rest, {
+    width,
+    lineGap,
     align: "justify",
   });
-
-  item.bullets.forEach((bullet) => {
-    if (doc.y + textHeight(doc, bullet, bodyWidth - 8, 7.1, 0.8) + 6 > BOTTOM) {
-      flow.y = doc.y + 5;
-      nextColumn(doc, flow);
-      doc.y = flow.y;
-    }
-
-    doc.moveDown(0.1);
-    doc.circle(bodyX + 1.8, doc.y + 3.4, 1).fillColor(COLORS.accent).fill();
-    writeBulletText(doc, bullet, item.descriptionLinks, bodyX + 8, doc.y, bodyWidth - 8, 7.1, 0.8);
-  });
-
-  if (Object.keys(item.links ?? {}).length > 0) {
-    writeLinks(doc, item.links, bodyX, doc.y + 2);
-    doc.y += 8;
-  }
-
-  flow.y = Math.max(doc.y + 8, startY + 30);
 };
 
 const writeEntryBox = (
@@ -527,9 +411,9 @@ const writeEntryBox = (
   options: { dense?: boolean } = {},
 ) => {
   const dense = options.dense ?? false;
-  const dateWidth = dense ? 50 : 56;
-  const bodyX = x + dateWidth + 9;
-  const bodyWidth = width - dateWidth - 9;
+  const dateWidth = dense ? ENTRY_DATE_DENSE_WIDTH : ENTRY_DATE_WIDTH;
+  const bodyX = x + dateWidth + ENTRY_DATE_GAP;
+  const bodyWidth = width - dateWidth - ENTRY_DATE_GAP;
   const titleSize = dense ? 8 : 8.4;
   const captionSize = dense ? 6.8 : 7.25;
   const bulletSize = dense ? 6.45 : 7.1;
@@ -544,18 +428,35 @@ const writeEntryBox = (
   doc.font("Helvetica-Bold").fontSize(titleSize).fillColor(COLORS.ink).text(item.title, bodyX, y, {
     width: bodyWidth,
     lineGap: 0.2,
-  });
-
-  doc.font("Helvetica").fontSize(captionSize).fillColor(COLORS.muted).text(item.caption, bodyX, doc.y + 1, {
-    width: bodyWidth,
-    lineGap,
     align: "justify",
   });
 
+  doc
+    .font("Helvetica")
+    .fontSize(captionSize)
+    .fillColor(COLORS.muted)
+    .text(item.caption, bodyX, doc.y + 1, {
+      width: bodyWidth,
+      lineGap,
+      align: "justify",
+    });
+
   item.bullets.forEach((bullet) => {
     doc.moveDown(0.08);
-    doc.circle(bodyX + 1.8, doc.y + 3.2, 0.9).fillColor(COLORS.accent).fill();
-    writeBulletText(doc, bullet, item.descriptionLinks, bodyX + 8, doc.y, bodyWidth - 8, bulletSize, lineGap);
+    doc
+      .circle(bodyX + 1.8, doc.y + 3.2, 0.9)
+      .fillColor(COLORS.accent)
+      .fill();
+    writeBulletText(
+      doc,
+      bullet,
+      item.descriptionLinks,
+      bodyX + 8,
+      doc.y,
+      bodyWidth - 8,
+      bulletSize,
+      lineGap,
+    );
   });
 
   if (Object.keys(item.links ?? {}).length > 0) {
@@ -566,19 +467,13 @@ const writeEntryBox = (
   return Math.max(doc.y + 6, y + entryBoxHeight(doc, item, width, { dense }));
 };
 
-const writeCategory = (doc: PdfDoc, flow: Flow, category: TimelineCategory) => {
-  writeSection(doc, flow, CATEGORY_LABELS[category]);
-  entriesFor(category).forEach((item) => writeEntry(doc, flow, item));
-  flow.y += 4;
-};
-
 const writePageOne = (doc: PdfDoc) => {
   writeBackground(doc);
   writeHeader(doc);
   const top = writeIntro(doc);
   const leftX = PAGE.margin;
   const rightX = PAGE.margin + COLUMN_WIDTH + COLUMN_GAP;
-  const work = entriesFor("work");
+  const work = entriesFor("work").filter((item) => item.title !== "Chainlink Functions");
   const research = entriesFor("research");
 
   let y = writeSectionAt(doc, "work", PAGE.margin, top, BODY_WIDTH);
@@ -587,41 +482,29 @@ const writePageOne = (doc: PdfDoc) => {
   const svvyEnd = writeEntryBox(doc, work[0], leftX, firstRowY, COLUMN_WIDTH);
   const primodiumEnd = writeEntryBox(doc, work[2], rightX, firstRowY, COLUMN_WIDTH);
 
-  const leftColumnEnd = writeEntryBox(doc, work[1], leftX, svvyEnd + 8, COLUMN_WIDTH);
-  const rightColumnEnd = writeEntryBox(doc, work[3], rightX, primodiumEnd + 8, COLUMN_WIDTH);
+  const tevmEnd = writeEntryBox(doc, work[1], leftX, svvyEnd + ENTRY_VERTICAL_GAP, COLUMN_WIDTH);
 
-  y = writeSectionAt(doc, "research", PAGE.margin, Math.max(leftColumnEnd, rightColumnEnd) + 2, BODY_WIDTH);
-  writeEntryBox(doc, research[0], leftX, y, COLUMN_WIDTH, { dense: true });
-  writeEntryBox(doc, research[1], rightX, y, COLUMN_WIDTH, { dense: true });
+  y = writeSectionAt(doc, "research", PAGE.margin, Math.max(tevmEnd, primodiumEnd) + 2, BODY_WIDTH);
+  writeEntryBox(doc, research[0], leftX, y, COLUMN_WIDTH);
+  writeEntryBox(doc, research[1], rightX, y, COLUMN_WIDTH);
 };
 
-const writePageTwo = (doc: PdfDoc) => {
-  writeBackground(doc);
-
-  const left: Flow = { column: 0, y: TOP };
-  writeCategory(doc, left, "experiments");
-  left.y += 2;
-  writeCategory(doc, left, "writing");
-
-  writeCategory(doc, { column: 1, y: TOP }, "education");
-};
-
-const drawFooter = (doc: PdfDoc, pageNumber: number, totalPages: number) => {
-  const footerText = "Read a cleaner web version at ";
-  const footerY = BOTTOM - 2;
-  const footerSize = 6.8;
+const drawFooter = (doc: PdfDoc) => {
+  const footerText = "More about my projects, experiments, writing and education at ";
+  const footerY = PAGE.height - PAGE.margin - FOOTER_SIZE;
+  const footerSize = FOOTER_SIZE;
   const linkLabel = "polarzero.xyz";
-  const linkX = PAGE.margin + doc.font("Helvetica").fontSize(footerSize).widthOfString(footerText);
+  const linkX =
+    PAGE.margin + doc.font("Helvetica-Bold").fontSize(footerSize).widthOfString(footerText);
   const linkWidth = doc.font("Helvetica-Bold").fontSize(footerSize).widthOfString(linkLabel);
 
   doc
-    .font("Helvetica")
-    .fontSize(footerSize)
-    .fillColor(COLORS.quiet)
-    .text(footerText, PAGE.margin, footerY, { width: BODY_WIDTH / 2 })
     .font("Helvetica-Bold")
+    .fontSize(footerSize)
+    .fillColor(COLORS.ink)
+    .text(footerText, PAGE.margin, footerY, { lineBreak: false })
     .fillColor(COLORS.link)
-    .text(linkLabel, linkX, footerY);
+    .text(linkLabel, linkX, footerY, { lineBreak: false });
 
   doc
     .save()
@@ -632,14 +515,6 @@ const drawFooter = (doc: PdfDoc, pageNumber: number, totalPages: number) => {
     .stroke()
     .restore()
     .link(linkX, footerY, linkWidth, footerSize + 2, "https://polarzero.xyz");
-
-  doc
-    .font("Helvetica")
-    .fillColor(COLORS.quiet)
-    .text(`${pageNumber} / ${totalPages}`, PAGE.margin, footerY, {
-      align: "right",
-      width: BODY_WIDTH,
-    });
 };
 
 export async function generateProfilePdf() {
@@ -658,13 +533,15 @@ export async function generateProfilePdf() {
   doc.on("data", (chunk: Buffer) => chunks.push(chunk));
 
   writePageOne(doc);
-  doc.addPage();
-  writePageTwo(doc);
 
   const pageRange = doc.bufferedPageRange();
-  for (let pageIndex = pageRange.start; pageIndex < pageRange.start + pageRange.count; pageIndex += 1) {
+  for (
+    let pageIndex = pageRange.start;
+    pageIndex < pageRange.start + pageRange.count;
+    pageIndex += 1
+  ) {
     doc.switchToPage(pageIndex);
-    drawFooter(doc, pageIndex + 1, pageRange.count);
+    drawFooter(doc);
   }
 
   doc.end();

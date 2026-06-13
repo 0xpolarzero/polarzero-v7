@@ -75,7 +75,7 @@ Repository: 0xpolarzero/svvy
 URL: https://github.com/0xpolarzero/svvy
 Description: A strategic coding workbench for directing bounded, workflow-backed agent work.
 Primary language: TypeScript
-Stars: 1
+Stars: 3
 Forks: 0
 
 ## evmstate

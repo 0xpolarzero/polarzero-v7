@@ -1610,6 +1610,16 @@ Tevm is MIT licensed. See [LICENSE](./LICENSE) for details.
 
 ---
 
+## Tevm / @tevm/mud
+
+Source: https://github.com/evmts/tevm-monorepo/tree/229177e76eae1d83f687784d9560a3488bbcc503/bundler-packages/mud
+
+# @tevm/mud
+
+MUD plugin for optimistic updates with Tevm
+
+---
+
 ## Tevm / guillotine
 
 Source: https://github.com/evmts/guillotine

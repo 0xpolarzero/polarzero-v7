@@ -32,9 +32,9 @@ Email: contact@polarzero.xyz
 
 ## Summary
 
-- Most of my experience as a SE is in AI and blockchain, and nearly all of my work has been open source, whether for a company, on contract, or independently. My current focus is on working sensibly with AI: refining my workflows as the core harness for doing good work, without getting one-shot by obsessive AI optimization or losing sight of architecture, design, product, and taste.
-- I’m interested in emergent capabilities, both in how frontier models behave and in how people evolve as they start using AI seriously. I try to keep as much skin in the game as possible by experimenting myself, discussing with peers I respect, and paying attention to early shifts in DevX, UX, tooling, interfaces, and product habits. Adjacent interests include local-first apps and capabilities, fully onchain games, and developer tooling.
-- The more I learn, the more the engineering side becomes intuitive, and the more I can think about product and intent. I’m trying to become more product-minded while keeping the discipline and curiosity to tackle unfamiliar problems with a good methodology.
+- Most of my experience as a software engineer is in AI and blockchain, and nearly all of my work has been open source—whether for companies, on contract, or independently. I currently build and experiment with consumer AI apps, looking for early shifts in model capabilities and user behavior, then turning what I learn into product features and abstractions that make AI more useful for both developers and consumers.
+- I stay close to these changes by building and using products myself, exchanging ideas with peers I respect, and paying attention to emerging patterns in developer experience, UX, tooling, interfaces, and product habits. I’m also interested in local-first software, fully onchain games, and developer tooling.
+- As engineering becomes more intuitive, I’m increasingly able to focus on product, intent, and taste. I’m working toward becoming a stronger product-minded engineer while keeping the discipline and curiosity to approach unfamiliar problems methodically.
 
 # Public links
 

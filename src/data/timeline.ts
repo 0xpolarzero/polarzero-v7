@@ -56,7 +56,8 @@ export const TIMELINE: TimelineYear[] = [
         caption: "Contributing to a multi-language library for running an EVM in every environment",
         description: [
           "@tevm/compiler: shipped a Solidity & Vyper compiler around Foundry compilers for Typescript.",
-          "tevm-monorepo: contributed to call/debug and tracing methods, a MUD plugin for optimistic updates, storage layout and pre/post-state tooling, and various other runtime, API, build, and documentation contributions.",
+          "tevm-monorepo: contributed to call/debug and tracing methods, storage layout and pre/post-state tooling, and various other runtime, API, build, and documentation contributions.",
+          "@tevm/mud: shipped a MUD integration for optimistic updates, executing writes locally with Tevm's MemoryClient, exposing React optimistic-state hooks, and reconciling pending transactions with canonical chain state.",
           "guillotine: contributed to a Zig EVM, including a Zig devtool and BubbleTea CLI for call disassembly and step-by-step tracing, Go/C/WASM/TypeScript SDK bindings, EVM semantics fixes, and research-heavy work on hardfork support, gas accounting, and execution spec fixtures.",
           "guillotine-mini: contributed WASI/WASM build and bindings, and research-heavy EVM tracing/debugging work around WASM constraints, threading, debugger architecture, and dispatch-level execution hooks.",
           "@tevm/test-matchers: shipped a Javascript library that extends Vitest with EVM-related test matchers.",
@@ -70,6 +71,8 @@ export const TIMELINE: TimelineYear[] = [
         descriptionLinks: {
           "@tevm/compiler": "https://github.com/evmts/compiler/blob/main/libs/compiler/README.md",
           "tevm-monorepo": "https://github.com/evmts/tevm-monorepo",
+          "@tevm/mud":
+            "https://github.com/evmts/tevm-monorepo/tree/229177e76eae1d83f687784d9560a3488bbcc503/bundler-packages/mud",
           guillotine: "https://github.com/evmts/guillotine",
           "guillotine-mini": "https://github.com/evmts/guillotine-mini",
           "@tevm/test-matchers":

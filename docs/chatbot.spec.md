@@ -85,7 +85,7 @@ OPENROUTER_MODEL
 If `OPENROUTER_MODEL` is absent, the default model shall be:
 
 ```text
-deepseek/deepseek-v4-flash
+deepseek/deepseek-v4-flash-20260731
 ```
 
 The endpoint shall prefer the official DeepSeek provider path with provider data collection allowed, because that is the DeepSeek V4 Flash endpoint that supports implicit prompt caching. Fallbacks shall remain enabled so the chatbot can use non-cached third-party endpoints when the official DeepSeek endpoint is unavailable.
@@ -99,10 +99,10 @@ OPENROUTER_REASONING_EFFORT
 If `OPENROUTER_REASONING_EFFORT` is absent, the default reasoning effort shall be:
 
 ```text
-high
+max
 ```
 
-The default is `high` because `deepseek/deepseek-v4-flash` supports `high` and `xhigh` reasoning efforts, and `high` is the lower supported reasoning level for this model.
+The default is `max` because `deepseek/deepseek-v4-flash-20260731` is the latest pinned DeepSeek V4 Flash release and supports `low`, `high`, and `max` reasoning efforts.
 
 The maximum assistant output shall be configurable through:
 

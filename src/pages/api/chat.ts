@@ -15,8 +15,8 @@ type ClientMessage = {
   createdAt?: unknown;
 };
 
-const DEFAULT_MODEL = "deepseek/deepseek-v4-flash";
-const DEFAULT_REASONING_EFFORT = "high";
+const DEFAULT_MODEL = "deepseek/deepseek-v4-flash-20260731";
+const DEFAULT_REASONING_EFFORT = "max";
 const OPENROUTER_PROVIDER_ORDER = ["deepseek"];
 const DEFAULT_MAX_OUTPUT_TOKENS = 4_000;
 const MAX_BODY_BYTES = 128 * 1024;

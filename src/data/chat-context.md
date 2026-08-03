@@ -76,7 +76,7 @@ URL: https://github.com/0xpolarzero/svvy
 Description: A strategic coding workbench for directing bounded, workflow-backed agent work.
 Primary language: TypeScript
 Stars: 3
-Forks: 0
+Forks: 1
 
 ## evmstate
 

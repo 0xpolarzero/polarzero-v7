@@ -103,7 +103,7 @@ URL: https://github.com/polareth/savvy
 Description: An interface for the EVM in the browser, to simulate and visualize your onchain activity.
 Primary language: TypeScript
 Stars: 27
-Forks: 5
+Forks: 4
 
 ## reactive-tables
 

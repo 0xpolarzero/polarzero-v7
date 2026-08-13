@@ -84,7 +84,7 @@ Repository: polareth/evmstate
 URL: https://github.com/polareth/evmstate
 Description: A TypeScript library for tracing, and visualizing EVM state changes with detailed human-readable labeling.
 Primary language: TypeScript
-Stars: 33
+Stars: 34
 Forks: 6
 
 ## dex-indexer-stack

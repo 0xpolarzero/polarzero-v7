@@ -11,6 +11,16 @@
       "forks": 1
     },
     {
+      "name": "hartlib",
+      "nameWithOwner": "0xpolarzero/hartlib",
+      "url": "https://github.com/0xpolarzero/hartlib",
+      "description": "A single chat for your subscriptions and densest sources: grounded answers, explained the way you understand best.",
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "stars": 0,
+      "forks": 0
+    },
+    {
       "name": "evmstate",
       "nameWithOwner": "polareth/evmstate",
       "url": "https://github.com/polareth/evmstate",
@@ -39,16 +49,6 @@
       "languageColor": "#3178c6",
       "stars": 27,
       "forks": 4
-    },
-    {
-      "name": "reactive-tables",
-      "nameWithOwner": "primodiumxyz/reactive-tables",
-      "url": "https://github.com/primodiumxyz/reactive-tables",
-      "description": "A Typescript library for managing reactive tables in a MUD application, on node and browser environments.",
-      "language": "TypeScript",
-      "languageColor": "#3178c6",
-      "stars": 3,
-      "forks": 3
     },
     {
       "name": "compiler",

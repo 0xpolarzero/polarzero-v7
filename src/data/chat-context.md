@@ -69,15 +69,6 @@ These links are applied by the website when matching technology/tool names in ti
 
 # Pinned repositories
 
-## svvy
-
-Repository: 0xpolarzero/svvy
-URL: https://github.com/0xpolarzero/svvy
-Description: A strategic coding workbench for directing bounded, workflow-backed agent work.
-Primary language: TypeScript
-Stars: 3
-Forks: 1
-
 ## hartlib
 
 Repository: 0xpolarzero/hartlib
@@ -86,6 +77,24 @@ Description: A single chat for your subscriptions and densest sources: grounded 
 Primary language: TypeScript
 Stars: 0
 Forks: 0
+
+## silo
+
+Repository: 0xpolarzero/silo
+URL: https://github.com/0xpolarzero/silo
+Description: A native macOS app for managing and monitoring secure and isolated MicroSandbox VMs
+Primary language: Swift
+Stars: 0
+Forks: 0
+
+## svvy
+
+Repository: 0xpolarzero/svvy
+URL: https://github.com/0xpolarzero/svvy
+Description: A strategic coding workbench for directing bounded, workflow-backed agent work.
+Primary language: TypeScript
+Stars: 3
+Forks: 1
 
 ## evmstate
 
@@ -113,15 +122,6 @@ Description: An interface for the EVM in the browser, to simulate and visualize 
 Primary language: TypeScript
 Stars: 27
 Forks: 4
-
-## compiler
-
-Repository: 0xpolarzero/compiler
-URL: https://github.com/0xpolarzero/compiler
-Description: A powerful Solidity and Vyper compiler for TypeScript.
-Primary language: Rust
-Stars: 0
-Forks: 0
 
 # Portfolio and timeline
 
@@ -7602,280 +7602,123 @@ To let Hartlib search the web, set `TINYFISH_API_KEY` in `.env`.
 
 ---
 
-## Pinned repository: compiler / github
+## Pinned repository: silo / github
 
-Source: https://github.com/0xpolarzero/compiler
+Source: https://github.com/0xpolarzero/silo
 
-# TEVM Compiler
+# MicroSandbox Workspaces (`msw`) 3.1.0
 
-Rust-backed tooling that exposes Foundry's Solidity/Yul/Vyper compiler stack to JavaScript runtimes via N-API bindings. The active Nx project lives in `libs/compiler/`.
+<img src="assets/silo-logo.svg" alt="Silo" width="96">
 
-## Start Here
+**Silo** is the native macOS control surface for these MicroSandbox workspaces.
 
-- Read [`libs/compiler/README.md`](libs/compiler/README.md) for setup instructions, build/test commands, API examples, and troubleshooting notes.
-- Share [`libs/compiler/build/llms.txt`](libs/compiler/build/llms.txt) with your preferred LLM, which includes a bundle of docs, types, and specs, and ask it how to implement your feature.
-- Checkout [`libs/compiler/test/integrations.spec.ts`](libs/compiler/test/integrations.spec.ts) file for realistic use cases.
+A ready-to-run development setup for an Apple Silicon Mac with configurable, isolated, persistent Linux microVM workspaces. A fresh setup starts with these defaults:
 
-Everything else in the repository exists to support the `@tevm/compiler` package surfaced there.
+| Workspace | Purpose | Normal live limit | Resize ceiling | Browser name |
+|---|---|---:|---:|---|
+| `dev` | Main/work development | 8 CPU, 32 GB RAM | 48 GB RAM | `dev.msw.test` |
+| `playgrounds` | Experiments | 4 CPU, 32 GB RAM | 48 GB RAM | `playgrounds.msw.test` |
+| `personal` | Personal projects | 6 CPU, 16 GB RAM | 32 GB RAM | `personal.msw.test` |
 
-### Inlined linked README: `libs/compiler/README.md`
+Each workspace has its own Ubuntu system, repositories, Docker daemon, images, volumes, credentials, processes, and public-internet connection. Code and Docker data live on independent persistent ext4 volumes. Zed and Ghostty remain native macOS applications and connect over SSH.
 
-Source: https://github.com/0xpolarzero/compiler/blob/main/libs/compiler/README.md
-
-# @tevm/compiler
-
-Rust + N-API bindings that expose Foundry's multi-language compiler (Solidity, Yul, Vyper) to JavaScript and Bun runtimes. The package ships with helpers for AST instrumentation, contract state objects with convenient types, and project-aware builds (Foundry, Hardhat, or from a custom root). This allows any project to benefit from Foundry's compiler stack and caching capabilities in a custom structure. This includes caching inline sources.
-
-## Quick Start
-
-1. **Install toolchains**
-   - Node.js 18+ with `pnpm` 9+
-   - Bun 1.1+ (required for the test suite)
-   - Rust stable toolchain
-   - Relevant compiler binaries:
-     - Install `solc` releases via `Compiler.installSolcVersion(version)` or Foundry's `svm`
-     - Optional: `vyper` executable on your `PATH` for Vyper projects
-2. **Install dependencies**
-   ```bash
-   pnpm install
-   ```
-3. **Build native bindings**
-   ```bash
-   pnpm nx run compiler:build
-   pnpm nx run compiler:post-build   # copies curated .d.ts files, type-checks, regenerates build/llms.txt
-   ```
-4. **Run the full test matrix**
-   ```bash
-   pnpm nx run compiler:test         # cargo tests + Bun specs + TS type assertions
-   ```
-
-## Usage
-
-- Feed `libs/compiler/build/llms.txt` to your favourite LLM and ask how to adapt the compiler for your workflow—the bundle includes the public API surface, curated `.d.ts`, and executable specs.
-- The sections below show direct JavaScript usage patterns; all examples run in Node.js or Bun.
-- You will also find realistic use cases in [test/integrations.spec.ts](test/integrations.spec.ts).
-
-### Compile inline sources
-
-```ts
-import { Compiler, CompilerLanguage } from '@tevm/compiler'
-
-await Compiler.installSolcVersion('0.8.30')
-
-const compiler = new Compiler({
-  language: 'solidity', // or 'yul', 'vyper'
-  solcVersion: '0.8.30',
-  solcSettings: {
-    // any solc settings, see index.d.ts:CompilerSettings
-  }
-
-  // or
-  language: CompilerLanguage.Vyper,
-  vyperSettings: {
-    // any vyper settings, see index.d.ts:VyperCompilerSettings
-  }
-})
-
-// This will be cached by default in ~/.tevm/virtual-sources
-const output = compiler.compileSources({
-  'Example.sol': `
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.20;
-
-    contract Example {
-      ...
-    }
-  `,
-}, {
-    // override any constructor settings; this is true for every compile method
-})
-
-if (output.hasCompilerErrors()) {
-  console.error(output.diagnostics)
-} else {
-  // The artifacts paths are fully typed
-  const artifact = output.artifacts["Example.sol"].contracts.Example
-  console.log(artifact?.toJson())
-}
-
-// Compile a single source, which will be cached as well as a virtual source
-const output = compiler.compileSource('contract Example { uint256 private value; }')
-const artifact = output.artifact.contract.Example
-// or some files
-const output = compiler.compileFiles(['Example.sol', 'Another.sol'])
-// ...
-```
-
-### Target existing projects
-
-```ts
-import { Compiler } from "@tevm/compiler";
-import { join } from "node:path";
-
-// Reuse foundry.toml configuration, remappings, and cache directories.
-const foundryRoot = join(process.cwd(), "projects", "foundry-sample");
-const foundryCompiler = Compiler.fromFoundryRoot(foundryRoot, {
-  solcVersion: "0.8.30",
-});
-
-// Compile everything the project declares in its remappings/sources
-const projectSnapshot = foundryCompiler.compileProject();
-// Narrow to a single contract that will be resolved with the project graph
-const counterSnapshot = foundryCompiler.compileContract("Counter");
-
-// Hardhat projects automatically normalise cache + build-info placement
-const hardhatRoot = join(process.cwd(), "projects", "hardhat-sample");
-const hardhatCompiler = Compiler.fromHardhatRoot(hardhatRoot);
-const compiledHardhat = hardhatCompiler.compileSources({
-  "Inline.sol": "contract Inline { function value() public {} }",
-});
-
-// Work inside an arbitrary directory while still persisting .tevm artifacts.
-const syntheticRoot = join(process.cwd(), "tmp", "inline-only");
-const syntheticCompiler = Compiler.fromRoot(syntheticRoot);
-// or `new Compiler()` which will use the current workspace as root
-const inlineSnapshot = syntheticCompiler.compileSource("contract Foo { }");
-```
-
-### Manipulate ASTs for shadowing contracts
-
-```ts
-import { Ast, Compiler } from "@tevm/compiler";
-
-await Compiler.installSolcVersion("0.8.30");
-
-const ast = new Ast({
-  solcVersion: "0.8.30",
-  instrumentedContract: "Example", // this is not necessary if there is only one contract
-})
-  .fromSource("contract Example { uint256 private value; }")
-  .injectShadow("function getValue() public returns (uint256) { return value; }") // any inline Solidity (contract body)
-  .exposeInternalFunctions() // promote private/internal functions
-  .exposeInternalVariables() // promote private/internal variables
-  .validate(); // optional: recompiles to ensure the AST is sound
-
-const stitched = ast.sourceUnit(); // SourceUnit ready for compilation
-
-// Compile the instrumented AST (this will reuse the cached output from validate() if not invalidated)
-const compiled = ast.compile();
-// which is exactly the same as:
-const compiler = new Compiler({ solcVersion: "0.8.30" });
-const output = compiler.compileSources({ "Example.sol": stitched });
-// The compilation output returns ast classes as well
-const ast = output.artifacts["Example.sol"].ast;
-```
-
-When a fragment redefines existing members you can switch the conflict strategy to replace the matching node while still appending the rest:
-
-```ts
-ast.injectShadow(
-  "function getValue() public view returns (uint256) { return value + 1; }",
-  // 'safe' is the default strategy (will fail to compile if conflicting members are found)
-  // 'replace' will overwrite the existing members when conflicting
-  { resolveConflictStrategy: 'replace' },
-)
-```
-
-For quick instrumentation (e.g. invariants, guards), `injectShadowAtEdges` injects your snippets directly into the original body without changing the function signature. Each `return` path receives the "after" statements and the fallthrough path is automatically covered so the original control-flow remains intact while your instrumentation runs.
-
-```ts
-// Inject invariants before and after an existing function body.
-new Ast({ solcVersion: "0.8.30", instrumentedContract: "Token" })
-  .fromSource(readFileSync("Token.sol", "utf8"))
-  .injectShadowAtEdges("mint(address, uint256)", { // signature can be important if there are overloads
-    before: "uint256 __totalSupplyBefore = totalSupply();",
-    after: "require(totalSupply() == __totalSupplyBefore + amount);",
-  })
-  .validate();
-```
-
-```ts
-// Emit a shadow event inside a function
-new Ast({ solcVersion: "0.8.30", instrumentedContract: "Token" })
-  .fromSource(readFileSync("Token.sol", "utf8"))
-  .injectShadow(`
-    event BalanceChangeTrace(address account, uint256 balanceAfter);
-  `)
-  .injectShadowAtEdges("transfer", {
-    after: [
-        "emit BalanceChangeTrace(msg.sender, balanceOf(msg.sender));",
-        "emit BalanceChangeTrace(to, balanceOf(to));",
-    ],
-  })
-  .validate();
-```
-
-AST helpers only support Solidity targets; requests for other languages throw with actionable guidance. Node IDs remain unique after fragment injection, making the resulting tree safe to feed back into the compiler.
-
-### Contract snapshots
-
-```ts
-import { Contract } from "@tevm/compiler";
-
-const counter = Contract
-  .fromSolcContractOutput("Counter", artifact)
-  .withAddress("0xabc...")
-  .withDeployedBytecode("0x6000...");
-
-// address and deployedBytecode are typed
-console.log(counter.address);
-console.log(counter.deployedBytecode.hex);
-console.log(counter.toJson()); // normalised contract state
-```
-
-`CompileOutput` instances expose `.artifacts`, `.artifact`, `.errors`, `.diagnostics`, `.hasCompilerErrors()`, and `.toJson()` so downstream tools can safely persist or transport build metadata.
-
-## Build & Test Commands
+## Install
 
 ```bash
-# Build native bindings and emit build/index.{js,d.ts}
-pnpm nx run compiler:build
-
-# Copy curated types, generate llms.txt, type-check declarations
-pnpm nx run compiler:post-build
-
-# Execute the full suite (cargo tests + Bun integration specs + TS type checks)
-pnpm nx run compiler:test
+unzip microsandbox-workspaces-v3.1.0.zip
+cd microsandbox-workspaces
+./setup.sh
+exec zsh -l
 ```
 
-Useful sub-targets:
+`setup.sh` installs the host tools, builds the common development image, creates every workspace in the validated schema-v1 `~/.config/msw/workspaces.json`, publishes the configured localhost ports, configures SSH/Zed integration, and finishes with a live deep check. Silo supplies that JSON through `msw app bootstrap --resume --workspace-config-fd FD --format json`; names and numeric limits are decoded as data rather than shell syntax.
 
-- `pnpm nx run compiler:test:rust` – Rust unit tests (`cargo test`).
-- `pnpm nx run compiler:test:js` – Bun specs in `test/**/*.spec.ts`.
-- `pnpm nx run compiler:test:typecheck` – Validates the published `.d.ts` surface.
-- `pnpm nx run compiler:lint` / `:format` – Biome for JS + `cargo fmt` for Rust sources.
+Then set your commit identity:
 
-## What Lives Here
+```bash
+msw identity "Your Name" you@example.com
+```
 
-- `src/ast` – Solidity-only AST orchestration (`Ast` class) for stitching fragments, promoting visibility, and validating stitched trees.
-- `src/compiler` – Project-aware compilation core (`Compiler`) that understands Foundry, Hardhat, inline sources, and language overrides.
-- `src/contract` – Ergonomic wrappers around standard JSON artifacts (`Contract`, `JsContract`) with mutation helpers for downstream tooling.
-- `src/internal` – Shared config parsing, compiler orchestration, filesystem discovery, and error translation surfaced through N-API.
-- `src/types` – Hand-authored `.d.ts` extensions copied into `build/` after every release.
-- `test/` – Bun-powered specs and TypeScript assertion suites describing expected behaviour.
+GitHub is optional. The default local mode (`MSW_GITHUB_MODE=local`) never
+binds a GitHub token into a workspace: git inside a workspace reaches GitHub
+through a host-side proxy on `127.0.0.1:18446`. Public repositories are
+cloneable anonymously with no setup at all. A per-workspace policy file
+controls host-credential injection only: it decides, per workspace and
+canonical repository, whether the host OAuth/token may be attached to a
+request and whether that grant is read-only or read-write. The Mac holds ONE
+host credential (reusing an authenticated `gh` CLI, or OAuth Device Flow when
+configured); no GitHub credential ever enters a VM.
 
-## API Highlights
+Set up authenticated access in **Silo** → **Settings** → **GitHub**:
+connect the account on this Mac, then grant repositories to each workspace and
+pick a mode per repository — **Clone/pull (push from Mac)** or **Clone/pull +
+Push from VM**. Selections grant the host credential to those repositories;
+they are not required for public repositories, which remain anonymously
+cloneable. Local editing and commits always work; host push (`msw push` or the
+app's Push button) is allowed for every granted repository, while push from
+inside a VM is allowed only for repositories granted for VM push. The policy
+starts empty — no credential is injected anywhere until you grant
+repositories. Port warnings during setup are nonfatal. The CLI mirrors this
+surface: `msw github auth|repos|status|verify|remove`. See
+[`docs/GITHUB-SETUP.md`](docs/GITHUB-SETUP.md).
 
-- `Compiler.installSolcVersion(version)` downloads solc releases into the Foundry `svm` cache. `Compiler.isSolcVersionInstalled` performs fast existence checks.
-- `new Compiler(options)` compiles inline sources or AST units. `.fromFoundryRoot`, `.fromHardhatRoot`, and `.fromRoot` bootstrap project-aware compilers.
-- `compileSource(s)`, `compileFiles`, `compileProject`, `compileContract` return `CompileOutput` snapshots with structured diagnostics, contract wrappers, and standard JSON.
-- `Ast` instances parse Solidity sources, inject fragment sources or AST objects (`injectShadow`), expose internal members, and emit unique-ID `SourceUnit`s ready for compilation.
-- `Contract` wrappers (available in JS and Rust) provide `.withAddress`, `.withCreationBytecode`, `.withDeployedBytecode`, and `.toJson()` for ergonomic artifact manipulation.
+### Host-held API secrets
 
-## Release Checklist
+Use **Silo → Secrets** to add, edit, remove, and scope API keys to
+workspaces and exact domains, `*.example.com`, or all HTTPS hosts (`*`). Values
+stay in macOS Keychain; VMs receive placeholders that MicroSandbox substitutes
+only at the configured HTTPS destinations. Every change is staged and shows
+**Restart required** or **Applies on next start** until MSW verifies it.
 
-1. `pnpm build:release`
-2. `pnpm release:init` to create new release notes
-3. `pnpm release:version` to update the version in the package.json
-4. `pnpm release:publish` to publish the package
+## Daily use
 
-The `libs/compiler/build/llms.txt` bundle is regenerated automatically during `post-build` so AI assistants stay in sync with the public surface.
+```bash
+# Enter /workspace in Ghostty
+msw dev
+msw playgrounds
+msw personal
 
-## Troubleshooting Notes
+# Enter a nested repository
+msw dev clients/acme/backend
 
-- Always call `Compiler.installSolcVersion(version)` (or ensure Foundry's `svm` cache is primed) before running tests locally. Specs assert that required solc versions exist.
-- Vyper workflows depend on a `vyper` executable available on `PATH`. Missing binaries throw actionable N-API errors; install via `pipx install vyper`.
-- AST helpers reject non-Solidity `solcLanguage` overrides—limit them to Solidity and feed the resulting tree back into `compiler.compileSources`.
+# Clone into a nested folder
+msw clone dev OWNER/REPO clients/acme/backend
+
+# Open in Zed
+msw zed dev clients/acme/backend
+
+# Open a running website in your Mac browser
+msw open dev 3000
+msw open playgrounds 5173
+
+# Explicitly push the current committed branch from the Mac
+msw push dev clients/acme/backend
+
+# Back up every VM and persistent volume
+msw backup
+```
+
+A service must listen on `0.0.0.0` inside the VM or container. The common development ports are already published to each workspace's dedicated loopback IP, so every configured workspace can use port 3000 simultaneously.
+
+## Documentation
+
+- [Complete setup guide](docs/SETUP-GUIDE.md)
+- [GitHub permissions and push guide](docs/GITHUB-SETUP.md)
+- [Command cheatsheet](docs/MSW-CHEATSHEET.md)
+- [Test report](docs/TEST-REPORT.md)
+
+Installed documentation is also available from any terminal:
+
+```bash
+msw docs setup
+msw docs github
+msw docs cheatsheet
+msw docs tests
+```
+
+Every process and agent inside one workspace can access everything in that workspace. Configured workspaces are separate from one another and no Mac folder, Mac Docker socket, or Mac SSH agent is mounted into them. GitHub credential grants are owner/repository scoped: the host credential is injected only for the exact canonical repositories granted to a workspace (read-only by default), it stays in macOS Keychain and is used only by the proxy and the explicit `msw push` path, and no GitHub credential exists inside any workspace. Public repositories remain reachable anonymously regardless of grants; GitHub itself decides whether an unauthenticated request succeeds.
+
+Full public internet access means an untrusted agent can still transmit files it can read to an unrelated internet service. This setup prevents direct access to your Mac and gates GitHub pushes to the repositories each workspace is allowed to write; it is not a data-loss-prevention system.
 
 # Fetch report
 

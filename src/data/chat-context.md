@@ -1392,243 +1392,109 @@ The `libs/compiler/build/llms.txt` bundle is regenerated automatically during `p
 
 Source: https://github.com/evmts/tevm-monorepo
 
-<p align="center">
-  <a href="https://node.tevm.sh">
-    <img src="https://github.com/user-attachments/assets/880d8f54-8063-4018-8777-98ba383433ee" width="400" alt="Tevm Logo" />
-  </a>
-</p>
+# TEVM
 
-<h1 align="center">Tevm</h1>
+TEVM embeds the native ZEVM node in Node.js and exposes it through viem clients, an event emitter, and HTTP, WebSocket, and IPC JSON-RPC servers. ZEVM owns execution, mining, transaction admission, receipts, filters, snapshots, and fork state. It uses Voltaire primitives/state and Guillotine Mini bytecode execution.
 
-<p align="center">
-  <b>JavaScript-native Ethereum runtime for TypeScript apps, tests, and tools.</b>
-</p>
+This checkout contains a breaking native-engine migration. Previously published JavaScript-engine releases do not implement this API. See [the migration guide](docs/native-engine-migration.md).
 
-<p align="center">
-  <a href="https://github.com/evmts/tevm-monorepo/actions/workflows/ci.yml">
-    <img src="https://github.com/evmts/tevm-monorepo/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
-  </a>
-  <a href="https://www.npmjs.com/package/tevm?activeTab=versions">
-    <img src="https://img.shields.io/npm/v/tevm/rc?label=rc" alt="NPM RC Version" />
-  </a>
-  <a href="https://www.npmjs.com/package/tevm">
-    <img src="https://img.shields.io/npm/dm/tevm.svg" alt="Tevm Downloads" />
-  </a>
-  <a href="https://bundlephobia.com/package/tevm">
-    <img src="https://badgen.net/bundlephobia/minzip/tevm" alt="Minzipped Size" />
-  </a>
-  <a href="https://t.me/+ANThR9bHDLAwMjUx">
-    <img alt="Telegram" src="https://img.shields.io/badge/chat-telegram-blue.svg">
-  </a>
-  <a href="https://deepwiki.com/evmts/tevm-monorepo">
-    <img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki">
-  </a>
-</p>
+## Local setup
 
----
+Keep these repositories beside each other:
 
-## Release Candidate
-
-Tevm 1.0 is now available on the npm `rc` dist-tag.
-
-```bash
-npm install tevm@rc viem
+```text
+~/tevm-monorepo
+~/zevm
+~/voltaire
+~/guillotine-mini
 ```
 
-The release candidate includes the new block, mining, receipt, txpool, JSON-RPC, tracing, and viem-compatible client work that replaces the older pre-1.0 README examples. The npm `latest` tag may still point at the older `next` series, so use `tevm@rc` when trying the current 1.0 release candidate.
+Use Node from `.nvmrc`, pnpm from `package.json`, and tools from `mise.toml`:
 
-## What Is Tevm?
+```sh
+nvm use
+mise install
+pnpm install
+pnpm factory:preflight
+pnpm build:host
+```
 
-Tevm runs an Ethereum execution environment inside JavaScript. Use it as an in-memory devnet, a forked-chain simulator, an EIP-1193 provider, a viem-compatible client, or a lower-level EVM toolkit.
+The install build compiles ZEVM's Node-API addon from the sibling Zig sources. `build:host` builds the native client, RPC servers, adapters, and MCP packages with clean declarations. To rebuild the addon after native changes:
 
-It runs in Node, Bun, browsers, serverless functions, edge runtimes, and desktop apps without Docker or a background chain process.
+```sh
+mise exec -- node scripts/factory/build-native.mjs
+```
 
-## Why Use It?
+There is no alternate engine fallback. Local builds use the sibling source; published clients require ZEVM native platform packages. A missing native addon is an error.
 
-- **Fork any EVM chain locally**: run calls against mainnet, L2s, L3s, or appchains while overriding accounts, storage, and block context.
-- **Use viem actions directly**: `createMemoryClient` includes viem public, wallet, and Anvil-style test actions.
-- **Control mining behavior**: choose automatic, manual, or interval mining and decide when pending transactions become canonical blocks.
-- **Inspect real execution**: collect traces, receipts, logs, access lists, created addresses, and block-level results from local execution.
-- **Import Solidity in TypeScript**: use Tevm bundler plugins to import Solidity contracts with ABI, bytecode, and type-safe helpers.
-- **Run in the browser**: build local-first dapps, optimistic UIs, demos, and tests where a separate RPC node would be too heavy.
-- **Extend the EVM**: add custom precompiles, predeploys, decorators, and low-level runtime packages when you need direct control.
+## In-memory client
 
-## Quick Start
+```js
+import { createMemoryClient } from '@tevm/memory-client'
+import { parseAbi } from 'viem'
 
-Create a local in-memory chain, add a transaction to the mempool, mine it, and read the receipt.
-
-```typescript
-import { createMemoryClient, parseEther } from "tevm";
-
-const client = createMemoryClient({
-  miningConfig: { type: "manual" },
-});
-
-await client.tevmReady();
-
-const alice = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266";
-const bob = "0x1111111111111111111111111111111111111111";
-
-await client.tevmSetAccount({
-  address: alice,
-  balance: parseEther("1"),
-});
-
-const { txHash } = await client.tevmCall({
-  from: alice,
-  to: bob,
-  value: parseEther("0.1"),
-  addToMempool: true,
-});
-
-if (!txHash) {
-  throw new Error("Transaction was not added to the mempool");
+const client = createMemoryClient()
+try {
+  const deployed = await client.tevmDeploy({
+    bytecode: '0x600a600c600039600a6000f3602a60005260206000f3',
+  })
+  const result = await client.tevmContract({
+    address: deployed.createdAddress,
+    abi: parseAbi(['function answer() view returns (uint256)']),
+    functionName: 'answer',
+  })
+  console.log(result.data) // 42n
+} finally {
+  await client.tevmClose()
 }
-
-await client.tevmMine({ blockCount: 1 });
-
-const receipt = await client.getTransactionReceipt({ hash: txHash });
-const balance = await client.getBalance({ address: bob });
-
-console.log(receipt.status, balance);
 ```
 
-## Fork Mainnet Or An L2
+Viem public, wallet, and test actions are attached to the client. Calls use the native JSON-RPC implementation; supported methods and error behavior follow ZEVM. The default chain ID is 31337. Each client creates isolated native state unless given an existing engine.
 
-Tevm can fork through any EIP-1193 or viem transport. Set `common` when you know the chain to avoid an extra chain-id lookup.
+## Engine and events
 
-```typescript
-import { createMemoryClient, http, parseAbi } from "tevm";
-import { optimism } from "tevm/common";
+```js
+import { createZevmEngine } from '@tevm/node'
 
-const client = createMemoryClient({
-  common: optimism,
-  fork: {
-    transport: http("https://mainnet.optimism.io"),
-    blockTag: "latest",
-  },
-  miningConfig: { type: "manual" },
-});
-
-await client.tevmReady();
-
-const abi = parseAbi(["function balanceOf(address) view returns (uint256)"]);
-
-const balance = await client.readContract({
-  address: "0x4200000000000000000000000000000000000042",
-  abi,
-  functionName: "balanceOf",
-  args: ["0x0000000000000000000000000000000000000000"],
-});
-
-console.log(balance);
+const engine = createZevmEngine({ mining: { auto: false } })
+engine.events.on('block', (block) => console.log(block.number))
+try {
+  await engine.request({ method: 'evm_mine' })
+  console.log(await engine.rpc('{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber"}'))
+} finally {
+  await engine.close()
+}
 ```
 
-## New In The 1.0 RC
+`request` returns a JSON result and throws `NativeRpcError` with the native `code` and `data`. `rpc` returns the exact response JSON, or `null` for notifications. Requests are serialized. The wrapper emits `request`, `response`, `block`, and `close`; block listeners also observe native interval mining.
 
-- **Blocks and canonical chain state**: Tevm now mines blocks instead of only mutating state snapshots. Calls that create transactions are pending until mined; cheat methods such as `tevmSetAccount` still update canonical state immediately.
-- **Mining modes**: configure `miningConfig` with `manual`, `auto`, or `interval` behavior. Use `client.tevmMine()` or viem's Anvil-compatible `client.mine()` to advance the chain.
-- **Txpool and receipts**: transactions can enter the mempool, be mined into blocks, and then be queried through viem actions or JSON-RPC methods such as `eth_getTransactionReceipt`.
-- **Historical block tags**: `blockTag` works for forked history and locally mined Tevm blocks.
-- **State and block overrides**: `tevmCall`, `tevmContract`, `tevmDeploy`, and `eth_call` can run with temporary account, storage, and block overrides.
-- **Execution tracing**: use `createTrace` on calls and `traceConfig` on debug APIs to inspect EVM execution for tests, debuggers, and profilers.
-- **Synchronous client creation**: `createMemoryClient()` and `createTevmNode()` return synchronously; `client.tevmReady()` and `node.ready()` are available when you want to eagerly wait for initialization.
-- **EIP-1193 request support**: `request` now follows the EIP-1193 shape. The previous low-level request helpers are available as `send` and `sendBulk`.
-- **Stable decorators**: extend `TevmNode` with `tevmActions`, `ethActions`, `tevmSend`, and `requestEip1193`.
-- **Broader JSON-RPC compatibility**: Tevm supports more Ethereum, Anvil, Ganache, and Hardhat-compatible RPC methods for viem test-client workflows.
-- **State persistence**: persist and hydrate in-memory client state with synchronous storage using `createSyncStoragePersister`.
-- **Runtime packages**: the monorepo now includes Tevm-native block, blockchain, tx, txpool, receipt-manager, state, VM, and utility packages.
+## JSON-RPC server
 
-## API Surface
-
-### Memory Client
-
-`createMemoryClient` is the easiest entry point. It returns a viem client with Tevm actions and Anvil-style test actions already installed.
-
-```typescript
-import { createMemoryClient } from "tevm";
-
-const client = createMemoryClient({
-  miningConfig: { type: "auto" },
-});
-
-await client.tevmReady();
-await client.tevmSetAccount({ address: "0x0000000000000000000000000000000000000001", balance: 1n });
-await client.getBlockNumber();
+```sh
+pnpm native:server
 ```
 
-### Tevm Node
+This starts HTTP and WebSocket on `127.0.0.1:8545`. Browsers connect to this server with viem's `http` or `webSocket` transport. The native addon is not a browser WASM engine.
 
-`createTevmNode` gives lower-level access to the runtime and decorator model.
+```js
+import { createMemoryClient } from '@tevm/memory-client'
+import { createServer, createIpcServer } from '@tevm/server'
 
-```typescript
-import { createTevmNode } from "tevm";
-import { requestEip1193, tevmActions } from "tevm/decorators";
-
-const node = createTevmNode({ miningConfig: { type: "manual" } })
-  .extend(tevmActions())
-  .extend(requestEip1193());
-
-await node.ready();
-
-const chainId = await node.request({ method: "eth_chainId" });
+const client = createMemoryClient()
+await client.tevmReady()
+const server = createServer(client)
+server.listen(8545, '127.0.0.1')
+const ipc = createIpcServer(client)
+ipc.listen('/tmp/tevm.sock')
+process.once('SIGINT', () => {
+  ipc.close()
+  server.close(() => { void client.tevmClose() })
+})
 ```
 
-### Solidity Imports
+WebSocket and IPC subscriptions use native block, log, and pending-transaction filters. HTTP passes batches, notifications, and JSON-RPC errors through the native dispatcher.
 
-Tevm bundler plugins let TypeScript import Solidity modules directly.
-
-```typescript
-import { createMemoryClient } from "tevm";
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20.sol";
-
-const client = createMemoryClient();
-const token = ERC20.withAddress("0x0000000000000000000000000000000000000000");
-
-const balance = await client.tevmContract(
-  token.read.balanceOf("0x0000000000000000000000000000000000000001"),
-);
-```
-
-`tevm.json` is optional in the RC series. Use package-specific bundler docs for Vite, Webpack, Bun, esbuild, rspack, and other integrations.
-
-## Packages
-
-The `tevm` package re-exports the most common runtime APIs. Individual packages remain available when you want smaller imports or lower-level control.
-
-| Package | Purpose |
-| --- | --- |
-| `tevm` | Main batteries-included package |
-| `@tevm/memory-client` | viem-compatible in-memory Ethereum client |
-| `@tevm/node` | Low-level Tevm node and decorator runtime |
-| `@tevm/actions` | Tevm actions, JSON-RPC handlers, and debug APIs |
-| `@tevm/decorators` | Client extensions for actions, EIP-1193, and events |
-| `@tevm/block`, `@tevm/blockchain`, `@tevm/tx`, `@tevm/txpool` | Chain, block, transaction, and mempool internals |
-| `@tevm/receipt-manager` | Receipt storage and lookup |
-| `@tevm/state`, `@tevm/vm`, `@tevm/evm` | State manager and execution internals |
-| `@tevm/sync-storage-persister` | Synchronous persistence for browser or embedded storage |
-
-## Learn More
-
-- [Getting Started](https://node.tevm.sh/getting-started/overview)
-- [Viem Integration](https://node.tevm.sh/getting-started/viem)
-- [Ethers Integration](https://node.tevm.sh/getting-started/ethers)
-- [Bundler Quickstart](https://node.tevm.sh/getting-started/bundler)
-- [API Reference](https://node.tevm.sh/api/packages)
-- [Examples](https://github.com/evmts/tevm-monorepo/tree/main/examples)
-
-## Community
-
-- [Telegram](https://t.me/+ANThR9bHDLAwMjUx)
-- [GitHub Discussions](https://github.com/evmts/tevm-monorepo/discussions)
-
-## Contributing
-
-Contributions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) for local setup, testing, and pull-request guidance.
-
-## License
-
-Tevm is MIT licensed. See [LICENSE](./LICENSE) for details.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for repository gates and [AGENTS.md](AGENTS.md) for the contributor contract.
 
 ---
 
@@ -2156,11 +2022,43 @@ zig build
 zig build test
 zig build specs
 zig build wasm
+zig build test-wasm
 ```
 
 ```bash
 TEST_FILTER="push0" zig build specs
 ```
+
+## WebAssembly
+
+The WASM build uses the adjacent `../voltaire` checkout and requires Zig 0.15.2,
+Rust/Cargo, and Python 3. Install Rust's WASM standard library once:
+
+```bash
+rustup target add wasm32-unknown-unknown
+zig build wasm
+zig build test-wasm
+node examples/wasm.mjs
+```
+
+`zig build wasm` builds the Rust crypto archive automatically and writes
+`zig-out/bin/guillotine_mini.wasm`. The example returns a 32-byte word containing
+42 and reports 18 gas used. The test and example require Node 22 or newer and
+have no npm dependencies.
+
+The artifact is a **WASI Preview 1 reactor**. Supply a WASI implementation and
+call `_initialize` once before using the C API; Node's `WASI.initialize(instance)`
+does this. Browser hosts need a WASI Preview 1 adapter. Crypto precompiles are
+linked into the module, including BN254 and BLS12-381; no JavaScript crypto
+callbacks are required. The two `env` imports, `js_opcode_callback` and
+`js_precompile_callback`, select the built-in implementation when they return 0.
+
+Use `evm_alloc(length)` and `evm_free(pointer, length)` for host transfer buffers.
+Zero-length allocation returns 0; freeing a null pointer is a no-op. Input setters
+copy buffers, so the host can release them after the call. Recreate typed-array
+views after allocations or EVM calls because WebAssembly memory may grow.
+Call `evm_destroy(handle)` when finished with an instance. See the complete
+[Node example](examples/wasm.mjs) and [execution regression tests](test/wasm.test.mjs).
 
 ## Docs
 
@@ -2173,7 +2071,7 @@ TEST_FILTER="push0" zig build specs
 - Full hardfork support (Frontier → Osaka)
 - 20+ EIPs implemented
 - EIP-3155 tracing
-- WASM target (~193 KB optimized)
+- WASM target with linked crypto precompiles (WASI Preview 1)
 - 100% ethereum/tests coverage
 
 ## More
@@ -2184,648 +2082,6 @@ TEST_FILTER="push0" zig build specs
 ## License
 
 See `LICENSE`.
-
----
-
-## Tevm / @tevm/test-matchers
-
-Source: https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-matchers
-
-# @tevm/test-matchers
-
-Custom Vitest matchers for Tevm and EVM-related testing in TypeScript.
-
-## Installation
-
-```bash
-pnpm add @tevm/test-matchers -D
-# or
-npm install @tevm/test-matchers --save-dev
-```
-
-## Setup
-
-Add to your `vitest.config.ts`:
-
-```typescript
-import { defineConfig } from 'vitest/config'
-
-export default defineConfig({
-  test: {
-    setupFiles: ['@tevm/test-matchers'],
-  },
-})
-```
-
-If your `tsconfig.json` includes a `compilerOptions.types` array, add `@tevm/test-matchers` to it. Otherwise, types will be extended by default.
-
-## Available Matchers
-
-### Basic Matchers
-
-#### `toBeAddress(opts?)`
-Validates Ethereum addresses. Default requires EIP-55 checksum.
-```typescript
-expect('0x742d35Cc5dB4c8E9f8D4Dc1Ef70c4c7c8E5b7A6b').toBeAddress() // checksummed
-expect('0x742d35cc5db4c8e9f8d4dc1ef70c4c7c8e5b7a6b').toBeAddress({ strict: false }) // any case
-```
-
-#### `toBeHex(opts?)`
-Validates hex strings with optional size verification.
-```typescript
-expect('0x1234abcd').toBeHex()
-expect('0xa9059cbb').toBeHex({ size: 4 }) // function selector (4 bytes)
-expect(txHash).toBeHex({ size: 32 }) // transaction hash (32 bytes)
-```
-
-#### `toEqualAddress(expected)`
-Case-insensitive address comparison.
-```typescript
-expect('0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC').toEqualAddress('0xa5cc3c03994db5b0d9a5eedd10cabab0813678ac')
-```
-
-#### `toEqualHex(expected, opts?)`
-Hex comparison with normalization by default (trims leading zeros).
-```typescript
-expect('0x000123').toEqualHex('0x123') // normalized (default)
-expect('0x000123').toEqualHex('0x000123', { exact: true }) // exact match
-```
-
-### Balance Matchers
-
-#### `toChangeBalance(client, account, expectedChange)`
-Tests ETH balance changes for a single account. Use `toChangeBalances` for multiple accounts.
-```typescript
-await expect(txHash).toChangeBalance(client, '0x123...', 100n) // gained 100 wei
-await expect(txHash).toChangeBalance(client, account, -50n) // lost 50 wei
-```
-
-#### `toChangeBalances(client, balanceChanges)`
-Tests ETH balance changes for multiple accounts in a single transaction.
-```typescript
-await expect(txHash).toChangeBalances(client, [
-  { account: sender, amount: -100n },   // sender loses 100
-  { account: recipient, amount: 100n }, // recipient gains 100
-])
-```
-
-#### `toChangeTokenBalance(client, token, account, expectedChange)`
-Tests ERC20 token balance changes. Use `toChangeTokenBalances` for multiple accounts.
-```typescript
-await expect(txHash).toChangeTokenBalance(client, tokenAddress, '0x123...', 100n)
-await expect(txHash).toChangeTokenBalance(client, tokenContract, account, -50n)
-```
-
-#### `toChangeTokenBalances(client, token, balanceChanges)`
-Tests token balance changes for multiple accounts.
-```typescript
-await expect(txHash).toChangeTokenBalances(client, tokenAddress, [
-  { account: sender, amount: -100n },
-  { account: recipient, amount: 100n },
-])
-```
-
-### Event Matchers
-
-#### `toEmit(contract, eventName)`
-Tests if a transaction emitted a specific event.
-```typescript
-await expect(contract.write.transfer('0x123...', 100n))
-  .toEmit(contract, 'Transfer')
-
-// Alternative: use signature or selector
-await expect(transaction)
-  .toEmit('Transfer(address,address,uint256)')
-  .toEmit('0xddf252ad...') // event selector
-```
-
-#### `withEventArgs(...args)` / `withEventNamedArgs(args)`
-Chain with `toEmit` to test event arguments.
-```typescript
-// Positional arguments
-await expect(contract.write.transfer(to, 100n))
-  .toEmit(contract, 'Transfer')
-  .withEventArgs(from, to, 100n)
-
-// Named arguments (partial matching supported)
-await expect(contract.write.transfer(to, 100n))
-  .toEmit(contract, 'Transfer')
-  .withEventNamedArgs({ value: 100n })
-```
-
-**Limitation**: Cannot use `.not` before `withEventArgs`/`withEventNamedArgs`.
-
-### Error Matchers
-
-#### `toBeReverted(client?)`
-Tests if a transaction reverted for any reason.
-```typescript
-await expect(writeContract(client, contract.write.failingFunction()))
-  .toBeReverted(client)
-```
-
-#### `toBeRevertedWithString(client, message)`
-Tests for specific revert string messages.
-```typescript
-await expect(writeContract(client, contract.write.requirePositive(-1)))
-  .toBeRevertedWithString(client, 'Amount must be positive')
-```
-
-#### `toBeRevertedWithError(client, contract, errorName)`
-Tests for custom contract errors. Use `toBeRevertedWithString` for `revert()` messages.
-```typescript
-await expect(writeContract(client, contract.write.transfer(to, 1000n)))
-  .toBeRevertedWithError(client, contract, 'InsufficientBalance')
-
-// Alternative: use signature or selector
-await expect(transaction)
-  .toBeRevertedWithError(client, 'InsufficientBalance(uint256,uint256)')
-  .toBeRevertedWithError(client, '0x356680b7') // error selector
-```
-
-#### `withErrorArgs(...args)` / `withErrorNamedArgs(args)`
-Chain with `toBeRevertedWithError` to test error arguments.
-```typescript
-// Positional arguments
-await expect(transaction)
-  .toBeRevertedWithError(client, contract, 'InsufficientBalance')
-  .withErrorArgs(50n, 1000n) // available: 50, required: 1000
-
-// Named arguments (partial matching supported)
-await expect(transaction)
-  .toBeRevertedWithError(client, contract, 'InsufficientBalance')
-  .withErrorNamedArgs({ required: 1000n })
-```
-
-**Limitation**: Cannot use `.not` before `withErrorArgs`/`withErrorNamedArgs`.
-
-### Contract Call Matchers
-
-#### `toCallContractFunction(client, contract, functionName)`
-Tests if a transaction called a specific contract function.
-```typescript
-await expect(txHash)
-  .toCallContractFunction(client, contract, 'transfer')
-
-// Alternative: use function signature or selector
-await expect(txHash)
-  .toCallContractFunction(client, 'transfer(address,uint256)')
-await expect(txHash)
-  .toCallContractFunction(client, '0xa9059cbb')
-```
-
-#### `withFunctionArgs(...args)` / `withFunctionNamedArgs(args)`
-Chain with `toCallContractFunction` to test function call arguments.
-```typescript
-// Positional arguments
-await expect(txHash)
-  .toCallContractFunction(client, contract, 'transfer')
-  .withFunctionArgs(recipient, 100n)
-
-// Named arguments (partial matching supported)
-await expect(txHash)
-  .toCallContractFunction(client, contract, 'transfer')
-  .withFunctionNamedArgs({ to: recipient, value: 100n })
-```
-
-**Limitation**: Cannot use `.not` before `withFunctionArgs`/`withFunctionNamedArgs`.
-
-### State Matchers
-
-#### `toBeInitializedAccount(client)`
-Tests if an address contains deployed contract code.
-```typescript
-await expect('0x742d35Cc5dB4c8E9f8D4Dc1Ef70c4c7c8E5b7A6b')
-  .toBeInitializedAccount(client)
-```
-
-#### `toHaveState(client, expectedState)`
-Tests account state properties (balance, nonce, code, storage).
-```typescript
-await expect('0x742d35Cc5dB4c8E9f8D4Dc1Ef70c4c7c8E5b7A6b')
-  .toHaveState(client, {
-    balance: 1000n,
-    nonce: 5n,
-    code: '0x6080...',
-    storage: { '0x0': '0x1' }
-  })
-```
-
-#### `toHaveStorageAt(client, expectedStorage)`
-Tests contract storage values at specific slots.
-```typescript
-// Single slot
-await expect(contractAddress)
-  .toHaveStorageAt(client, { slot: '0x0', value: '0x1' })
-
-// Multiple slots
-await expect(contractAddress)
-  .toHaveStorageAt(client, [
-    { slot: '0x0', value: '0x1' },
-    { slot: '0x1', value: '0x2' }
-  ])
-```
-
-## TypeScript Support
-
-All matchers include full TypeScript support with proper type definitions. The matchers will be available on the `expect` object after importing.
-
-## Complete Example
-
-```typescript
-import { expect, it } from 'vitest'
-import { createMemoryClient } from 'tevm'
-import { writeContract } from 'viem/actions'
-
-it('ERC20 transfer with all matchers', async () => {
-  const client = createMemoryClient()
-  const token = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' // USDC
-  const sender = '0x742d35Cc6274c36e1019e41D77d0A4aa7D7dE01e'
-  const recipient = '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed'
-
-  // Validate addresses
-  expect(sender).toBeAddress()
-  expect(recipient).toEqualAddress('0x5aAeb6053f3e94c9b9a09f33669435e7ef1beaed')
-
-  // Execute transfer
-  const txHash = await writeContract(client, {
-    address: token,
-    abi: erc20Abi,
-    functionName: 'transfer',
-    args: [recipient, 1000n],
-    account: sender,
-  })
-
-  // Test balance changes
-  await expect(txHash).toChangeTokenBalances(client, token, [
-    { account: sender, amount: -1000n },
-    { account: recipient, amount: 1000n },
-  ])
-
-  // Test event emission
-  await expect(txHash)
-    .toEmit(token, 'Transfer')
-    .withEventNamedArgs({
-      from: sender,
-      to: recipient,
-      value: 1000n
-    })
-
-  // Test function call
-  await expect(txHash)
-    .toCallContractFunction(client, token, 'transfer')
-    .withFunctionArgs(recipient, 1000n)
-
-  // Test transaction hash format
-  expect(txHash).toBeHex({ size: 32 })
-})
-
-it('Failed transfer with custom error', async () => {
-  const client = createMemoryClient()
-
-  // This should fail with InsufficientBalance error
-  await expect(
-    writeContract(client, {
-      address: token,
-      abi: erc20Abi,
-      functionName: 'transfer',
-      args: [recipient, 1000000n], // more than balance
-      account: sender,
-    })
-  )
-    .toBeRevertedWithError(client, token, 'InsufficientBalance')
-    .withErrorNamedArgs({ required: 1000000n })
-})
-```
-
-## Gotchas & Best Practices
-
-1. **Balance Changes**: When testing multiple balance changes with `.not`, i.e. `not.toChangeBalances` or `not.toChangeTokenBalances`, the assertion will pass as long as at least one of the specified changes is not met.
-2. **Event Testing**: Use `withEventNamedArgs` for partial matching when you only care about specific arguments.
-3. **Error Testing**: Use `toBeRevertedWithString` for `revert("message")` or `require(false, "message")` and `toBeRevertedWithError` for custom errors.
-4. **Address Comparison**: Use `toEqualAddress` for case-insensitive comparison, `toBeAddress` for validation.
-5. **Hex Comparison**: Default behavior normalizes (trims leading zeros). Use `{ exact: true }` for strict comparison.
-6. **Chainable Limitations**: Cannot use `.not` before `withEventArgs`, `withEventNamedArgs`, `withErrorArgs`, or `withErrorNamedArgs`.
-
----
-
-## Tevm / @tevm/test-node
-
-Source: https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-node
-
-# @tevm/test-node
-
-A utility package for testing applications with Tevm. It provides a simple way to spin up a local, forked Tevm instance with built-in JSON-RPC snapshotting for fast, reliable, and deterministic tests.
-
-## Features
-
-- **Auto-managed Test Server**: Zero-config test server that automatically starts/stops per test file
-- **JSON-RPC Snapshotting**: Automatically caches JSON-RPC requests to disk. Subsequent test runs are served from the cache, making them orders of magnitude faster and immune to network flakiness
-- **Forking Support**: Test against a fork of any EVM-compatible network
-- **Seamless Vitest Integration**: Designed to work perfectly with Vitest's lifecycle hooks
-- **Automatic Snapshot Placement**: Snapshots stored in `__rpc_snapshots__/<testFileName>.snap.json` next to test files
-
-## Installation
-
-```bash
-pnpm add -D @tevm/test-node vitest
-npm install -D @tevm/test-node vitest
-```
-
-## Quick Start
-
-```typescript
-import { createTestSnapshotClient } from '@tevm/test-node'
-import { http } from 'viem'
-
-const client = createTestSnapshotClient({
-  fork: {
-    transport: http('https://mainnet.optimism.io')
-  }
-})
-
-// Use in tests
-await client.getBlock({ blockNumber: 123456n })
-// Snapshots automatically saved to __rpc_snapshots__/yourTest.spec.ts.snap.json
-```
-
-### With Viem Client
-
-```typescript
-import { createTestSnapshotTransport } from '@tevm/test-node'
-import { createTevmTransport } from '@tevm/memory-client'
-import { createClient, http } from 'viem'
-import { mainnet } from 'viem/chains'
-
-const cachedTransport = createTestSnapshotTransport({
-  transport: http('https://mainnet.optimism.io')
-})
-
-const client = createClient({
-  chain: mainnet,
-  transport: createTevmTransport({
-		fork: { transport: cachedTransport },
-	})
-})
-
-await client.getBlock({ blockNumber: 123456n })
-// Snapshots cached automatically
-```
-
-### As Standalone Server
-
-```typescript
-import { createTestSnapshotClient } from '@tevm/test-node'
-import { createClient, http } from 'viem'
-
-const client = createTestSnapshotClient({
-  fork: { transport: http('https://mainnet.optimism.io') }
-})
-
-// Start HTTP server
-await client.server.start()
-console.log(client.server.rpcUrl)  // http://localhost:8545
-
-// Connect other clients to the server (these will hit the server directly and not be cached)
-const otherClient = createClient({
-  transport: http(client.server.rpcUrl)
-})
-
-await client.server.stop()
-```
-
-## API Reference
-
-### `createTestSnapshotClient(options)`
-
-Creates a memory client with automatic RPC response snapshotting.
-
-**Options:**
-- `fork.transport` (required): Viem transport to fork from
-- `fork.blockTag?`: Block number to fork from
-- `common?`: Chain configuration
-- `test.resolveSnapshotPath?`: How to resolve snapshot paths (default: `'vitest'`)
-  - `'vitest'`: Automatic resolution using vitest context (places in `__rpc_snapshots__/` subdirectory)
-  - `() => string`: Custom function returning full absolute path to snapshot file
-- `test.autosave?`: When to save snapshots (default: `'onRequest'`)
-  - `'onRequest'`: Save after each cached request
-  - `'onStop'`: Save when stopping the server
-  - `'onSave'`: Save only when manually calling `saveSnapshots()`
-
-**Returns:**
-- All `MemoryClient` properties
-- `server.http`: HTTP server instance
-- `server.rpcUrl`: URL of running server
-- `server.start()`: Start the server
-- `server.stop()`: Stop the server (auto-saves if autosave is `'onStop'`)
-- `saveSnapshots()`: Manually save snapshots
-
-**Example:**
-```typescript
-const client = createTestSnapshotClient({
-  fork: {
-    transport: http('https://mainnet.optimism.io'),
-    blockTag: 123456n
-  }
-})
-
-await client.server.start()
-const block = await client.getBlock({ blockNumber: 123456n })
-await client.server.stop()
-```
-
-### `createTestSnapshotNode(options)`
-
-Creates a Tevm node with automatic RPC response snapshotting.
-
-**Options:**
-- Same as `createTestSnapshotClient`, but accepts `TevmNodeOptions`
-
-**Returns:**
-- All `TevmNode` properties
-- `server`: Server instance (same as `createTestSnapshotClient`)
-- `saveSnapshots()`: Manually save snapshots
-
-**Example:**
-```typescript
-import { blockNumberProcedure } from '@tevm/actions'
-
-const node = createTestSnapshotNode({
-  fork: { transport: http('https://mainnet.optimism.io') }
-})
-
-const result = await blockNumberProcedure(node)({
-  jsonrpc: '2.0',
-  method: 'eth_blockNumber',
-  id: 1,
-  params: []
-})
-```
-
-### `createTestSnapshotTransport(options)`
-
-Creates a transport with automatic RPC response snapshotting.
-
-**Options:**
-- `transport` (required): Viem transport to wrap
-- `test.autosave?`: When to save snapshots (default: `'onRequest'`)
-
-**Returns:**
-- `request`: EIP-1193 request function
-- `server`: Server instance (same as `createTestSnapshotClient`)
-- `saveSnapshots()`: Manually save snapshots
-
-**Example:**
-```typescript
-const transport = createTestSnapshotTransport({
-  transport: http('https://mainnet.optimism.io')
-})
-
-const result = await transport.request({
-  method: 'eth_getBlockByNumber',
-  params: ['0x123', false]
-})
-```
-
-## Autosave Modes
-
-### `'onRequest'` (default)
-Saves snapshots immediately after each cached request. Provides real-time persistence.
-
-```typescript
-const client = createTestSnapshotClient({
-  fork: { transport: http('https://mainnet.optimism.io') },
-  test: { autosave: 'onRequest' } // default, can be omitted
-})
-```
-
-### `'onStop'`
-Saves snapshots only when `server.stop()` is called. Better performance for batch operations.
-
-```typescript
-const client = createTestSnapshotClient({
-  fork: { transport: http('https://mainnet.optimism.io') },
-  test: { autosave: 'onStop' }
-})
-
-// No snapshots saved during these calls
-await client.getBlock({ blockNumber: 1n })
-await client.getBlock({ blockNumber: 2n })
-
-// All snapshots saved here
-await client.server.stop()
-```
-
-### `'onSave'`
-No automatic saving. Complete manual control via `saveSnapshots()`.
-
-```typescript
-const client = createTestSnapshotClient({
-  fork: { transport: http('https://mainnet.optimism.io') },
-  test: { autosave: 'onSave' }
-})
-
-await client.getBlock({ blockNumber: 1n })
-await client.server.stop() // Does not save
-
-// Manually trigger save
-await client.saveSnapshots() // Now saved
-```
-
-## Snapshot Location
-
-Snapshots are automatically placed in a `__rpc_snapshots__` subdirectory next to your test file:
-
-```
-src/
-├── myTest.spec.ts
-└── __rpc_snapshots__/
-    └── myTest.spec.ts.snap.json
-```
-
-No configuration needed - snapshot paths are resolved automatically using Vitest's test context.
-
-## Examples
-
-### Global Setup
-
-```typescript
-// vitest.setup.ts
-import { createTestSnapshotClient } from '@tevm/test-node'
-import { http } from 'viem'
-import { afterAll, beforeAll } from 'vitest'
-
-export const client = createTestSnapshotClient({
-  fork: {
-    transport: http('https://mainnet.optimism.io'),
-    blockTag: 123456n
-  }
-})
-
-beforeAll(() => client.server.start())
-afterAll(() => client.server.stop())
-```
-
-```typescript
-// myTest.spec.ts
-import { client } from './vitest.setup'
-
-it('fetches block', async () => {
-  const block = await client.getBlock({ blockNumber: 123456n })
-  expect(block.number).toBe(123456n)
-})
-```
-
-### Per-Test Client
-
-```typescript
-import { createTestSnapshotClient } from '@tevm/test-node'
-import { http } from 'viem'
-
-it('works with local client', async () => {
-  const client = createTestSnapshotClient({
-    fork: { transport: http('https://mainnet.optimism.io') }
-  })
-
-  const block = await client.getBlock({ blockNumber: 1n })
-  expect(block.number).toBe(1n)
-})
-```
-
-### Using with Viem Client
-
-```typescript
-import { createMemoryClient } from '@tevm/memory-client'
-import { createTestSnapshotTransport } from '@tevm/test-node'
-import { http } from 'viem'
-
-const transport = createTestSnapshotTransport({
-  transport: http('https://mainnet.optimism.io')
-})
-
-const client = createMemoryClient({
-  fork: { transport }
-})
-
-const block = await client.getBlock({ blockNumber: 1n })
-```
-
-### Custom Snapshot Path
-
-```typescript
-import { createTestSnapshotClient } from '@tevm/test-node'
-import { http } from 'viem'
-import path from 'node:path'
-
-const client = createTestSnapshotClient({
-  fork: { transport: http('https://mainnet.optimism.io') },
-  test: {
-    resolveSnapshotPath: () => path.join(process.cwd(), 'custom-snapshots', 'my-test.snap.json')
-  }
-})
-
-// Snapshots saved to custom-snapshots/my-test.snap.json
-```
 
 ---
 
@@ -7724,4 +6980,6 @@ Full public internet access means an untrusted agent can still transmit files it
 
 # Fetch report
 
+- Could not fetch README for Tevm (https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-matchers)
+- Could not fetch README for Tevm (https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-node)
 - Skipped README outside GitHub owner allowlist: https://github.com/smartcontractkit/full-blockchain-solidity-course-js

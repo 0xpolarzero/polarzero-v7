@@ -83,7 +83,7 @@ Forks: 0
 Repository: 0xpolarzero/silo
 URL: https://github.com/0xpolarzero/silo
 Description: A native macOS app for managing and monitoring secure and isolated MicroSandbox VMs
-Primary language: Swift
+Primary language: TypeScript
 Stars: 0
 Forks: 0
 

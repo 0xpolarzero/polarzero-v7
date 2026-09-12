@@ -83,7 +83,7 @@ Forks: 0
 Repository: 0xpolarzero/silo
 URL: https://github.com/0xpolarzero/silo
 Description: A native macOS app for managing and monitoring secure and isolated MicroSandbox VMs
-Primary language: Swift
+Primary language: TypeScript
 Stars: 0
 Forks: 0
 
@@ -6866,122 +6866,110 @@ Source: https://github.com/0xpolarzero/silo
 
 <img src="assets/silo-logo.svg" alt="Silo" width="96">
 
-**Silo** is the native macOS control surface for these MicroSandbox workspaces.
+Silo is a desktop app for creating and managing Linux development VMs on your computer and remote computers from one interface. It runs on macOS and Linux and connects over SSH to other computers running Silo.
 
-A ready-to-run development setup for an Apple Silicon Mac with configurable, isolated, persistent Linux microVM workspaces. A fresh setup starts with these defaults:
-
-| Workspace | Purpose | Normal live limit | Resize ceiling | Browser name |
-|---|---|---:|---:|---|
-| `dev` | Main/work development | 8 CPU, 32 GB RAM | 48 GB RAM | `dev.silo.test` |
-| `playgrounds` | Experiments | 4 CPU, 32 GB RAM | 48 GB RAM | `playgrounds.silo.test` |
-| `personal` | Personal projects | 6 CPU, 16 GB RAM | 32 GB RAM | `personal.silo.test` |
-
-Each workspace has its own Ubuntu system, repositories, Docker daemon, images, volumes, credentials, processes, and public-internet connection. Code and Docker data live on independent persistent ext4 volumes. Zed and Ghostty remain native macOS applications and connect over SSH.
-
-## Desktop releases
-
-Use [Changesets and the desktop release guide](docs/SiloUI-RELEASES.md#release-a-new-version) to record changes, prepare a version, build a draft, and publish verified app updates.
+Each sandbox is a persistent virtual machine powered by MicroSandbox, with its own CPU, memory, and disks. Start and stop local or remote sandboxes, work in your terminal or editor over SSH, browse project files, and open development services in your browser.
 
 ## Install
 
-```bash
-unzip silo-v3.1.0.zip
-cd silo
-./setup.sh
-exec zsh -l
+Download the package for your computer from [Silo releases](https://github.com/0xpolarzero/silo/releases).
+
+| Platform | Requirements | Package |
+| --- | --- | --- |
+| macOS | Apple Silicon, macOS 14 or newer | DMG |
+| Linux | x86-64 or ARM64, Ubuntu 24.04-compatible system; KVM access for local VMs | AppImage or `.deb` |
+
+On macOS, open the DMG and drag Silo to Applications. The app is not notarized; first launch may require **System Settings → Privacy & Security → Open Anyway**. On Linux, make the AppImage executable and launch it, or install the Debian package with your package manager. MicroSandbox, the guest image, and Git tools are bundled.
+
+This README describes the current source. Check the download's release notes for available features; remote computer management was added in [0.2.0](docs/releases/0.2.0.md) and is absent from 0.1.x.
+
+## Start working
+
+1. **Complete setup.** Silo checks dependencies, lets you choose your terminal and editor, and creates your sandboxes. Choose a name, CPU, memory, and disk sizes. GitHub connection is optional.
+2. **Open a sandbox.** Use its controls to start it and open a terminal. Keep project files in `/workspace`; they survive stops, restarts, and app updates.
+3. **Open your editor.** Browse **Files** and use a folder's editor action. Use Zed, or Visual Studio Code with its Remote SSH extension. The editor runs on your computer and connects to the sandbox over SSH.
+4. **Open a development server.** Start the server inside the sandbox, listening on `0.0.0.0`, then use **Network → Add port** or connect a discovered port. Open the displayed local address when it becomes reachable. Adding a port does not start the server.
+
+Use **Search or Jump To…** (`⌘K` on macOS, `Ctrl K` on Linux) to find pages and sandbox actions. Use **Add** above the sandbox list to create another sandbox. **Logs** shows runtime output; **Activity** shows operations and their results.
+
+Stopping a sandbox preserves its disks. CPU and memory edits stop a running sandbox and take effect on its next start. Existing sandbox names and disk sizes cannot change.
+
+Closing the window keeps Silo running when a status icon is available; otherwise it quits. **Quit stops Silo's local VMs**, preserves their disks, and leaves VMs on other computers running. A shutdown failure keeps the app open with an error.
+
+## GitHub, secrets, and backups
+
+- **GitHub:** connect your account and choose repository access for each sandbox. Access defaults to read-only; enable writes when needed. Set the Git author separately.
+- **Secrets:** store API credentials in this computer's credential store and assign them to sandboxes and allowed HTTPS domains. Guests use placeholders that the runtime replaces in permitted requests. See [secret behavior and limits](docs/SiloUI-SECRETS.md).
+- **Backup:** select local sandboxes and a destination. Silo stops selected running VMs, saves their disks and configuration, then attempts to restart them. Restore creates a new stopped VM and requires the same CPU architecture. Backups do not include the host credential store.
+
+## Use another computer
+
+Remote management requires Silo 0.2.0 or newer on both computers and SSH access to the owning computer.
+
+1. On the computer hosting the VMs, enable SSH access (**Remote Login** on macOS), open **Settings → Computers**, enable **Allow remote management**, and copy the address.
+2. On your computer, choose **Connect computer…** and paste the address. Follow the SSH authorization or key setup action if prompted.
+3. Manage its sandboxes alongside local ones. Choose **Run on** when creating a sandbox to select its computer.
+
+Keep Silo running on the owning computer. Connecting does not move or synchronize VMs, accounts, secrets, or backups. Manage those settings and backups on their owning computer. See [remote computers](docs/SiloUI-REMOTE-COMPUTERS.md) for details.
+
+## Build from source
+
+The app lives in [`app/SiloUI`](app/SiloUI), using React, TypeScript, Rust, and Tauri. Install Node.js 24, Python 3.11 or newer, Rust, and the host's Tauri prerequisites. Runtime preparation also requires Rust 1.94.0 and network access on a cold cache.
+
+Native builds require GitHub App configuration even if you skip GitHub in the app. Follow [local setup](docs/SiloUI-RELEASES.md#local-setup), then run from the repository root:
+
+```sh
+npm --prefix app/SiloUI ci
+npm --prefix app/SiloUI run desktop
 ```
 
-`setup.sh` installs the host tools, builds the common development image, creates every workspace in the validated schema-v1 `~/.config/silo/workspaces.json`, publishes the configured localhost ports, configures SSH/Zed integration, and finishes with a live deep check. Silo supplies that JSON through `silo app bootstrap --resume --workspace-config-fd FD --format json`; names and numeric limits are decoded as data rather than shell syntax.
+`desktop` prepares the bundled runtime and launches the native app. `npm --prefix app/SiloUI run dev` only starts Vite; the normal browser entry requires Tauri and is not an interactive app preview.
 
-Native onboarding treats that bootstrap as background work. **Continue** on Workspaces validates and saves the selected configuration, enqueues one idempotent bootstrap operation, and advances immediately to GitHub; it never waits for VM creation or verification. Progress and failures remain visible through the later steps. Review is the only synchronization barrier, and **Done** stays unavailable until every required operation has completed and verified successfully.
+See the [build and release guide](docs/SiloUI-RELEASES.md#local-setup) for local bundles and verification commands, and the [documentation index](docs/README.md) for implementation details. Add a [changeset](docs/SiloUI-RELEASES.md#while-making-changes) with user-visible app changes.
 
-Then set your commit identity:
+## Help
 
-```bash
-silo identity "Your Name" you@example.com
-```
+Open **Silo Help** in the app for the bundled guide. For a problem, check the operation's error details, **Logs**, and **Activity**, then [report an issue](https://github.com/0xpolarzero/silo/issues) with your Silo version, operating system, and steps to reproduce it. Remove credentials and private data from shared logs.
 
-GitHub is optional. Silo never binds a GitHub token into a workspace: git
-inside a workspace reaches GitHub
-through a host-side proxy on `127.0.0.1:18446`. Public repositories are
-cloneable anonymously with no setup at all. A per-workspace policy file
-controls host-credential injection only: it decides, per workspace and
-canonical repository, whether the host OAuth/token may be attached to a
-request and whether that grant is read-only or read-write. The Mac holds ONE
-host credential (reusing an authenticated `gh` CLI, or OAuth Device Flow when
-configured); no GitHub credential ever enters a VM.
+### Inlined linked README: documentation index
 
-Set up authenticated access in **Silo** → **Settings** → **GitHub**:
-connect the account on this Mac, then grant repositories to each workspace and
-pick a mode per repository — **Clone/pull (push from Mac)** or **Clone/pull +
-Push from VM**. Selections grant the host credential to those repositories;
-they are not required for public repositories, which remain anonymously
-cloneable. Local editing and commits always work; host push (`silo push` or the
-app's Push button) is allowed for every granted repository, while push from
-inside a VM is allowed only for repositories granted for VM push. The policy
-starts empty — no credential is injected anywhere until you grant
-repositories. Port warnings during setup are nonfatal. The CLI mirrors this
-surface: `silo github auth|repos|status|verify|disconnect`. See
-[`docs/GITHUB-SETUP.md`](docs/GITHUB-SETUP.md).
+Source: https://github.com/0xpolarzero/silo/blob/main/docs/README.md
 
-### Host-held API secrets
+# Silo documentation
 
-Use **Silo → Secrets** to add, edit, remove, and scope API keys to
-workspaces and exact domains, `*.example.com`, or all HTTPS hosts (`*`). Values
-stay in macOS Keychain; VMs receive placeholders that MicroSandbox substitutes
-only at the configured HTTPS destinations. Every change is staged and shows
-**Restart required** or **Applies on next start** until Silo verifies it.
+The application lives in [`app/SiloUI`](../app/SiloUI): React in `src/`, Rust and
+native integration in `src-tauri/`, and build tooling in `scripts/`. Start with
+the [repository README](../README.md) for development commands.
 
-## Daily use
+## Implementation and operations
 
-```bash
-# Enter /workspace in Ghostty
-silo dev
-silo playgrounds
-silo personal
+These documents describe the Tauri app. Dated verification results establish
+coverage for that run, not a guarantee that every platform or live VM workflow
+has been exercised.
 
-# Enter a nested repository
-silo dev clients/acme/backend
+| Area | Documents |
+| --- | --- |
+| Build and release | [Release workflow](SiloUI-RELEASES.md), [distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
+| Runtime | [Packaging](SiloUI-RUNTIME-PACKAGING.md), [runtime and backup decisions](SiloUI-RUNTIME-BACKUP-FINDINGS.md), [bundled guest images](SiloUI-GUEST-IMAGES.md) |
+| Platform verification | [Linux](SiloUI-LINUX-VERIFICATION.md), [macOS VM library loading](SiloUI-LIBRARY-CONSTRAINTS.md), [dependencies and backup testing](SiloUI-DEPENDENCIES-BACKUP-TESTING.md) |
+| Remote management | [Remote computers and Quit behavior](SiloUI-REMOTE-COMPUTERS.md) |
+| GitHub and secrets | [GitHub implementation](SiloUI-GITHUB-IMPLEMENTATION.md), [secrets](SiloUI-SECRETS.md) |
+| VM tools | [Files](SiloUI-FILES.md), [network](SiloUI-NETWORK-PLAN.md), [terminal handoff](SiloUI-TERMINAL-HANDOFF.md), [editor and browser handoff](SiloUI-EDITOR-HANDOFF.md) |
+| Desktop behavior | [Settings](SiloUI-SETTINGS.md), [native menus](SiloUI-NATIVE-MENUS.md), [status panel](SiloUI-STATUS-PANEL.md) |
 
-# Clone into a nested folder
-silo clone dev OWNER/REPO clients/acme/backend
+## Research and design evidence
 
-# Open in Zed
-silo zed dev clients/acme/backend
+Research records the inputs to a decision. Follow the implementation documents
+above for current behavior and build commands.
 
-# Open a running website in your Mac browser
-silo open dev 3000
-silo open playgrounds 5173
+- [Server-free GitHub research](SiloUI-GITHUB-SERVER-FREE-RESEARCH.md): primary sources and authorization constraints behind the native implementation.
+- [Guest image size experiment](SiloUI-GUEST-IMAGE-SIZE.md): measured image-size tradeoffs.
+- [Historical ext4 discard investigation](../artifacts/ext4-raw-image-root-cause.html): upstream MicroSandbox v0.6.8 reproduction and regression requirements; not current app validation.
+- Branding studies: [logo system](../artifacts/silo-logo-system.html), [proportions](../artifacts/silo-proportion-study.html), [structure](../artifacts/silo-structure-study.html), and [top-down study](../artifacts/silo-top-down-study.html).
 
-# Explicitly push the current committed branch from the Mac
-silo push dev clients/acme/backend
-
-# Back up every VM and persistent volume
-silo backup
-```
-
-A service must listen on `0.0.0.0` inside the VM or container. The common development ports are already published to each workspace's dedicated loopback IP, so every configured workspace can use port 3000 simultaneously.
-
-## Documentation
-
-- [Complete setup guide](docs/SETUP-GUIDE.md)
-- [GitHub permissions and push guide](docs/GITHUB-SETUP.md)
-- [Desktop build configuration and rolling releases](docs/SiloUI-RELEASES.md)
-- [Command cheatsheet](docs/Silo-CHEATSHEET.md)
-- [Test report](docs/TEST-REPORT.md)
-
-Installed documentation is also available from any terminal:
-
-```bash
-silo docs setup
-silo docs github
-silo docs cheatsheet
-silo docs tests
-```
-
-Every process and agent inside one workspace can access everything in that workspace. Configured workspaces are separate from one another and no Mac folder, Mac Docker socket, or Mac SSH agent is mounted into them. GitHub credential grants are owner/repository scoped: the host credential is injected only for the exact canonical repositories granted to a workspace (read-only by default), it stays in macOS Keychain and is used only by the proxy and the explicit `silo push` path, and no GitHub credential exists inside any workspace. Public repositories remain reachable anonymously regardless of grants; GitHub itself decides whether an unauthenticated request succeeds.
-
-Full public internet access means an untrusted agent can still transmit files it can read to an unrelated internet service. This setup prevents direct access to your Mac and gates GitHub pushes to the repositories each workspace is allowed to write; it is not a data-loss-prevention system.
+Shared branding files live in [`assets/`](../assets/). Generated native bundles,
+logs, and Rust outputs belong in the ignored `app/SiloUI/src-tauri/target/` tree;
+frontend build output belongs in the ignored `app/SiloUI/dist/` tree.
 
 # Fetch report
 

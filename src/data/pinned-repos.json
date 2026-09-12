@@ -15,8 +15,8 @@
       "nameWithOwner": "0xpolarzero/silo",
       "url": "https://github.com/0xpolarzero/silo",
       "description": "A native macOS app for managing and monitoring secure and isolated MicroSandbox VMs",
-      "language": "Swift",
-      "languageColor": "#F05138",
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
       "stars": 0,
       "forks": 0
     },

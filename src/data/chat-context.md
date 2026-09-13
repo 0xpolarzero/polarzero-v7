@@ -6877,7 +6877,7 @@ Download Silo from [Releases](https://github.com/0xpolarzero/silo/releases). The
 | Platform | Requirements | Installation |
 | --- | --- | --- |
 | macOS | Apple Silicon, macOS 14+ | Open the DMG and drag Silo to Applications. |
-| Linux | x86-64 or ARM64, Ubuntu 24.04-compatible system | Make the AppImage executable and open it, or install the `.deb` with your package manager. |
+| Linux | x86-64 or ARM64, Ubuntu 24.04-compatible system | Install the `.deb` with your package manager and enable Silo updates when asked. Future releases appear in Software Updater. AppImage remains an optional portable download. |
 
 On macOS, first launch may require **System Settings → Privacy & Security → Open Anyway** because the app is not notarized. Local VMs on Linux require KVM access.
 
@@ -6934,7 +6934,7 @@ has been exercised.
 
 | Area | Documents |
 | --- | --- |
-| Build and release | [Release workflow](SiloUI-RELEASES.md), [distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
+| Build and release | [Release workflow](SiloUI-RELEASES.md), [Linux system updates](SiloUI-LINUX-UPDATES.md), [distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
 | Runtime | [Packaging](SiloUI-RUNTIME-PACKAGING.md), [runtime and backup decisions](SiloUI-RUNTIME-BACKUP-FINDINGS.md), [bundled guest images](SiloUI-GUEST-IMAGES.md) |
 | Platform verification | [Linux](SiloUI-LINUX-VERIFICATION.md), [macOS VM library loading](SiloUI-LIBRARY-CONSTRAINTS.md), [dependencies and backup testing](SiloUI-DEPENDENCIES-BACKUP-TESTING.md) |
 | Remote management | [Remote computers and Quit behavior](SiloUI-REMOTE-COMPUTERS.md) |

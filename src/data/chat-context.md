@@ -6870,7 +6870,7 @@ Silo is a desktop app for managing Linux development VMs on your computer and re
 
 Create a sandbox, open it in your usual editor or terminal, and connect to its development servers through the app. Manage GitHub access, API secrets, and backups in the same interface, without juggling VM commands and SSH configuration.
 
-https://github.com/user-attachments/assets/c29f8c5c-38f8-4173-861b-a448298c0c54
+https://github.com/user-attachments/assets/4e9cedd1-60a5-40d3-ad60-81cd17d127be
 
 ## Install
 
@@ -7109,13 +7109,18 @@ has been exercised.
 | Platform verification | [Linux](SiloUI-LINUX-VERIFICATION.md), [macOS VM library loading](SiloUI-LIBRARY-CONSTRAINTS.md), [dependencies and backup testing](SiloUI-DEPENDENCIES-BACKUP-TESTING.md) |
 | Remote management | [Remote computers and Quit behavior](SiloUI-REMOTE-COMPUTERS.md) |
 | GitHub and secrets | [GitHub implementation](SiloUI-GITHUB-IMPLEMENTATION.md), [secrets](SiloUI-SECRETS.md) |
-| VM tools | [Files](SiloUI-FILES.md), [network](SiloUI-NETWORK-PLAN.md), [terminal handoff](SiloUI-TERMINAL-HANDOFF.md), [editor and browser handoff](SiloUI-EDITOR-HANDOFF.md) |
+| VM tools | [Linux desktop](SiloUI-DESKTOP.md), [Files](SiloUI-FILES.md), [network](SiloUI-NETWORK-PLAN.md), [terminal handoff](SiloUI-TERMINAL-HANDOFF.md), [editor and browser handoff](SiloUI-EDITOR-HANDOFF.md) |
+| Logs | [Retained history, search and export](SiloUI-LOGS.md) |
 | Desktop behavior | [Settings](SiloUI-SETTINGS.md), [native menus](SiloUI-NATIVE-MENUS.md), [status panel](SiloUI-STATUS-PANEL.md) |
 
 ## Research and design evidence
 
+- [Landing page reference](SiloUI-LANDING-REFERENCES.md): approved Zed direction, product evidence, and website implementation.
+
 Research records the inputs to a decision. Follow the implementation documents
 above for current behavior and build commands.
+
+- [Logging and retention audit](SiloUI-LOGGING-AUDIT.md): current storage limits, log and activity presentation, and retention gaps.
 
 - [Development and release optimization plan](SiloUI-WORKFLOW-OPTIMIZATION-PLAN.md): measured bottlenecks, ranked changes, and benchmark acceptance gates.
 - [Server-free GitHub research](SiloUI-GITHUB-SERVER-FREE-RESEARCH.md): primary sources and authorization constraints behind the native implementation.
@@ -7124,6 +7129,8 @@ above for current behavior and build commands.
 - [Native compilation experiment](SiloUI-NATIVE-COMPILATION-EXPERIMENT.md): measured test-target reduction and the compiler-cache acceptance gate.
 - [Frontend test performance](SiloUI-FRONTEND-TEST-PERFORMANCE.md): controlled environment-split measurements.
 - [Guest image size experiment](SiloUI-GUEST-IMAGE-SIZE.md): measured image-size tradeoffs.
+- [Linux desktops for agents](SiloUI-LINUX-DESKTOP-RESEARCH.md): proposed guest desktop, agent compatibility, estimated costs and prototype acceptance.
+- [Optional desktop implementation plan](SiloUI-DESKTOP-IMPLEMENTATION-PLAN.md): desktop installation, automatic/manual lifecycle, minimal viewer and verification gates.
 - [Historical ext4 discard investigation](../artifacts/ext4-raw-image-root-cause.html): upstream MicroSandbox v0.6.8 reproduction and regression requirements; not current app validation.
 - Branding studies: [logo system](../artifacts/silo-logo-system.html), [proportions](../artifacts/silo-proportion-study.html), [structure](../artifacts/silo-structure-study.html), and [top-down study](../artifacts/silo-top-down-study.html).
 

@@ -6864,7 +6864,7 @@ Source: https://github.com/0xpolarzero/silo
 
 # Silo
 
-<img src="assets/silo-logo.svg" alt="Silo" width="96">
+![Silo: Linux desktops for agents, local and remote sandboxes, and per-sandbox GitHub permissions](docs/silo-showcase.jpg)
 
 Silo is a desktop app for managing Linux development VMs on your computer and remote computers from one place. It runs on macOS and Linux, with MicroSandbox powering the VMs.
 
@@ -7121,6 +7121,10 @@ has been exercised.
 Research records the inputs to a decision. Follow the implementation documents
 above for current behavior and build commands.
 
+- [Jev for natural-language commands](SiloUI-JEV-RESEARCH.md): primary-source findings, command-palette fit, limitations and proposed evaluation.
+
+- [Domain research](SiloUI-DOMAIN-RESEARCH-2026-09-19.md): domain availability, registrar pricing, and naming options checked on 2026-09-19.
+
 - [Logging and retention audit](SiloUI-LOGGING-AUDIT.md): current storage limits, log and activity presentation, and retention gaps.
 
 - [Development and release optimization plan](SiloUI-WORKFLOW-OPTIMIZATION-PLAN.md): measured bottlenecks, ranked changes, and benchmark acceptance gates.
@@ -7131,6 +7135,7 @@ above for current behavior and build commands.
 - [Frontend test performance](SiloUI-FRONTEND-TEST-PERFORMANCE.md): controlled environment-split measurements.
 - [Guest image size experiment](SiloUI-GUEST-IMAGE-SIZE.md): measured image-size tradeoffs.
 - [Luda integration plan](SiloUI-LUDA-IMPLEMENTATION-PLAN.md): pinned installer research, single-account scope and verification gates.
+- Luda agent evidence: [acceptance tests](SiloUI-LUDA-AGENT-TESTS.md), [initial skill evaluation](SiloUI-LUDA-SKILL-EVALUATION.md), [accepted skill benchmark](SiloUI-LUDA-SKILL-BENCHMARK.md), and [upstream handoff](SiloUI-LUDA-UPSTREAM-HANDOFF.md).
 - [Linux desktops for agents](SiloUI-LINUX-DESKTOP-RESEARCH.md): proposed guest desktop, agent compatibility, estimated costs and prototype acceptance.
 - [Optional desktop implementation plan](SiloUI-DESKTOP-IMPLEMENTATION-PLAN.md): desktop installation, automatic/manual lifecycle, minimal viewer and verification gates.
 - [Historical ext4 discard investigation](../artifacts/ext4-raw-image-root-cause.html): upstream MicroSandbox v0.6.8 reproduction and regression requirements; not current app validation.

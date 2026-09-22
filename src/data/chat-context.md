@@ -7042,10 +7042,13 @@ For an optimized app you can launch without the development terminal, use the co
 **macOS:**
 
 ```sh
-npm --prefix app/SiloUI run desktop:build -- --bundles app \
-  --config '{"bundle":{"createUpdaterArtifacts":false}}'
+npm --prefix app/SiloUI run desktop:build
 open app/SiloUI/src-tauri/target/release/bundle/macos/Silo.app
 ```
+
+The macOS command applies and verifies the VM helper's exact-engine ad-hoc
+signature before succeeding. It creates a local app without a DMG or updater
+archive; no Apple distribution certificate is required.
 
 **Linux:**
 
@@ -7110,7 +7113,7 @@ has been exercised.
 | Remote management | [Remote computers and Quit behavior](SiloUI-REMOTE-COMPUTERS.md) |
 | GitHub and secrets | [GitHub implementation](SiloUI-GITHUB-IMPLEMENTATION.md), [secrets](SiloUI-SECRETS.md) |
 | VM tools | [Working account](SiloUI-WORKING-ACCOUNT.md), [VM migration](SiloUI-WORKING-ACCOUNT-MIGRATION.md), [Linux desktop](SiloUI-DESKTOP.md), [agent desktop tools](SiloUI-LUDA.md), [Files](SiloUI-FILES.md), [network](SiloUI-NETWORK-PLAN.md), [terminal handoff](SiloUI-TERMINAL-HANDOFF.md), [editor and browser handoff](SiloUI-EDITOR-HANDOFF.md) |
-| Logs | [Retained history, search and export](SiloUI-LOGS.md) |
+| Logs | [Retained history, search and export](SiloUI-LOGS.md), [sandbox failure reporting](SiloUI-FAILURE-REPORTING.md) |
 | Storage | [Workspace reclamation policy and verification](SiloUI-STORAGE-RECLAMATION.md), [disk discard regression](SiloUI-STORAGE-DISCARD-RESEARCH.md) |
 | Desktop behavior | [Settings](SiloUI-SETTINGS.md), [native menus](SiloUI-NATIVE-MENUS.md), [status panel](SiloUI-STATUS-PANEL.md) |
 

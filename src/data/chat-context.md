@@ -82,7 +82,7 @@ Forks: 0
 
 Repository: 0xpolarzero/silo
 URL: https://github.com/0xpolarzero/silo
-Description: A native macOS app for managing and monitoring secure and isolated MicroSandbox VMs
+Description: Desktop app for local and remote Linux sandboxes, with desktops for AI agents and per-sandbox GitHub and secret access. Runs on macOS and Linux.
 Primary language: TypeScript
 Stars: 2
 Forks: 0
@@ -6864,232 +6864,76 @@ Source: https://github.com/0xpolarzero/silo
 
 # Silo
 
-![Silo: Linux desktops for agents, local and remote sandboxes, and per-sandbox GitHub permissions](docs/silo-showcase.jpg)
+Silo is a desktop app for running Linux sandboxes on your own computers. Each sandbox is a virtual machine powered by [MicroSandbox](https://github.com/superradcompany/microsandbox), with its own files, tools, and processes. Work locally on macOS or Linux, or connect to another computer over SSH.
 
-Silo is a desktop app for managing Linux development VMs on your computer and remote computers from one place. It runs on macOS and Linux, with MicroSandbox powering the VMs.
+Use your usual editor and terminal, give an AI agent a Linux desktop, and choose which repositories and credentials each sandbox can access.
 
-Create a sandbox, open it in your usual editor or terminal, and connect to its development servers through the app. Manage GitHub access, API secrets, and backups in the same interface, without juggling VM commands and SSH configuration.
+[Download](https://github.com/0xpolarzero/silo/releases/latest) · [Website and demo](https://silo.polarzero.xyz) · [Build from source](docs/SiloUI-BUILD-FROM-SOURCE.md) · [Documentation](docs/README.md)
 
-https://github.com/user-attachments/assets/4e9cedd1-60a5-40d3-ad60-81cd17d127be
+![Silo showing a Linux desktop, local and remote sandboxes, and GitHub access controls](docs/silo-showcase.jpg)
+
+## What you can do
+
+- **Work across computers.** Create, start, stop, and monitor local and remote sandboxes in one app.
+- **Use familiar tools.** Open projects in your editor or terminal, browse files, and connect to development servers through local addresses.
+- **Give agents a desktop.** Add an interactive Linux desktop with [Luda tools](docs/SiloUI-LUDA.md) for supported agents, including Codex, Claude Code, and Cursor. Install and sign in to the agents inside the sandbox yourself.
+- **Control GitHub access.** Connect through OAuth and select repositories for each sandbox, with read-only access by default. Alternatively, use a [personal token](docs/SiloUI-GITHUB-PERSONAL-TOKENS.md), which grants the token's full permissions.
+- **Scope API credentials.** Store credentials in your computer's credential store and choose the sandboxes and HTTPS domains that can use them. See [how secrets work](docs/SiloUI-SECRETS.md).
+- **Back up and troubleshoot.** Export local sandbox disks, restore backups as new sandboxes, and search or export logs alongside activity history.
 
 ## Install
 
-Download Silo from [Releases](https://github.com/0xpolarzero/silo/releases). The VM runtime, Linux image, and Git tools are included.
+The VM runtime, base Linux image, and Git tools are bundled. Optional desktop packages download when you add a desktop.
 
-| Platform | Requirements | Installation |
+| Platform | Requirements | Download |
 | --- | --- | --- |
-| macOS | Apple Silicon, macOS 14+ | Open the DMG and drag Silo to Applications. |
-| Linux | x86-64 or ARM64, Ubuntu 24.04-compatible system | Install the `.deb` with your package manager and enable Silo updates when asked. Future releases appear in Software Updater. AppImage remains an optional portable download. |
+| macOS | Apple Silicon, macOS 14+ | [DMG](https://github.com/0xpolarzero/silo/releases/latest/download/Silo-macos-arm64.dmg) |
+| Linux x86-64 | Ubuntu 24.04-compatible system | [DEB](https://github.com/0xpolarzero/silo/releases/latest/download/Silo-linux-x64.deb) · [AppImage](https://github.com/0xpolarzero/silo/releases/latest/download/Silo-linux-x64.AppImage) |
+| Linux ARM64 | Ubuntu 24.04-compatible system | [DEB](https://github.com/0xpolarzero/silo/releases/latest/download/Silo-linux-arm64.deb) · [AppImage](https://github.com/0xpolarzero/silo/releases/latest/download/Silo-linux-arm64.AppImage) |
 
-On macOS, first launch may require **System Settings → Privacy & Security → Open Anyway** because the app is not notarized. Local VMs on Linux require KVM access.
+**macOS:** open the DMG and drag Silo to Applications. The app is not notarized; first launch may require **System Settings → Privacy & Security → Open Anyway**.
+
+**Linux:** in the download directory, run `sudo apt install ./Silo-linux-x64.deb` (use `Silo-linux-arm64.deb` for ARM64). Accept the update-source prompt to receive releases through Software Updater. For AppImage, enable **Allow executing file as program** in its file properties, then launch it. Local VMs require KVM access; GitHub and secrets require a working Secret Service credential store, such as GNOME Keyring.
+
+Upgrading an older installation? Read the [release notes](https://github.com/0xpolarzero/silo/releases/latest) for required migration steps.
 
 ## Start working
 
-1. **Create a sandbox.** Follow setup to choose its name and resources, and your preferred terminal and editor. GitHub connection is optional. Use **Add → New sandbox** to create more later.
-2. **Open your project.** Start the sandbox and open its terminal. Create or clone your project in `/workspace`; use an HTTPS URL for GitHub repositories. Browse **Files** to open a folder in your code editor.
-3. **Open your development server.** Run it inside the sandbox, listening on `0.0.0.0`. In **Network**, connect a discovered port or choose **Add port**, then open the displayed address.
+1. **Create a sandbox.** Follow setup to choose its name, CPU, memory, and disk size. GitHub is optional. Select **Linux desktop** if you want graphical apps or agent computer use. Use **Add → New sandbox** to create more later.
+2. **Open your project.** Start the sandbox and open its terminal. Create or clone your project in `/workspace`; use HTTPS URLs for Silo's GitHub integration. In **Files**, open a folder in your preferred editor.
+3. **Open a development server.** Run it inside the sandbox, listening on `0.0.0.0`. In **Network**, connect a discovered port or choose **Add port**, then open the displayed address on your computer.
+4. **Open the desktop, if installed.** Choose **Open Linux desktop** from the sandbox's actions. You can add one later with **Add Linux desktop**. Closing the viewer leaves its graphical apps running.
 
-Your files survive stops, restarts, and app updates. Choose names and disk sizes carefully: they cannot change later. CPU and memory edits stop the sandbox and apply on its next start.
+Stopping a sandbox ends its running programs and preserves its files. Names and disk sizes are fixed after creation; changing CPU or memory stops the sandbox and applies on its next start. Quitting Silo stops local sandboxes; sandboxes on other computers keep running.
 
 ## Use another computer
 
-Install Silo on both computers. You can connect during setup without creating local VMs.
+Install Silo on both computers. You can connect during setup without creating a local sandbox.
 
-1. On the computer hosting the VMs, enable SSH access (**Remote Login** on macOS). In **Settings → Computers**, enable **Allow remote management** and copy the address.
-2. On your computer, choose **Add → Connect computer…**, paste the address, and follow any SSH setup prompts.
+1. On the computer that will run the VMs, enable SSH access (**Remote Login** on macOS). In **Settings → Computers**, enable **Allow remote management** and copy the address.
+2. On your computer, choose **Add → Connect computer…**, paste the address, and follow the SSH setup prompts.
 3. Use its sandboxes alongside your local ones. Choose **Run on** when creating a sandbox to select its computer.
 
-Keep Silo running on the computer hosting the VMs. Manage its GitHub account, secrets, and backups there. See [remote computer setup and troubleshooting](docs/SiloUI-REMOTE-COMPUTERS.md) for details.
+Keep Silo running on the computer hosting the VMs. Manage its GitHub account, secrets, and backups there. See [remote computer setup](docs/SiloUI-REMOTE-COMPUTERS.md) for details.
 
-## GitHub, secrets, and backups
+## Develop Silo
 
-- **GitHub:** connect your account and choose which repositories each sandbox can access. Access starts read-only; enable writes when needed.
-- **Secrets:** add an API credential, then choose its sandboxes and allowed HTTPS domains. Credentials are stored in your computer's credential store. See [how secrets work](docs/SiloUI-SECRETS.md).
-- **Backup:** open **Backup** to save local sandboxes or restore an archive as a new sandbox. Backups temporarily stop selected running VMs and exclude your computer's credential store. See [backup and restore details](docs/SiloUI-RUNTIME-BACKUP-FINDINGS.md#backup-and-restore).
-
-## Everyday controls
-
-- **Find a page or action:** use **Search or Jump To…** (`⌘K` on macOS, `Ctrl K` on Linux).
-- **Close the window:** Silo keeps running if a status icon is available; otherwise it quits.
-- **Quit Silo:** stops this computer's Silo VMs and preserves their files. VMs on other computers keep running.
-- **Troubleshoot:** check the error details, **Logs**, and **Activity**. On macOS, open **Help → Documentation** for the built-in guide. To [report an issue](https://github.com/0xpolarzero/silo/issues), include your app version, OS, and reproduction steps. Remove private data from shared logs.
-
-## Build from source with your own GitHub App
-
-Use this path if you want to own the GitHub connection as well as run Silo locally. You create a GitHub App under your account, put its configuration in an ignored local file, and build Silo with it. Silo's publisher has no ownership of that registration or independent installation access through it. You still need to trust the code you build and run.
-
-You do not need to host a server, create a personal access token, or generate an App private key. Silo talks directly to GitHub and stores user credentials in macOS Keychain or Linux Secret Service. Native builds currently require GitHub App configuration even if you plan to skip GitHub during onboarding.
-
-### 1. Install the build tools
-
-Build on the computer where you will run Silo: Apple Silicon macOS 14+, or x86-64/ARM64 Linux compatible with Ubuntu 24.04. Cross-compilation is not covered here.
-
-Install [Node.js 24](https://nodejs.org/en/download), Python 3.11 or newer, Git, and [Rust through rustup](https://rustup.rs/). Install the pinned Rust toolchain used by the bundled VM runtime:
+The app uses React/TypeScript and Rust/Tauri in [`app/SiloUI`](app/SiloUI). Follow the [source-build guide](docs/SiloUI-BUILD-FROM-SOURCE.md) to install prerequisites and configure your own GitHub App, then run from the repository root:
 
 ```sh
-rustup toolchain install 1.94.0 --profile minimal
-```
-
-**macOS:** install Apple's command-line tools if you do not already have them:
-
-```sh
-xcode-select --install
-```
-
-**Ubuntu 24.04:** install the native build and packaging dependencies:
-
-```sh
-sudo apt update
-sudo apt install -y build-essential pkg-config libwebkit2gtk-4.1-dev \
-  libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev \
-  patchelf libdbus-1-dev libclang-dev libcap-ng-dev cmake \
-  libfuse2t64 squashfs-tools file
-```
-
-Linux needs a working desktop credential store implementing Secret Service, such as GNOME Keyring, for GitHub login. Running local VMs also requires hardware virtualization and access to `/dev/kvm`; compilation alone does not establish that KVM works. See [Tauri's platform prerequisites](https://v2.tauri.app/start/prerequisites/) for OS setup details.
-
-### 2. Get the source
-
-```sh
-git clone https://github.com/0xpolarzero/silo.git
-cd silo
-rustup override set 1.94.0
 npm --prefix app/SiloUI ci
-```
-
-Run the remaining commands from this `silo` directory. The first native build downloads and compiles the bundled runtime and prepares the guest image, so it needs internet access and can take substantially longer than later builds.
-
-### 3. Create your GitHub App
-
-Open [GitHub → Settings → Developer settings → GitHub Apps → New GitHub App](https://github.com/settings/apps/new). This guide assumes you are using your personal account and repositories.
-
-Fill in these settings:
-
-| GitHub field | What to enter |
-| --- | --- |
-| GitHub App name | A unique name, such as `Silo-yourusername-dev`. |
-| Homepage URL | `https://github.com/0xpolarzero/silo` or your own fork's URL. |
-| Callback URL / Redirect URI | `http://127.0.0.1/github/callback` |
-| Allow wildcard matching, if shown | Leave disabled. |
-| Expire user authorization tokens | Leave enabled; Silo renews them automatically. Check **Optional features** after creation if this setting is not on the form. |
-| Request user authorization (OAuth) during installation | Leave disabled; Silo starts authorization itself. |
-| Enable Device Flow | Leave disabled. |
-| Setup URL | Leave empty. |
-| Webhook → Active | Uncheck it; leave the webhook URL empty. |
-| Where can this GitHub App be installed? | **Only on this account** for your personal repositories. |
-
-The callback is a temporary listener on the computer running Silo. Silo supplies its port when opening the browser; do not copy a port or authorization URL from a previous login attempt into the registration. This portless registration was exercised in Silo's [live OAuth audit](docs/SiloUI-OAUTH-RELEASE-AUDIT.md#live-pkce-reproduction).
-
-Under **Repository permissions**, choose the access you need:
-
-| What you want to do | Permission |
-| --- | --- |
-| Clone and read repository code | **Contents: Read-only** |
-| Also push commits | **Contents: Read & write** instead |
-| Push changes to GitHub Actions workflow files | Also **Workflows: Read & write** |
-| Work with issues or pull requests | Also **Issues** and/or **Pull requests**, with Read-only or Read & write as needed |
-| Use other GitHub features from a VM | Enable their corresponding repository permissions, such as Actions or Packages. |
-
-Leave **Account**, **Organization**, and **Enterprise** permissions at **No access**. Silo currently accepts repository permissions only. GitHub includes mandatory read-only Metadata access. The App's permissions are the maximum Silo can grant: each VM starts read-only, and enabling changes in Silo cannot exceed what you approved here.
-
-Click **Create GitHub App**. Creating it does not yet install it on your repositories; Silo will guide you through installation when you connect. GitHub's [registration guide](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) explains the form in more detail.
-
-**Organization repositories or other users:** a private personal App only works for its owner and cannot be installed on another account. To use the same registration on organization repositories, choose **Any account** and obtain any required organization approval. This makes the App installable by others, not their repositories public. You still own the App and its credentials. Teams can instead register it under their organization, subject to its policies.
-
-### 4. Add your App configuration to Silo
-
-On your new App's **General** settings page, find these three values:
-
-| Silo setting | Where to find it |
-| --- | --- |
-| `SILO_GITHUB_APP_SLUG` | The last part of the App settings URL. For `github.com/settings/apps/silo-alex-dev`, use `silo-alex-dev`. |
-| `SILO_GITHUB_CLIENT_ID` | **Client ID**, not the numeric App ID. |
-| `SILO_GITHUB_CLIENT_SECRET` | Click **Generate a new client secret**, then copy the generated value. This is not an App private key. |
-
-Create the configuration file once:
-
-```sh
-cp app/SiloUI/github-build.example.json app/SiloUI/github-build.local.json
-chmod 600 app/SiloUI/github-build.local.json
-```
-
-Open `app/SiloUI/github-build.local.json` in your editor and replace **all three values**, including the example's existing App slug and client ID:
-
-```json
-{
-  "SILO_GITHUB_APP_SLUG": "silo-yourusername-dev",
-  "SILO_GITHUB_CLIENT_ID": "YOUR_CLIENT_ID",
-  "SILO_GITHUB_CLIENT_SECRET": "YOUR_CLIENT_SECRET"
-}
-```
-
-Keep the quotes and use your actual values. The file is ignored by Git; do not commit or share it. Silo reads it automatically when compiling. Previously exported `SILO_GITHUB_*` environment variables override the file, so unset those if you configured a different App earlier.
-
-The client secret is embedded in your compiled app and can be extracted from it. Keep this build for your own use; do not treat that embedded value as a confidential credential. No App private key is needed or bundled. See the [credential audit](docs/SiloUI-OAUTH-RELEASE-AUDIT.md) for the precise security model.
-
-### 5. Run or build Silo
-
-To run the native app while developing:
-
-```sh
 npm --prefix app/SiloUI run desktop
 ```
 
-This prepares the runtime and opens Silo. Keep the terminal running. `npm run dev` alone only opens the browser UI preview; it cannot run VMs or complete native GitHub setup.
+For checks and release procedures, see the [development and release guide](docs/SiloUI-RELEASES.md). For the browser demo, see the [website README](website/README.md).
 
-For an optimized app you can launch without the development terminal, use the command for your platform. These commands disable updater artifact signing, so you do not need the project's release signing keys.
+## Help and license
 
-**macOS:**
+Check **Logs** and **Activity** for errors. [Report an issue](https://github.com/0xpolarzero/silo/issues) with your app version, OS, and reproduction steps; remove private data from shared logs.
 
-```sh
-npm --prefix app/SiloUI run desktop:build
-open app/SiloUI/src-tauri/target/release/bundle/macos/Silo.app
-```
+Silo is [MIT licensed](LICENSE). Bundled dependencies have their own [licenses and notices](app/SiloUI/THIRD-PARTY-NOTICES.md).
 
-The macOS command applies and verifies the VM helper's exact-engine ad-hoc
-signature before succeeding. It creates a local app without a DMG or updater
-archive; no Apple distribution certificate is required.
-
-**Linux:**
-
-```sh
-npm --prefix app/SiloUI run desktop:build -- --bundles appimage \
-  --config '{"bundle":{"createUpdaterArtifacts":false}}'
-```
-
-Open `app/SiloUI/src-tauri/target/release/bundle/appimage/` and launch the generated `.AppImage` for your architecture. If necessary, enable **Allow executing file as program** in its file properties. Use this AppImage for a personal source build rather than enrolling it in Silo's official Debian update source.
-
-### 6. Connect and use your repositories
-
-1. In the app you just built, choose **Connect GitHub** during setup or from its GitHub settings.
-2. In the browser on that same computer, sign in with the account that owns your private App. Confirm that GitHub shows **your App's name**.
-3. Authorize it. If it is not installed yet, Silo opens the installation page; choose **Only select repositories** and select the repositories you want available.
-4. Return to Silo. Choose repositories for each VM, then enable **Allow GitHub changes** only where needed. Clone over HTTPS inside the VM; Silo supplies credentials automatically.
-
-If you previously connected using an official Silo build, disconnect that connection before connecting your own App. Source builds currently share the same application identity and local data locations with official builds; changing the build does not create a separate set of VMs or settings. Quit an existing Silo instance safely before launching another build.
-
-### Updating and troubleshooting your build
-
-**Update by rebuilding:** pull new source, install its dependencies, and repeat your build command. Keep `github-build.local.json` in place. Resolve any local source changes before pulling.
-
-```sh
-git pull --ff-only
-npm --prefix app/SiloUI ci
-```
-
-Do not install an official Silo update over this build: it would replace your compiled GitHub App configuration with the publisher's. Turn off **Automatically check for updates** in Silo's Updates settings. Disabling updater artifact signing during the build does not disable update checks.
-
-| Problem | What to check |
-| --- | --- |
-| Build reports missing or invalid GitHub configuration | Check all three values in `github-build.local.json`, including accidental whitespace and old environment overrides. Rebuild after editing. |
-| GitHub authorization page returns 404 | Check the compiled client ID and App visibility. A private personal App only allows its owner to sign in. |
-| Browser cannot return to Silo | Keep Silo running, use the browser on the same computer, check the callback setting above, then cancel and start a fresh connection. |
-| Repository is missing | Add it to your App installation in GitHub settings; organization approval may be required. Refresh the repository list in Silo. |
-| Reads work but writes fail | Check both the GitHub App's permissions and that VM's **Allow GitHub changes** setting. Approve updated installation permissions on GitHub if you changed them. |
-
-The React/TypeScript frontend and Rust/Tauri backend live in [`app/SiloUI`](app/SiloUI). For tests, distribution signing, and maintainer releases, see the [development and release guide](docs/SiloUI-RELEASES.md). Browse the [documentation index](docs/README.md) for implementation details.
-
-### Inlined linked README: documentation index
+### Inlined linked README: Documentation
 
 Source: https://github.com/0xpolarzero/silo/blob/main/docs/README.md
 
@@ -7097,7 +6941,9 @@ Source: https://github.com/0xpolarzero/silo/blob/main/docs/README.md
 
 The application lives in [`app/SiloUI`](../app/SiloUI): React in `src/`, Rust and
 native integration in `src-tauri/`, and build tooling in `scripts/`. Start with
-the [repository README](../README.md) for development commands.
+the [repository README](../README.md) to install and use Silo, or the
+[source-build guide](SiloUI-BUILD-FROM-SOURCE.md) to develop it with your own
+GitHub App.
 
 ## Implementation and operations
 
@@ -7107,11 +6953,11 @@ has been exercised.
 
 | Area | Documents |
 | --- | --- |
-| Build and release | [Release workflow](SiloUI-RELEASES.md), [Linux system updates](SiloUI-LINUX-UPDATES.md), [distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
+| Build and release | [Build from source](SiloUI-BUILD-FROM-SOURCE.md), [release workflow](SiloUI-RELEASES.md), [Linux system updates](SiloUI-LINUX-UPDATES.md), [distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
 | Runtime | [Packaging](SiloUI-RUNTIME-PACKAGING.md), [runtime and backup decisions](SiloUI-RUNTIME-BACKUP-FINDINGS.md), [bundled guest images](SiloUI-GUEST-IMAGES.md), [SSH agent TLS regression](SiloUI-ZCODE-TLS-INVESTIGATION.md) |
 | Platform verification | [Linux](SiloUI-LINUX-VERIFICATION.md), [macOS VM library loading](SiloUI-LIBRARY-CONSTRAINTS.md), [dependencies and backup testing](SiloUI-DEPENDENCIES-BACKUP-TESTING.md) |
-| Remote management | [Remote computers and Quit behavior](SiloUI-REMOTE-COMPUTERS.md) |
-| GitHub and secrets | [GitHub implementation](SiloUI-GITHUB-IMPLEMENTATION.md), [secrets](SiloUI-SECRETS.md) |
+| Remote management | [Remote computers and Quit behavior](SiloUI-REMOTE-COMPUTERS.md), [managed SSH access](SiloUI-MANAGED-SSH.md) |
+| GitHub and secrets | [GitHub implementation](SiloUI-GITHUB-IMPLEMENTATION.md), [personal GitHub tokens](SiloUI-GITHUB-PERSONAL-TOKENS.md), [secrets](SiloUI-SECRETS.md) |
 | VM tools | [Working account](SiloUI-WORKING-ACCOUNT.md), [VM migration](SiloUI-WORKING-ACCOUNT-MIGRATION.md), [Linux desktop](SiloUI-DESKTOP.md), [agent desktop tools](SiloUI-LUDA.md), [Files](SiloUI-FILES.md), [network](SiloUI-NETWORK-PLAN.md), [terminal handoff](SiloUI-TERMINAL-HANDOFF.md), [editor and browser handoff](SiloUI-EDITOR-HANDOFF.md) |
 | Logs | [Retained history, search and export](SiloUI-LOGS.md), [sandbox failure reporting](SiloUI-FAILURE-REPORTING.md) |
 | Storage | [Workspace reclamation policy and verification](SiloUI-STORAGE-RECLAMATION.md), [disk discard regression](SiloUI-STORAGE-DISCARD-RESEARCH.md) |
@@ -7176,7 +7022,171 @@ Shared branding files live in [`assets/`](../assets/). Generated native bundles,
 logs, and Rust outputs belong in the ignored `app/SiloUI/src-tauri/target/` tree;
 frontend build output belongs in the ignored `app/SiloUI/dist/` tree.
 
-- [Managed SSH access](SiloUI-MANAGED-SSH.md): client keys, local/network listeners, ownership, lifecycle and verification.
+### Inlined linked README: website README
+
+Source: https://github.com/0xpolarzero/silo/blob/main/website/README.md
+
+# Silo website
+
+A static landing page for Silo, built with HTML, CSS, JavaScript, and Vite. The
+approved reference is [Zed](https://zed.dev/). The site uses Silo's branding and
+product demonstrations, self-hosted IBM Plex fonts, and direct release downloads.
+
+## Run
+
+Use Node.js 24. From the repository root:
+
+```sh
+npm --prefix app/SiloUI ci
+npm --prefix website ci
+npm --prefix website run dev
+```
+
+Preview: http://127.0.0.1:4173. This serves only the website, not the native app.
+
+```sh
+npm --prefix website run typecheck
+npm --prefix website test
+npm --prefix website run build
+npm --prefix website run preview
+```
+
+Stop the development server before running the production preview, since both
+use port 4173. Deploy `website/dist/` to a static host. No backend, environment
+variables, account, cookies, or analytics are required by the site.
+
+## Content and assets
+
+- `index.html`: copy, semantic layout, download links, and video dialog. Inline
+  first-paint rules constrain the logo and hide the skip link until focused,
+  even before external CSS arrives; keep these sizes aligned with `src/style.css`.
+- `src/style.css`: responsive layout and Zed-inspired typography/grid.
+- `src/main.js`: accessible workflow tabs, Linux architecture selection, video
+  chapter playback, and dialog cleanup.
+- `src/downloads.js`: explicit Linux architecture-to-package mapping.
+- `demo.html` and `src/demo/`: an isolated, lazy-loaded React iframe using the
+  actual Silo sidebar, navigation history, and production pages. Sample files,
+  logs, repositories, secrets, computers, and backups come from bundled fixtures.
+  The overview includes local VMs and a VM on Office Mac with expandable local
+  and network SSH access. The 680px embed fits both expanded sidebar groups.
+  Sidebar navigation, collapse/hover transitions, the production command palette,
+  SSH disclosures, sandbox action menus, and sample storage/history inspection
+  work. Commands navigate pages and sandbox views; native action commands are
+  omitted. The shared overview read-only mode disables mutations, clipboard
+  actions, native launches, and reordering; other
+  pages use a disabled fieldset and captured interaction events. Mutation adapters also reject
+  calls. Preferences and integrations use memory-only fixture stores. No native
+  application controller or live data source is created.
+- `vite.config.ts`: builds both static HTML entries and resolves shared app
+  components and one React runtime from `app/SiloUI`. Install both packages
+  before building; the deployed output needs neither Node nor the app installed.
+- `public/media/`: portable, versioned website assets. Six screenshot pairs show
+  the production glass UI with the read-only demo fixtures. Unsuffixed PNGs are
+  light; `-dark.png` variants are dark. Workflow captures are 1280 × 720;
+  GitHub, secrets, and backup captures are 1280 × 800. `overview.png` supplies
+  the computers screenshot. `silo-tour.mp4` and its `silo-tour.png` poster remain
+  the original v11 tour, deliberately unchanged.
+- `public/theme.js`: first-paint theme selection shared by the page and demo.
+  The icon-only navbar selector defaults to System and follows live OS changes.
+  Explicit choices persist in local storage; blocked storage still allows
+  switching during the visit. Picture sources and the iframe follow the same
+  choice. Only same-origin parent messages can update the embedded demo.
+- `public/media/tour.vtt` and `tour-transcript.txt`: descriptions of the silent
+  demo. Keep these and the chapter timestamps aligned when replacing the film.
+- `public/fonts/`: self-hosted Latin WOFF2 IBM Plex Sans, Serif, and Mono under
+  the included SIL Open Font License. Fallbacks cover other character ranges.
+- `public/favicon.svg`: the existing Silo app icon from `assets/silo-logo.svg`.
+
+The Silo views in the demo use production components with inert sample data.
+Editor, agent client, terminal, hardware, and notification views are
+illustrations. Playback never touches native APIs, credentials, or live VMs.
+
+Download filenames were verified against public release v0.9.0 on 2026-09-27.
+Links use GitHub's `releases/latest/download/` endpoint, so future releases must
+retain these stable filenames. Both Linux .deb and AppImage links follow the
+explicit architecture selector. A no-JavaScript fallback exposes ARM64 links.
+
+## Verification
+
+Verification includes TypeScript, the production build, two download mapping
+tests, and interactive demo tests covering sidebar history, disabled actions,
+fixture pages, and absence of live data requests. Browser checks covered the desktop layout and 320px, 390px, and 768px
+widths, loaded media, anchor targets, keyboard tab navigation, chapter seeking,
+video playback, Escape dismissal, focus restoration, architecture selection,
+and macOS installation disclosure. No horizontal page overflow was found.
+The interactive embed was also checked on desktop and at 390px and 320px,
+including collapsed sidebar navigation and page overflow.
+These checks validate website behavior and fixture presentation, not live VM
+operation or native package installation.
+
+See [design research](../docs/SiloUI-LANDING-REFERENCES.md) for the approved direction.
+
+## Vercel publication
+
+Production: [silo.polarzero.xyz](https://silo.polarzero.xyz), also set as the GitHub
+repository website. The Vercel deployment is available at
+[silo-theta.vercel.app](https://silo-theta.vercel.app).
+
+The Vercel `silo` project is connected to `0xpolarzero/silo`. Pushes and merges
+to `main` trigger production deployments; other branches receive preview deployments.
+The project settings use Node.js 24 and the repository root with:
+
+- Install command: `npm --prefix app/SiloUI ci && npm --prefix website ci`
+- Build command: `npm --prefix website run build`
+- Output directory: `website/dist`
+
+Both packages are required because the website imports shared app components.
+These settings are saved in Vercel. Git deployment behavior follows Vercel's
+[Git integration documentation](https://vercel.com/docs/git), checked on 2026-09-19.
+
+For a manual deployment, build locally, package the static output, and publish
+the linked `silo` project:
+
+```sh
+npm --prefix website run typecheck
+npm --prefix website test
+npm --prefix website run build:vercel
+npx --yes vercel@59.16.0 deploy --prebuilt --prod --yes --cwd website
+```
+
+For a new checkout, first run `npx --yes vercel@59.16.0 link --yes --project silo --cwd website`.
+The deployment uploads only compiled public assets from `.vercel/output/`.
+Vercel project metadata and local environment files are ignored. No native
+build inputs or local configuration are published by this prebuilt command.
+
+This follows Vercel's [prebuilt deployment](https://vercel.com/docs/cli/deploy)
+and [Build Output API v3](https://vercel.com/docs/build-output-api/configuration)
+documentation, checked on 2026-09-18.
+
+### Shared UI boundary
+
+The demo directly imports `ApplicationShell`, `OverviewPage`, and the other
+production page components from `app/SiloUI/src`. It has its own page composition
+and read-only data adapters rather than mounting the native application entry
+point. The demo opens Settings expanded and retains the production sidebar footer placement.
+Its CSS adjusts the outer window sizing and makes the embed canvas transparent so
+the showcase card’s computer-style wallpaper shows through the sidebar and title bar.
+The same wallpaper extends behind the heading and caption;
+sidebar icon positioning belongs to the shared `components/sidebar-shell.css`.
+After the alignment fix, browser measurements found zero x/y/size difference
+across all ten visible navigation icons when toggling sidebar collapse.
+
+## Refresh screenshots
+
+Copy `scripts/capture.html` to `website/capture.html`, start the website dev
+server, and open `/capture.html` or `/capture.html?theme=dark`. The harness
+imports the same production components and inert fixtures as the demo. It
+shows the default glass material even when the capture host has reduced
+transparency enabled; the shipped demo uses the website background instead, disables blur for reduced
+transparency, and uses opaque surfaces for increased contrast.
+Capture Overview, Overview with personal’s SSH disclosure expanded (tools),
+and Network at 1280 × 720. Capture GitHub, Secrets, and Backup at 1280 × 800.
+Click the empty title bar to clear hover styling before saving each PNG.
+Remove the temporary root capture file afterward; it is not a build entry.
+
+Theme verification covers System changes, explicit choices, persistence,
+blocked storage, and synchronization between documents. Screenshot checks
+use fixture data, not live VMs or credentials.
 
 # Fetch report
 

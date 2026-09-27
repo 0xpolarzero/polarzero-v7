@@ -14,7 +14,7 @@
       "name": "silo",
       "nameWithOwner": "0xpolarzero/silo",
       "url": "https://github.com/0xpolarzero/silo",
-      "description": "A native macOS app for managing and monitoring secure and isolated MicroSandbox VMs",
+      "description": "Desktop app for local and remote Linux sandboxes, with desktops for AI agents and per-sandbox GitHub and secret access. Runs on macOS and Linux.",
       "language": "TypeScript",
       "languageColor": "#3178c6",
       "stars": 2,

@@ -6964,10 +6964,12 @@ has been exercised.
 | VM tools | [Working account](SiloUI-WORKING-ACCOUNT.md), [VM migration](SiloUI-WORKING-ACCOUNT-MIGRATION.md), [Linux desktop](SiloUI-DESKTOP.md), [agent desktop tools](SiloUI-LUDA.md), [Files](SiloUI-FILES.md), [network](SiloUI-NETWORK-PLAN.md), [terminal handoff](SiloUI-TERMINAL-HANDOFF.md), [editor and browser handoff](SiloUI-EDITOR-HANDOFF.md) |
 | Logs | [Retained history, search and export](SiloUI-LOGS.md), [sandbox failure reporting](SiloUI-FAILURE-REPORTING.md) |
 | Storage | [Workspace reclamation policy and verification](SiloUI-STORAGE-RECLAMATION.md), [disk discard regression](SiloUI-STORAGE-DISCARD-RESEARCH.md) |
+| Desktop | [Detached desktop implementation plan](SiloUI-DETACHED-DESKTOP-IMPLEMENTATION-PLAN.md): current Selkies-backed rollout; it supersedes the older Kasm rollout plan for this work. Existing Kasm guests remain supported until explicit update. [Viewer direction](SiloUI-DESKTOP-VIEWER-DIRECTION.md) and [experience research](SiloUI-DESKTOP-EXPERIENCE-RESEARCH.md) record rationale and limits. |
 | Desktop behavior | [Settings](SiloUI-SETTINGS.md), [native menus](SiloUI-NATIVE-MENUS.md), [status panel](SiloUI-STATUS-PANEL.md) |
 
 ## Research and design evidence
 
+- [Release film](SiloUI-RELEASE-FILM.md): 59-second storyboard, product-claim sources, fixture boundaries, and rendering commands.
 - [Landing page reference](SiloUI-LANDING-REFERENCES.md): approved Zed direction, product evidence, and website implementation.
 
 Research records the inputs to a decision. Follow the implementation documents
@@ -6987,6 +6989,10 @@ above for current behavior and build commands.
 - [Frontend test performance](SiloUI-FRONTEND-TEST-PERFORMANCE.md): controlled environment-split measurements.
 - [Guest image size experiment](SiloUI-GUEST-IMAGE-SIZE.md): measured image-size tradeoffs.
 - [E2B fit for Silo](research/e2b-fit-2026-09-22.md): agent desktop capabilities, snapshots, local hosting requirements and the proposed comparison workflow.
+- [E2B adoption assessment](research/e2b-adoption-assessment-2026-09-24.md): feature inventory, established benefits and drawbacks, current-stack coverage limits, and the recommendation to refactor desktop packaging/viewing before replacing the backend.
+- [Checkpoint and desktop direction](research/checkpoints-desktop-direction-2026-09-24.md): newer MicroSandbox snapshot/fork support, the upstream-upgrade alternative, Btrfs limits, desktop candidate fit, LCU boundaries and qualification requirements.
+- [MicroSandbox live public ports](research/microsandbox-live-public-ports-0.7.2.md): pinned control and publisher source, Silo's loopback TCP contract, ingress and multi-tenant boundaries, and regression limits.
+- [Silo checkpoints implementation plan](SiloUI-CHECKPOINTS-PLAN.md): accepted restore/fork/permission decisions, stopped forks with explicit first start, phased upstream upgrade, UI flows and qualification gates.
 - [Executed local E2B desktop PoC](research/e2b-local-poc-2026-09-22.md): working ARM64 nested desktops, human handoff, memory snapshots, host restart recovery and measured resource costs.
 - [E2B + LCU qualification](research/e2b-lcu-qualification-2026-09-22.md): historical LCU, credentials, Git/LFS, SSH and native viewer results, with corrected limits on checkpoint/pause/restore attribution.
 - [E2B PoC investigation and completion handoff](SiloUI-E2B-QUALIFICATION-HANDOFF.md): current orchestrator brief, minimal failure reproductions, evidence corrections, model/delegation policy and full remaining qualification gates.
@@ -7008,6 +7014,7 @@ above for current behavior and build commands.
 - [E2B D2 error audit](research/e2b-d2-error-audit-2026-09-23.md): exact rootfs sync error, process/catalog timeline, and present artifact inventory.
 - [E2B D2 rootfs sync reproduction](research/e2b-d2-rootfs-sync-repro-2026-09-23.md): controlled source-built pause failure, SDK recovery checks, and limits of the synthetic EIO.
 - [E2B credential contract audit](research/e2b-credential-contract-2026-09-23.md): current Silo grant policy, PoC broker gaps, and synthetic receipt evidence.
+- [E2B credential-tool comparison](research/e2b-credential-tools-2026-09-24.md): existing brokers and proxy engines, iron-proxy and Infisical Agent Vault qualification order, disqualified alternatives, and the reuse-before-building rule.
 - [E2B access and viewer audit](research/e2b-access-viewer-audit-2026-09-23.md): transport, native editor, and viewer qualification gaps.
 - [E2B replacement plan](SiloUI-E2B-REPLACEMENT-PLAN.md): proposed breaking replacement, before/after flows, explicit deletion map, security and access gates, and implementation acceptance criteria.
 - [Codex, E2B and Luda computer use](research/codex-e2b-luda-computer-use-2026-09-22.md): observed native Codex interface, public API distinction, simplicity hypothesis and controlled comparison.
@@ -7017,13 +7024,16 @@ above for current behavior and build commands.
 - [Linux desktops for agents](SiloUI-LINUX-DESKTOP-RESEARCH.md): proposed guest desktop, agent compatibility, estimated costs and prototype acceptance.
 - [Desktop and streaming assessment](SiloUI-DESKTOP-STACK-ASSESSMENT.md): September 2026 comparison of desktop environments, viewer stacks, Luda compatibility, maintenance evidence and selection criteria.
 - [Independent desktop and viewer selection](SiloUI-DESKTOP-SELECTION.md): current selection recommendation without agent-library constraints, evidence notation, weighted measurement rubric, candidate leaderboards, primary-source annexes and qualification protocol.
-- [Optional desktop implementation plan](SiloUI-DESKTOP-IMPLEMENTATION-PLAN.md): desktop installation, automatic/manual lifecycle, minimal viewer and verification gates.
+- [MicroSandbox native display](research/msb-native-display-2026-09-27.md): Omarchy demonstration, Silo stack mapping, distribution independence, native-viewer opportunity and checkpoint/upstream adoption constraints.
+- [Historical optional Kasm desktop plan](SiloUI-DESKTOP-IMPLEMENTATION-PLAN.md): records the existing Kasm rollout; use the detached desktop plan above for the current Selkies work.
 - [Historical ext4 discard investigation](../artifacts/ext4-raw-image-root-cause.html): upstream MicroSandbox v0.6.8 reproduction and regression requirements; not current app validation.
 - Branding studies: [logo system](../artifacts/silo-logo-system.html), [proportions](../artifacts/silo-proportion-study.html), [structure](../artifacts/silo-structure-study.html), and [top-down study](../artifacts/silo-top-down-study.html).
 
 Shared branding files live in [`assets/`](../assets/). Generated native bundles,
 logs, and Rust outputs belong in the ignored `app/SiloUI/src-tauri/target/` tree;
 frontend build output belongs in the ignored `app/SiloUI/dist/` tree.
+
+- Detached desktop evidence: [viewer implementation](research/desktop-viewer-implementation-evidence-2026-09-27.md), [guest lifecycle](research/desktop-lifecycle-implementation-evidence-2026-09-27.md), [Selkies/Tauri compatibility](research/selkies-tauri-implementation-evidence-2026-09-27.md), [live viewer and LCU probe](research/desktop-viewer-probe-2026-09-27.md), [Selkies first-frame fix and source provenance](research/selkies-web-client-first-frame-fix.md), and [Linux platform, streaming, UX and native-display comparisons](research/linux-desktop-platform-options-2026-09-27.md). The [LCU 0.4.0 native-desktop compatibility patch](research/lcu-linux-native-desktop-0.4.0.patch) records the upstream source change used by Silo's hash-guarded managed install. The dated viewer probe includes Ubuntu 24.04 ARM64 package qualification and its limits.
 
 ### Inlined linked README: website README
 
@@ -7064,8 +7074,9 @@ variables, account, cookies, or analytics are required by the site.
   first-paint rules constrain the logo and hide the skip link until focused,
   even before external CSS arrives; keep these sizes aligned with `src/style.css`.
 - `src/style.css`: responsive layout and Zed-inspired typography/grid.
-- `src/main.js`: accessible workflow tabs, Linux architecture selection, video
-  chapter playback, and dialog cleanup.
+- `src/main.js`: accessible workflow tabs and Linux architecture selection.
+- `src/tour.js`: video chapter playback, media-duration-aware chapter selection,
+  and dialog cleanup with focus restoration.
 - `src/downloads.js`: explicit Linux architecture-to-package mapping.
 - `demo.html` and `src/demo/`: an isolated, lazy-loaded React iframe using the
   actual Silo sidebar, navigation history, and production pages. Sample files,
@@ -7087,8 +7098,11 @@ variables, account, cookies, or analytics are required by the site.
   the production glass UI with the read-only demo fixtures. Unsuffixed PNGs are
   light; `-dark.png` variants are dark. Workflow captures are 1280 × 720;
   GitHub, secrets, and backup captures are 1280 × 800. `overview.png` supplies
-  the computers screenshot. `silo-tour.mp4` and its `silo-tour.png` poster remain
-  the original v11 tour, deliberately unchanged.
+  the computers screenshot. `silo-tour.mp4` is the 59-second, 1920 × 1080 release
+  film, rendered at 30 fps from `demo/src/release-film.tsx`; `silo-tour.png` is its
+  matching poster. The film includes agent desktop use, local and remote
+  computers, familiar tools, SSH and an agent connection, repository access,
+  scoped secrets, a local backup, and port forwarding.
 - `public/theme.js`: first-paint theme selection shared by the page and demo.
   The icon-only navbar selector defaults to System and follows live OS changes.
   Explicit choices persist in local storage; blocked storage still allows
@@ -7100,9 +7114,31 @@ variables, account, cookies, or analytics are required by the site.
   the included SIL Open Font License. Fallbacks cover other character ranges.
 - `public/favicon.svg`: the existing Silo app icon from `assets/silo-logo.svg`.
 
-The Silo views in the demo use production components with inert sample data.
-Editor, agent client, terminal, hardware, and notification views are
-illustrations. Playback never touches native APIs, credentials, or live VMs.
+The Silo views in the demo and film use production components with inert sample
+data. The film's agent sessions, guest desktop, editor, terminal, browser content,
+and computer diagrams are illustrations. The backup sequence compresses waiting
+time. Playback never touches native APIs, credentials, or live VMs.
+
+### Film chapters
+
+The category links and player buttons use these starts:
+
+| Start | Chapter | Category link |
+| --- | --- | --- |
+| 0:03 | Agent desktop | Player only |
+| 0:11 | Computers | Remote computer workflow |
+| 0:16 | Editor & terminal | Player only |
+| 0:21 | SSH & agents | Editor and agent workflow |
+| 0:32 | GitHub | GitHub access |
+| 0:37 | Secrets | Secrets |
+| 0:42 | Backups | Backups |
+| 0:47 | Networking | Development server workflow |
+
+`demo/src/release-timeline.ts` is the timing authority. `scripts/tour.test.mjs`
+compares every category and chapter destination, caption cue, transcript entry,
+and duration label against it using Node.js 24's built-in TypeScript support.
+Update the film, poster, HTML starts and duration, captions, and transcript
+together. The player's last chapter ends at the media's actual duration.
 
 Download filenames were verified against public release v0.9.0 on 2026-09-27.
 Links use GitHub's `releases/latest/download/` endpoint, so future releases must
@@ -7111,8 +7147,8 @@ explicit architecture selector. A no-JavaScript fallback exposes ARM64 links.
 
 ## Verification
 
-Verification includes TypeScript, the production build, two download mapping
-tests, and interactive demo tests covering sidebar history, disabled actions,
+Verification includes TypeScript, the production build, download mapping tests,
+film timing and player interaction tests, and interactive demo tests covering sidebar history, disabled actions,
 fixture pages, and absence of live data requests. Browser checks covered the desktop layout and 320px, 390px, and 768px
 widths, loaded media, anchor targets, keyboard tab navigation, chapter seeking,
 video playback, Escape dismissal, focus restoration, architecture selection,

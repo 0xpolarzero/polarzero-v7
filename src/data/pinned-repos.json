@@ -15,8 +15,8 @@
       "nameWithOwner": "0xpolarzero/silo",
       "url": "https://github.com/0xpolarzero/silo",
       "description": "Desktop app for local and remote Linux sandboxes, with desktops for AI agents and per-sandbox GitHub and secret access. Runs on macOS and Linux.",
-      "language": "TypeScript",
-      "languageColor": "#3178c6",
+      "language": "Rust",
+      "languageColor": "#dea584",
       "stars": 2,
       "forks": 0
     },

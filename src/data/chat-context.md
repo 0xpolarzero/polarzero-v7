@@ -6963,7 +6963,7 @@ has been exercised.
 
 | Area | Documents |
 | --- | --- |
-| Build and release | [Build from source](SiloUI-BUILD-FROM-SOURCE.md), [release workflow and CI](SiloUI-RELEASES.md), [Linux system updates](SiloUI-LINUX-UPDATES.md), [distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
+| Build and release | [Build from source](SiloUI-BUILD-FROM-SOURCE.md), [build channels (production and Dev)](SiloUI-BUILD-CHANNELS.md), [release workflow and CI](SiloUI-RELEASES.md), [Linux system updates](SiloUI-LINUX-UPDATES.md), [distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
 | Runtime | [Packaging](SiloUI-RUNTIME-PACKAGING.md), [bundled guest images](SiloUI-GUEST-IMAGES.md), [SSH agent TLS regression](SiloUI-ZCODE-TLS-INVESTIGATION.md), and the dated [runtime and backup decision log](SiloUI-RUNTIME-BACKUP-FINDINGS.md) (validated against MicroSandbox 0.6.17 unless a section says otherwise; Silo now bundles 0.7.2, and the Backup page it describes became per-sandbox Export and Import) |
 | Checkpoints | [Checkpoint implementation plan and qualification](SiloUI-CHECKPOINTS-PLAN.md), [snapshot lineage groups](research/silo-snapshot-lineage-groups-2026-09-26.md) |
 | Native tests | [Rust test support and live-test boundaries](SiloUI-RUST-TEST-SUPPORT.md) |
@@ -6995,6 +6995,7 @@ above for current behavior and build commands.
 
 - [Checkpoint and desktop direction](research/checkpoints-desktop-direction-2026-09-24.md): newer MicroSandbox snapshot/fork support, the upstream-upgrade alternative, Btrfs limits, desktop candidate fit, LCU boundaries and qualification requirements.
 - [MicroSandbox live public ports](research/microsandbox-live-public-ports-0.7.2.md): pinned control and publisher source, Silo's loopback TCP contract, ingress and multi-tenant boundaries, and regression limits.
+- [MicroSandbox removing a sandbox that never started](research/microsandbox-remove-created-2026-10-01.md): upstream state of the `Created` removal refusal and an unpublished issue and pull request draft for the `remove-created` patch.
 
 ### Desktop and agent computer use
 
@@ -7023,6 +7024,7 @@ above for current behavior and build commands.
 
 ### Product films and website
 
+- [README and website value review, 2026-09-29](research/public-docs-review-2026-09-29.md): reader decision gaps, broken GitHub explanation link, agent quickstart priority, and proposed observed-user validation.
 - [Release film](SiloUI-RELEASE-FILM.md): 59-second storyboard, product-claim sources, fixture boundaries, and rendering commands.
 - [Demo script](SiloUI-DEMO-SCRIPT.md): current `SiloDemo` cut and production-component boundaries, with [editing research](SiloUI-DEMO-EDITING-RESEARCH.md).
 - [Launch cut notes](SiloUI-LAUNCH-CUT-NOTES.md): feature evidence for the independent 54-second launch cut.

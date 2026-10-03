@@ -12,9 +12,9 @@
     },
     {
       "name": "silo",
-      "nameWithOwner": "0xpolarzero/silo",
-      "url": "https://github.com/0xpolarzero/silo",
-      "description": "Desktop app for local and remote Linux sandboxes, with desktops for AI agents and per-sandbox GitHub and secret access. Runs on macOS and Linux.",
+      "nameWithOwner": "amontlabs/silo",
+      "url": "https://github.com/amontlabs/silo",
+      "description": "Computers for your agents. Run Linux sandboxes locally or remotely, with a desktop and computer use.",
       "language": "Rust",
       "languageColor": "#dea584",
       "stars": 2,

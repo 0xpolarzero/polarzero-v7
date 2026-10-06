@@ -1,16 +1,6 @@
 {
   "repos": [
     {
-      "name": "hartlib",
-      "nameWithOwner": "0xpolarzero/hartlib",
-      "url": "https://github.com/0xpolarzero/hartlib",
-      "description": "A single chat for your subscriptions and densest sources: grounded answers, explained the way you understand best.",
-      "language": "TypeScript",
-      "languageColor": "#3178c6",
-      "stars": 0,
-      "forks": 0
-    },
-    {
       "name": "silo",
       "nameWithOwner": "amontlabs/silo",
       "url": "https://github.com/amontlabs/silo",
@@ -19,6 +9,16 @@
       "languageColor": "#dea584",
       "stars": 3,
       "forks": 0
+    },
+    {
+      "name": "lcu",
+      "nameWithOwner": "amontlabs/lcu",
+      "url": "https://github.com/amontlabs/lcu",
+      "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "stars": 598,
+      "forks": 27
     },
     {
       "name": "svvy",

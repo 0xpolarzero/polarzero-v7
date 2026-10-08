@@ -17,8 +17,8 @@
       "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
       "language": "Python",
       "languageColor": "#3572A5",
-      "stars": 724,
-      "forks": 32
+      "stars": 736,
+      "forks": 34
     },
     {
       "name": "svvy",

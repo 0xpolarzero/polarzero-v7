@@ -15,10 +15,10 @@
       "nameWithOwner": "amontlabs/lcu",
       "url": "https://github.com/amontlabs/lcu",
       "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
-      "language": "Python",
-      "languageColor": "#3572A5",
-      "stars": 768,
-      "forks": 35
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "stars": 803,
+      "forks": 40
     },
     {
       "name": "svvy",

@@ -7,7 +7,7 @@
       "description": "Computers for your agents. Run Linux sandboxes locally or remotely, with a desktop and computer use.",
       "language": "Rust",
       "languageColor": "#dea584",
-      "stars": 3,
+      "stars": 4,
       "forks": 0
     },
     {
@@ -17,8 +17,8 @@
       "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 1178,
-      "forks": 62
+      "stars": 1287,
+      "forks": 72
     },
     {
       "name": "svvy",

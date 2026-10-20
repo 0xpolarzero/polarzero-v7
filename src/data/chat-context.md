@@ -75,8 +75,8 @@ Repository: amontlabs/silo
 URL: https://github.com/amontlabs/silo
 Description: Computers for your agents. Run Linux sandboxes locally or remotely, with a desktop and computer use.
 Primary language: Rust
-Stars: 4
-Forks: 0
+Stars: 5
+Forks: 1
 
 ## lcu
 
@@ -84,8 +84,8 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 1722
-Forks: 93
+Stars: 1857
+Forks: 105
 
 ## svvy
 
@@ -94,7 +94,7 @@ URL: https://github.com/0xpolarzero/svvy
 Description: A strategic coding workbench for directing bounded, workflow-backed agent work.
 Primary language: TypeScript
 Stars: 3
-Forks: 1
+Forks: 2
 
 ## evmstate
 

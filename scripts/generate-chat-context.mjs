@@ -19,7 +19,7 @@ const fetchNotes = [];
 
 const markdownLinkPattern = /!?\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
 
-const GITHUB_README_OWNER_ALLOWLIST = new Set(["0xpolarzero", "evmts", "polareth", "primodiumxyz"]);
+const GITHUB_README_OWNER_ALLOWLIST = new Set(["0xpolarzero", "amontlabs", "evmts", "polareth", "primodiumxyz"]);
 
 const sourceHeaders = {
   "User-Agent": "polarzero-v7-chat-context-generator",

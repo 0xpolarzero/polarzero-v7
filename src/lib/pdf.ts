@@ -45,13 +45,6 @@ type PdfSummary = {
 };
 
 const PDF_SUMMARIES: Record<string, PdfSummary> = {
-  svvy: {
-    caption: "Agent coding workbench for bounded, workflow-backed implementation",
-    bullets: [
-      "Built svvy with Electrobun, Svelte, Pi, and Smithers to route implementation through bounded, inspectable agent workflows.",
-      "Shipped Electrobun browser tooling and E2E infra for headless desktop app inspection, driving, logs, screenshots, and tests.",
-    ],
-  },
   Tevm: {
     caption: "Multi-language EVM tooling across TypeScript, Zig, WASM, Go, and C",
     bullets: [
@@ -479,10 +472,10 @@ const writePageOne = (doc: PdfDoc) => {
   let y = writeSectionAt(doc, "work", PAGE.margin, top, BODY_WIDTH);
 
   const firstRowY = y;
-  const svvyEnd = writeEntryBox(doc, work[0], leftX, firstRowY, COLUMN_WIDTH);
+  const amontLabsEnd = writeEntryBox(doc, work[0], leftX, firstRowY, COLUMN_WIDTH);
   const primodiumEnd = writeEntryBox(doc, work[2], rightX, firstRowY, COLUMN_WIDTH);
 
-  const tevmEnd = writeEntryBox(doc, work[1], leftX, svvyEnd + ENTRY_VERTICAL_GAP, COLUMN_WIDTH);
+  const tevmEnd = writeEntryBox(doc, work[1], leftX, amontLabsEnd + ENTRY_VERTICAL_GAP, COLUMN_WIDTH);
 
   y = writeSectionAt(doc, "research", PAGE.margin, Math.max(tevmEnd, primodiumEnd) + 2, BODY_WIDTH);
   writeEntryBox(doc, research[0], leftX, y, COLUMN_WIDTH);

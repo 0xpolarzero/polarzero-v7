@@ -32,7 +32,7 @@ Email: contact@polarzero.xyz
 
 ## Summary
 
-- Most of my experience as a software engineer is in AI and blockchain, and nearly all of my work has been open source—whether for companies, on contract, or independently. I currently build and experiment with consumer AI apps, looking for early shifts in model capabilities and user behavior, then turning what I learn into product features and abstractions that make AI more useful for both developers and consumers.
+- Most of my experience as a software engineer is in AI and blockchain, and nearly all of my work has been open source—whether for companies, on contract, or independently. I'm currently building at Amont Labs, where I try to recognize early shifts in model capabilities and user behavior, and turn them into useful apps and libraries.
 - I stay close to these changes by building and using products myself, exchanging ideas with peers I respect, and paying attention to emerging patterns in developer experience, UX, tooling, interfaces, and product habits. I’m also interested in local-first software, fully onchain games, and developer tooling.
 - As engineering becomes more intuitive, I’m increasingly able to focus on product, intent, and taste. I’m working toward becoming a stronger product-minded engineer while keeping the discipline and curiosity to approach unfamiliar problems methodically.
 
@@ -50,7 +50,6 @@ These links are applied by the website when matching technology/tool names in ti
 - BubbleTea: https://github.com/charmbracelet/bubbletea
 - Certora: https://github.com/certora/certora
 - Deno: https://deno.com
-- Electrobun: https://electrobun.dev
 - Foundry: https://github.com/foundry-rs/foundry
 - Halmos: https://github.com/certora/halmos
 - Hardhat: https://github.com/NomicFoundation/hardhat
@@ -58,10 +57,7 @@ These links are applied by the website when matching technology/tool names in ti
 - MUD: https://github.com/latticexyz/mud
 - Neon: https://neon.tech
 - Next.js: https://nextjs.org
-- Pi: https://pi.dev
 - Remix: https://remix.run
-- Smithers: https://smithers.sh
-- Svelte: https://svelte.dev
 - Tevm: https://tevm.sh
 - Timescale: https://github.com/timescale/timescaledb
 - Whatsabi: https://github.com/shazow/whatsabi
@@ -69,13 +65,13 @@ These links are applied by the website when matching technology/tool names in ti
 
 # Pinned repositories
 
-## silo
+## fjord
 
-Repository: amontlabs/silo
-URL: https://github.com/amontlabs/silo
-Description: Computers for your agents. Run Linux sandboxes locally or remotely, with a desktop and computer use.
-Primary language: Rust
-Stars: 5
+Repository: amontlabs/fjord
+URL: https://github.com/amontlabs/fjord
+Description: [WIP] The power without the storm: Fjord connects your agents to everything they work with.
+Primary language: Swift
+Stars: 0
 Forks: 1
 
 ## lcu
@@ -84,17 +80,26 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2015
-Forks: 126
+Stars: 2016
+Forks: 128
 
-## svvy
+## silo
 
-Repository: 0xpolarzero/svvy
-URL: https://github.com/0xpolarzero/svvy
-Description: A strategic coding workbench for directing bounded, workflow-backed agent work.
-Primary language: TypeScript
-Stars: 3
-Forks: 2
+Repository: amontlabs/silo
+URL: https://github.com/amontlabs/silo
+Description: Computers for agents: sandboxed Linux and macOS VMs with a desktop and computer use.
+Primary language: Rust
+Stars: 5
+Forks: 1
+
+## sic
+
+Repository: amontlabs/sic
+URL: https://github.com/amontlabs/sic
+Description: [WIP] Live fact-checking of political debates against official sources.
+Primary language: Python
+Stars: 0
+Forks: 0
 
 ## evmstate
 
@@ -114,38 +119,33 @@ Primary language: TypeScript
 Stars: 13
 Forks: 4
 
-## savvy
-
-Repository: polareth/savvy
-URL: https://github.com/polareth/savvy
-Description: An interface for the EVM in the browser, to simulate and visualize your onchain activity.
-Primary language: TypeScript
-Stars: 27
-Forks: 4
-
 # Portfolio and timeline
 
 ## 2026
 
-### svvy
+### Amont Labs
 
 Category: work
-Dates: 2026-04
-Caption: A strategic coding workbench for directing bounded, workflow-backed agent work
+Dates: 2026-08
+Caption: Practical, open-source software on emerging tech
 
 Details:
-- svvy: organizes coding work around orchestrator sessions that hold product intent, route implementation into bounded threads, and reconcile durable results from structured, inspectable workflows those threads supervise without bloating orchestrator context, while letting you steer at any layer.
-- electrobun-browser-tools: shipped an inspection and driving bridge for Electrobun apps, exposing windows, views, layout trees, DOM state, logs, events, screenshots, and Playwright-style locators to agents.
-- electrobun-e2e: shipped shared end-to-end infrastructure for running Electrobun desktop apps headlessly in OrbStack Linux environments.
-- Built with Electrobun, Svelte, Pi, and Smithers.
+- Fjord: a macOS app between coding agents and everything they work with, bringing you only what needs your attention (WIP).
+- Silo: computers for agents, sandboxed Linux and macOS VMs with a desktop and computer use; the engine behind Fjord.
+- LCU: Codex computer use decoupled from the app, for any agent harness.
+- Sic: live fact-checking of political debates against official sources (WIP).
+- Hartlib: one cited research chat across your subscriptions (paused).
 
 Links:
-- github: https://github.com/0xpolarzero/svvy
+- website: https://amontlabs.com
+- github: https://github.com/amontlabs
 
 Referenced links:
-- svvy: https://github.com/0xpolarzero/svvy
-- electrobun-browser-tools: https://github.com/0xpolarzero/electrobun-browser-tools
-- electrobun-e2e: https://github.com/0xpolarzero/electrobun-e2e
+- Fjord: https://github.com/amontlabs/fjord
+- Silo: https://github.com/amontlabs/silo
+- LCU: https://github.com/amontlabs/lcu
+- Sic: https://github.com/amontlabs/sic
+- Hartlib: https://github.com/amontlabs/hartlib
 
 ## 2025
 
@@ -539,591 +539,1110 @@ Links:
 
 # Fetched README content
 
-## svvy / github
+## Amont Labs / Fjord
 
-Source: https://github.com/0xpolarzero/svvy
+Source: https://github.com/amontlabs/fjord
 
-# svvy
+<div align="center">
 
-`svvy` organizes coding work around orchestrator sessions that hold product intent, route implementation into bounded threads, and reconcile durable results from structured, inspectable workflows those threads supervise without bloating orchestrator context, while letting you steer at any layer.
+<img src="docs/assets/icon.png" width="128" height="128" alt="Fjord icon">
 
-## The Flow
+# Fjord
 
-1. You ask the main orchestrator to do something.
-2. The orchestrator keeps its context focused on strategy and product state, not the full implementation transcript.
-3. If the work is small, it answers directly. If it needs bounded execution, it opens a handler thread for that one objective.
-4. The handler thread picks the lightest path that fits: finish the work directly, run official Smithers CLI commands against workspace `.smithers/` workflow source that imports saved Workflows assets, or author short-lived workspace `.smithers/` workflow source.
-5. Verification and validation live in that path instead of being bolted on afterward, so build, test, lint, manual checks, and failed validations come back as structured outcomes.
-6. The thread can inspect results, repair inputs, rerun, pause, resume, or ask for clarification without bloating orchestrator context.
-7. When the work is ready, the thread hands the result back to the orchestrator explicitly as a bounded episode.
+**The power without the storm.**
 
-That keeps product-level reasoning in one place and implementation detail in the delegated surface that owns it.
+Coding agents multiply what you ship, and what you have to keep up with. Fjord sits between them and everything they work with, and brings you only what you need to know or decide.
 
-## Agent Context Model
+[Download](https://github.com/amontlabs/fjord/releases/latest) · [Install](#install) · [Privacy](#privacy) · [Development](DEVELOPMENT.md)
 
-`svvy` uses separate agent surfaces with deliberately different context and tools:
+</div>
 
-- **Orchestrator** owns strategy, routing, and final user-facing decisions. It can inspect and edit the repo with Shell and Apply Patch, use `execute_typescript` for typed loaded-extension composition, start handler threads with `thread_start({ threads: [...] })`, and wait. It knows handlers can use Smithers through Shell, but it does not receive Smithers wrapper tools.
-- **Handler threads** own one delegated objective. They get the same repo tools plus Shell guidance for official Smithers CLI workflow work and report durable results back to the orchestrator.
-- **Workflow task agents** run inside a single Smithers task attempt. They receive task-local repo and artifact guidance plus `execute_typescript`, and they do not get orchestrator or handler controls.
-- **Namer** is a tiny no-tool agent that turns the first session prompt or handler objective into a short title.
+> [!WARNING]
+> Work in progress. Expect rough edges and breaking changes between releases.
 
-Prompt context is loaded through pi's system-prompt channel from actor-specific generated instructions and generated tool/API contracts. Durable surface state is exposed through targeted tools, read models, queue items, and product-authored start context where the specs require it; it is not flattened into hidden transcript prose.
+<!-- TODO: hero screenshot (the bar at the screen's edge, the window open on the Router).
+     Render it with `--window-shots` / `--playground-shots` (see DEVELOPMENT.md), save it as
+     docs/screenshots/hero.png, then replace this comment with:
+<p align="center"><img src="docs/screenshots/hero.png" width="860" alt="Fjord: the bar at the screen's edge and the window beside it"></p>
+-->
 
-## Docs
+Keep the apps you use. Fjord joins GitHub, CI and your Claude Code sessions, passing work between them, while you still see everything and make every call.
 
-Product intent lives in [docs/prd.md](./docs/prd.md). The exhaustive feature inventory lives in [docs/features.ts](./docs/features.ts). Progress is tracked in [docs/progress.md](./docs/progress.md). Owning specs in [docs/specs](./docs/specs) define accepted behavior; scratch notes and UI notes are inputs only until promoted into those authoritative docs.
+## Why Fjord
 
-## Commands
+Several sessions at once are a real boost, and they send a lot back: questions, plans waiting for a yes, sessions finished or stuck, pull requests, red CI, and everything that has to pass between your agents and GitHub.
+
+Fjord takes that on. Questions come to you; a failing check goes, by your rules, to the session that can fix it; the rest stays out of your way. You keep the boost and shed most of its weight.
+
+## How it works
+
+Fjord has two tools, the Router and Triage. Each works alone, and the first launch asks which you want. Both live in a slim bar against any edge of any screen (no Dock icon unless its window is open): hover it to see what's inside, click it to open the window.
+
+### Router: one chat above all your Claude Code sessions
+
+- **See who needs you.** Every session from the Claude desktop app on one page: *Needs you*, *Worth a look*, *Waiting* and *Working*. Each question, plan to approve, finished or stuck session is a card you answer right there; it stays until you do.
+- **Type once.** The Router picks the session your message is for and delivers your exact words as your own message. When it isn't sure, it asks *Where should this go?*
+- **Change your mind.** Cancel a message, edit and resend it, or fork the session from just before it.
+- **Look away.** Working sessions show what they're doing, live, with a summary one click away.
+- **Bring things in.** `@` adds a project, a session, a GitHub item or a saved prompt to your message.
+- **It only talks.** It never edits files, runs commands or acts on GitHub.
+
+### Triage: your GitHub inbox and CI, sorted by your rules
+
+- **Write rules you can read.** Each is a sentence about pull requests, issues or workflows:
+  > PRs by me in *Repos I contribute to*, when any of: new review by *Maintainers*, checks failing
+- **Order your categories.** The first that matches keeps the item. You start with *My repos* and add your own.
+- **Let a category act.** Comment on GitHub, re-run failed jobs, or, with the Router on, hand the item to a Claude Code session in your clone of the repo.
+- **Archive what you've handled.** It comes back only when something new matches.
+
+With both tools on, you can also set up Triage by talking to the Router (*"make a category for PRs by bots"*); each change shows in the Router's history with **Open** and **Revert**.
+
+## Install
+
+1. Download `Fjord-<version>.zip` from [Releases](https://github.com/amontlabs/fjord/releases/latest), unzip it, and move **Fjord.app** to `/Applications`.
+2. It isn't notarized yet, so clear the quarantine flag once, in Terminal:
+   ```sh
+   xattr -dr com.apple.quarantine "/Applications/Fjord.app"
+   ```
+3. Open it and pick your tools.
+
+Requires **macOS 14** or later, Apple silicon or Intel.
+
+| Tool | Also needs |
+| --- | --- |
+| Triage | GitHub access: `gh auth login`, `GH_TOKEN` / `GITHUB_TOKEN`, or a token pasted in Settings (kept in your Keychain). |
+| Router | The [Claude desktop app](https://claude.ai/download). The Router follows sessions started in its Code tab, not `claude` in a terminal. |
+
+Switching the Router on adds a small hook (`~/.claude/hooks/fjord-form.sh`) and the `fjord@fjord` plugin to Claude Code, backing up `~/.claude/settings.json` first; switching it off removes both. The Router reads Claude's local session files, which aren't a public API: if a Claude update changes them, the Router says so, and Triage keeps working.
+
+Updates download in the background and are verified (checksum, and the same signing certificate as your copy); a small restart icon on the bar installs them. Settings → Updates turns the checks off.
+
+## Privacy
+
+Fjord has no server and no account. What leaves your Mac:
+
+- **GitHub**: Triage reads your pull requests, issues and workflows through GitHub's API; updates come from this repo's Releases.
+- **Anthropic**: the Router's briefs, summaries and replies are written by Claude Haiku through your own Claude Code, on your account.
+- **TypeSafe** *(optional)*: with a [TypeSafe](https://typesafe.ai) API key, its classifier (Jev) helps route your messages, read how each session's turn ended, label new comments (*asks you*, *to do*, *FYI*, *noise*) and pick icons. It receives your messages and drafts, sessions' titles, activity and final messages, project names and, for labels, the comment and its pull request or issue details. Without a key, nothing is sent there.
+
+Everything else stays on your Mac, in `~/Library/Application Support/Fjord/`. Code folders you add in Settings are scanned locally for git clones.
+
+## Keyboard
+
+| Shortcut | Action |
+| --- | --- |
+| <kbd>⌃⌥L</kbd> | Show or hide the window, from anywhere |
+| <kbd>⌃⌥R</kbd> | Open the Router, from anywhere |
+| <kbd>Return</kbd> | Open the selected inbox item on GitHub |
+| <kbd>⌘↩</kbd> | Open it in the Router |
+| <kbd>Space</kbd> | Mark it read or unread (<kbd>⌥Space</kbd>: all read) |
+| <kbd>⌫</kbd> | Archive it (<kbd>⌘Z</kbd> undoes it for 30 seconds) |
+| <kbd>⌘R</kbd> | Refresh the inbox |
+
+Change any of them in Settings → Shortcuts. <kbd>⌘F</kbd> searches, and <kbd>⌘1</kbd>–<kbd>⌘4</kbd> answer *Where should this go?*
+
+## Development
+
+Building from source, tests, debug flags and releasing: [DEVELOPMENT.md](DEVELOPMENT.md).
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+---
+
+<p align="center">Made by <a href="https://amontlabs.com">Amont Labs</a>.</p>
+
+---
+
+## Amont Labs / Silo
+
+Source: https://github.com/amontlabs/silo
+
+# Silo
+
+Silo gives agents computers. Each computer is a Linux virtual machine powered by [MicroSandbox](https://github.com/superradcompany/microsandbox), with its own files, tools, and processes, sandboxed from your device. Silo runs as a host app on Apple Silicon Macs; Linux computers remain supported as guests on a Mac.
+
+Use your usual editor and terminal, give an AI agent a Linux desktop, and choose which repositories and credentials each computer can access.
+
+[Download](https://github.com/amontlabs/silo/releases/latest) · [Website and demo](https://silo.amontlabs.com) · [Build from source](docs/SiloUI-BUILD-FROM-SOURCE.md) · [Documentation](docs/README.md)
+
+![Silo showing a Linux desktop, local and remote computers, and GitHub access controls](docs/silo-showcase.webp)
+
+## What you can do
+
+- **Work across devices.** Create, start, stop, and monitor local and remote computers in one app. Each computer has its own page for its settings, checkpoints, storage, and SSH access.
+- **Use familiar tools.** Open projects in your editor or terminal, browse files, and connect to development servers through local addresses.
+- **Give agents a desktop.** New computers have the Linux desktop built in, with computer use for agents. Silo downloads ChatGPT for Linux from OpenAI automatically on each device, and computer use becomes ready by itself once that one-time download and the computer's setup finish. Choose **Set up computer use** on a computer's page after installing a new agent, and use its switch to let agents act without asking. Install and sign in to the agents inside the computer yourself. See the [computer-use plan](docs/SiloUI-COMPUTER-USE-PLAN.md).
+- **Control GitHub access.** Connect through OAuth and select repositories for each computer, with read-only access by default. Alternatively, use a [personal token](docs/SiloUI-GITHUB-PERSONAL-TOKENS.md), which grants the token's full permissions.
+- **Scope API credentials.** Store credentials in your device's credential store and choose the computers and HTTPS domains that can use them. See [how secrets work](docs/SiloUI-SECRETS.md).
+- **Save and branch state.** Create checkpoints of a computer, restore it to an earlier checkpoint, or fork a new computer with a copy of its files.
+- **Move computers and troubleshoot.** Export a local computer or checkpoint to an export file and import it as a new computer on this or another device. Search or export logs alongside activity history.
+
+## Install
+
+The computer runtime, base Linux image, and Git tools are bundled. Silo downloads ChatGPT for Linux in the background for computer use. Computers created before the built-in desktop download optional desktop packages when you add a desktop.
+
+| Platform | Requirements | Download |
+| --- | --- | --- |
+| macOS | Apple Silicon, macOS 14+ | [DMG](https://github.com/amontlabs/silo/releases/latest/download/Silo-macos-arm64.dmg) |
+
+**macOS:** open the DMG and drag Silo to Applications. The app is not notarized; first launch may require **System Settings → Privacy & Security → Open Anyway**.
+
+Upgrading an older installation? Saved data is converted automatically on first launch, but exports from earlier versions cannot be imported. Read the [release notes](https://github.com/amontlabs/silo/releases/latest) for required migration steps.
+
+## Start working
+
+1. **Create a computer.** Follow setup to choose its name, CPU, memory, and disk size. GitHub is optional. The Linux desktop and computer use are built in. Use **Add → New computer** to create more later.
+2. **Open your project.** Start the computer and open its terminal. Create or clone your project in `/workspace`; use HTTPS URLs for Silo's GitHub integration. In **Files**, open a folder in your preferred editor.
+3. **Open a development server.** Run it inside the computer, listening on `0.0.0.0`. In **Network**, connect a discovered port or choose **Add port**, then open the displayed address on your device.
+4. **Open the desktop.** Choose **Open Linux desktop** from the computer's actions. Closing the viewer leaves its graphical apps running. A computer created before the built-in desktop keeps its current setup: add a desktop with **Add Linux desktop**, then choose **Set up LCU** in the viewer, which needs the official ChatGPT Linux app inside the computer. Create a new computer for automatic computer use.
+
+Stopping a computer ends its running programs and preserves its files. Names and disk sizes are fixed after creation; changing CPU or memory stops the computer and applies on its next start. Quitting Silo stops local computers; computers on other devices keep running.
+
+## Connect another device
+
+Install the same version of Silo on both devices; a device with an older version must update before they connect. You can connect during setup without creating a local computer.
+
+1. On the device that will run the computers, enable SSH access (**Remote Login** on macOS). In **Settings → Connections**, enable **Allow connections from other devices** and copy the address.
+2. On your device, choose **Add → Connect device…**, paste the address, and follow the SSH setup prompts.
+3. Use its computers alongside your local ones. Choose **Run on** when creating a computer to select its device.
+
+Keep Silo running on the device that owns the computers. Manage its GitHub account, secrets, exports, and imports there. See [Connections](docs/SiloUI-CONNECTIONS.md) for details.
+
+## Develop Silo
+
+The app uses React/TypeScript and Rust/Tauri in [`app/SiloUI`](app/SiloUI). Follow the [source-build guide](docs/SiloUI-BUILD-FROM-SOURCE.md) to install prerequisites and configure your own GitHub App, then run from the repository root:
+
+```sh
+npm --prefix app/SiloUI ci
+npm --prefix app/SiloUI run desktop
+```
+
+For checks and release procedures, see the [development and release guide](docs/SiloUI-RELEASES.md). For the browser demo, see the [website README](website/README.md).
+
+## Help and license
+
+Check **Logs** and **Activity** for errors. [Report an issue](https://github.com/amontlabs/silo/issues) with your app version, OS, and reproduction steps; remove private data from shared logs.
+
+Silo is [MIT licensed](LICENSE). Bundled dependencies have their own [licenses and notices](app/SiloUI/THIRD-PARTY-NOTICES.md).
+
+### Inlined linked README: Documentation
+
+Source: https://github.com/amontlabs/silo/blob/main/docs/README.md
+
+# Silo documentation
+
+The application lives in [`app/SiloUI`](../app/SiloUI): React in `src/`, Rust and
+native integration in `src-tauri/`, and build tooling in `scripts/`. Start with
+the [repository README](../README.md) to install and use Silo, or the
+[source-build guide](SiloUI-BUILD-FROM-SOURCE.md) to develop it with your own
+GitHub App.
+
+This index has three parts: [current implementation](#current-implementation-and-operations),
+[current research and evidence](#current-research-and-design-evidence), and
+[historical records](#historical-records) that no longer describe the app or
+its plans. Paths under `app/SiloUI/src-tauri/target/verification/` name
+untracked evidence kept on the machine that ran the check; they are not in Git.
+
+## Current implementation and operations
+
+These documents describe the Tauri app. Dated verification results establish
+coverage for that run, not a guarantee that every platform or live VM workflow
+has been exercised.
+
+| Area | Documents |
+| --- | --- |
+| Vocabulary | [Silo vocabulary](SiloUI-VOCABULARY.md): the terms (computer, device, Connections, workspace, sandboxed) and the identifiers that keep older names |
+| Build and release | [Build from source](SiloUI-BUILD-FROM-SOURCE.md), [build channels (production and Dev)](SiloUI-BUILD-CHANNELS.md), [release workflow and CI](SiloUI-RELEASES.md), [historical Linux system updates](SiloUI-LINUX-UPDATES.md), [historical distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
+| Engine | [Engine crate extraction](SiloUI-ENGINE.md): workspace location, host context boundary, and macOS VM-window seam for `silod` |
+| Runtime | [Packaging](SiloUI-RUNTIME-PACKAGING.md), [guest images](SiloUI-GUEST-IMAGES.md) (downloaded on first use), [SSH agent TLS regression](SiloUI-ZCODE-TLS-INVESTIGATION.md), and the [current runtime pins](../app/SiloUI/runtime-inputs.json). The dated [runtime and backup decision log](SiloUI-RUNTIME-BACKUP-FINDINGS.md) was validated against MicroSandbox 0.6.17 unless a section says otherwise; its Backup page became per-sandbox Export and Import. |
+| Checkpoints | [Checkpoint implementation plan and qualification](SiloUI-CHECKPOINTS-PLAN.md), [snapshot lineage groups](research/silo-snapshot-lineage-groups-2026-09-26.md) |
+| Native tests | [Rust test support and live-test boundaries](SiloUI-RUST-TEST-SUPPORT.md), [skipped and ignored test audit, 2026-10-02](SiloUI-TEST-SKIP-AUDIT-2026-10-02.md) |
+| Platform verification | [Historical Linux host verification](SiloUI-LINUX-VERIFICATION.md), [Linux verification session, 2026-09-30](research/linux-verification-2026-09-30.md), [Linux acceptance, 2026-09-25](research/silo-linux-acceptance-2026-09-25.md), [macOS VM library loading](SiloUI-LIBRARY-CONSTRAINTS.md), [dependencies, export and import testing](SiloUI-DEPENDENCIES-BACKUP-TESTING.md) |
+| Connections | [Connections and Quit behavior](SiloUI-CONNECTIONS.md), [managed SSH access](SiloUI-MANAGED-SSH.md) |
+| GitHub and secrets | [GitHub implementation](SiloUI-GITHUB-IMPLEMENTATION.md), [personal GitHub tokens](SiloUI-GITHUB-PERSONAL-TOKENS.md), [secrets](SiloUI-SECRETS.md), [secret placeholders in agent requests](SiloUI-AGENT-PLACEHOLDER-STALL.md), [0.4.4 authentication investigation](SiloUI-GITHUB-044-AUTH-INVESTIGATION.md) |
+| Computer tools | [Working account](SiloUI-WORKING-ACCOUNT.md), [computer migration](SiloUI-WORKING-ACCOUNT-MIGRATION.md), [Linux desktop](SiloUI-DESKTOP.md), [macOS computers](SiloUI-MACOS-COMPUTERS.md), [computer-use plan](SiloUI-COMPUTER-USE-PLAN.md), [Files](SiloUI-FILES.md), [network](SiloUI-NETWORK-PLAN.md), [terminal handoff](SiloUI-TERMINAL-HANDOFF.md), [editor and browser handoff](SiloUI-EDITOR-HANDOFF.md) |
+| Logs | [Retained history, search and export](SiloUI-LOGS.md), [computer failure reporting](SiloUI-FAILURE-REPORTING.md) |
+| Storage | [Workspace disk reclamation policy and verification](SiloUI-STORAGE-RECLAMATION.md), [disk discard regression](SiloUI-STORAGE-DISCARD-RESEARCH.md) |
+| Desktop | [Built-in desktop and computer use plan](SiloUI-COMPUTER-USE-PLAN.md): approved 2026-10-01, replaces optional desktops and Luda for new computers. [Pinned ChatGPT app manager](SiloUI-CHATGPT-APP.md): device download, verification and extraction. [Background preparation](SiloUI-PREPARATION.md): launch-time computer image import and LCU download. [Detached desktop implementation record](SiloUI-DETACHED-DESKTOP-IMPLEMENTATION-PLAN.md): September Selkies rollout and its original design evidence. Existing Kasm guests remain supported until explicit update. [Viewer integration plan](SiloUI-VIEWER-INTEGRATION-PLAN.md): proposed clipboard, file transfer, audio and window-sized screen work. [Viewer direction](SiloUI-DESKTOP-VIEWER-DIRECTION.md) and [experience research](SiloUI-DESKTOP-EXPERIENCE-RESEARCH.md) record rationale and limits. |
+| Desktop behavior | [Settings](SiloUI-SETTINGS.md), [native menus](SiloUI-NATIVE-MENUS.md), [status panel](SiloUI-STATUS-PANEL.md), [notifications](SiloUI-NOTIFICATIONS.md), [macOS title-bar alignment](SiloUI-TITLEBAR-ALIGNMENT.md), [glass material](SiloUI-GLASS-STUDY.md) |
+
+[Bundled application help](../app/SiloUI/docs/silo-help.html) describes the user-facing
+controls and workflows.
+
+## Current research and design evidence
+
+Research records the inputs to a decision. Follow the implementation documents
+above for current behavior and build commands.
+
+### Review remediation
+
+- [Second code review pass, 2026-10-02](SiloUI-CODE-REVIEW-PASS-2-2026-10-02.md): 11 additional findings at `a1197ae` from three specialist subagents and integration review, covering log redaction, GitHub policy preservation, checkpoint restore contracts, and native routing/repair; verifies the earlier approval-race fix and separately records a compilation failure on an intermediate revision.
+- [Comprehensive code review, 2026-10-02](SiloUI-CODE-REVIEW-2026-10-02.md): consolidates 26 findings and 11 improvement opportunities, including four additional settings, migration, remote-checkpoint, and status-subscription defects; separates fresh verification from prior evidence and defines regression and live-qualification criteria.
+- [Background preparation flows, 2026-10-03](research/background-preparation-flows-2026-10-03.md): VM image import, LCU archive, creation boot, operation queue and start flow, with verified code paths and open questions. The resulting design is in [background preparation](SiloUI-PREPARATION.md).
+- [LCU registration for harnesses installed later, 2026-10-03](research/lcu-agent-preregistration-2026-10-03.md): what LCU 0.8.7 does for absent harnesses, what each registers, existing multi-client installers, and the `--allow-missing` plus `--reconcile` design.
+- [Independent current-checkout review, 2026-10-02](research/codebase-review-current-2026-10-02.md): 22 findings and 10 improvement opportunities, including six additional defects and a follow-up on the concurrent computer-use merge, independently checked reproductions, verification results, and explicit qualification gaps.
+- [Code review, 2026-10-02](research/codebase-review-2026-10-02.md): 16 current findings and 9 improvement opportunities, with deterministic reproductions, prioritized fixes, local check results, and live-verification limits.
+- [Workflow micro-review fixes](research/micro-reviews/workflows-fixes.md): privileged QEMU image pinning, fail-closed publication checks, pending guest-publication retention, and verification limits.
+- [Desktop contract fix-loop findings](research/micro-reviews/fe-desktop-contracts-fixes.md): status-event ordering, saved CPU bounds, notice disposal, and the pinned native menu checks.
+- [Release dry run, 2026-09-30](research/release-dry-run-2026-09-30.md): non-publishing all-target release verification for A-01, A-04, A-08 and A-09.
+- [Review remediation plan](SiloUI-REVIEW-REMEDIATION-PLAN.md): ledger of the 2026-09-29 review findings with landed-fix statuses and verification, plus the original work packages, phases, merge-queue orchestration and live verification sessions.
+- [Review remediation design notes](SiloUI-REVIEW-DESIGN-NOTES.md): Phase 0 decision records (options checked against upstream tools, recommended decision, implementation outline, owner questions) for the review items marked design.
+- [Codebase review, 2026-09-29](research/codebase-review-2026-09-29.md): ranked findings from a read-only review of the whole app — owner decisions, release blockers, security, data loss, stuck states, performance, UX, CI, tests and code health.
+- Follow-up review records, 2026-10-02: [release tooling](SiloUI-CODE-REVIEW-PASS-3-RELEASE-2026-10-02.md), [security](SiloUI-CODE-REVIEW-PASS-3-SECURITY-2026-10-02.md), [guest bridge](SiloUI-CODE-REVIEW-PASS-3-GUEST-BRIDGE-2026-10-02.md), and [computer use](SiloUI-CODE-REVIEW-PASS-3-COMPUTER-USE-2026-10-02.md). Findings and verification describe the recorded commits; compare HEAD before reopening an item.
+- [Micro-review index and finding counts](research/micro-reviews/README.md): original audits and fix-loop findings, including [status, storage and updates](research/micro-reviews/fe-status-storage-updates-fixes.md). Counts include fixed findings and overlap across reports; each record states its scope and verification limits.
+- [Changeset audit, 2026-10-02](research/micro-reviews/changesets.md): metadata, user-facing wording, duplicate corrections, and commit coverage since `f9421925`.
+
+### Runtime, checkpoints and network
+
+- [Native bridge contract audit](research/native-bridge-contract-2026-09-30.md): Rust-emitted state fixtures, typed error codes, remote compatibility, and verification limits.
+- [Runtime failure contract](SiloUI-RUNTIME-ERRORS.md): summary, diagnostic and partial-change fields for setup, lifecycle and Activity failures.
+
+- [Checkpoint and desktop direction](research/checkpoints-desktop-direction-2026-09-24.md): newer MicroSandbox snapshot/fork support, the upstream-upgrade alternative, Btrfs limits, desktop candidate fit, LCU boundaries and qualification requirements.
+- [MicroSandbox live public ports](research/microsandbox-live-public-ports-0.7.2.md): pinned control and publisher source, Silo's loopback TCP contract, ingress and multi-tenant boundaries, and regression limits.
+- [MicroSandbox removing a sandbox that never started](research/microsandbox-remove-created-2026-10-01.md): upstream state of the `Created` removal refusal and an unpublished issue and pull request draft for the `remove-created` patch.
+
+### Desktop and agent computer use
+
+- Detached desktop evidence: [viewer implementation](research/desktop-viewer-implementation-evidence-2026-09-27.md), [guest lifecycle](research/desktop-lifecycle-implementation-evidence-2026-09-27.md), [Selkies/Tauri compatibility](research/selkies-tauri-implementation-evidence-2026-09-27.md), [live viewer and LCU probe](research/desktop-viewer-probe-2026-09-27.md), [Selkies first-frame fix and source provenance](research/selkies-web-client-first-frame-fix.md), and [Linux platform, streaming, UX and native-display comparisons](research/linux-desktop-platform-options-2026-09-27.md), with its annexes on [native local delivery](research/linux-desktop-native-options-2026-09-27.md), [streaming engines](research/linux-desktop-streaming-options-2026-09-27.md) and [desktop UX](research/linux-desktop-ux-options-2026-09-27.md). The [LCU 0.4.0 native-desktop compatibility patch](research/lcu-linux-native-desktop-0.4.0.patch) records the upstream source change used by Silo's hash-guarded managed install. The dated viewer probe includes Ubuntu 24.04 ARM64 package qualification and its limits.
+- [Selkies multi-client admission, 2026-10-14](research/selkies-multiclient-admission-2026-10-14.md): what the pinned Selkies 2.0.0 does with a second page (eviction, debounce, read-only shared viewers), the options considered, and the source-hash-guarded patch chosen so two clients can view one computer. The behavior is in [the desktop notes](SiloUI-DESKTOP.md#several-viewers-of-one-computer-recipe-5).
+- [Desktop stream tuning, 2026-10-09](research/desktop-stream-tuning-2026-10-09.md): measured input latency and sharpness of the streamed desktop, the MicroSandbox metrics-sampler stall behind the 0.5 s input delays, device-pixel rendering with integer Xfce scaling, damage-gated encoding and the H.264 frame-size limit.
+- [Native local display, 2026-10-09](research/desktop-native-display-2026-10-09.md): VMPal and Cua Spaces stacks, the libkrun display/GPU route with its upstream PRs and steamac patches, maintainer status and the checkpoint gate.
+- [macOS guest engine, 2026-10-09](research/macos-guest-engine-2026-10-09.md): Lume, Tart and direct Virtualization.framework bindings compared, framework constraints probed on this device, and Apple's license terms for macOS virtual machines.
+- [macOS checkpoints, 2026-10-10](research/macos-checkpoints-2026-10-10.md): how Lume, cua-vmm, Tart, UTM and VMPal save, restore and fork macOS guests, and the pause, save, restore and resume sequence timed on this device.
+- [macOS remote display, 2026-10-10](research/macos-remote-display-2026-10-10.md): screen options for a macOS computer on another Mac (guest Screen Sharing, `_VZVNCServer`, Sunshine and others), noVNC as the client, and the probe that chose the guest's Screen Sharing
+- [MicroSandbox native display](research/msb-native-display-2026-09-27.md): Omarchy demonstration, Silo stack mapping, distribution independence, native-viewer opportunity and checkpoint/upstream adoption constraints.
+- [Independent desktop and viewer selection](SiloUI-DESKTOP-SELECTION.md): selection recommendation without agent-library constraints, evidence notation, weighted measurement rubric, candidate leaderboards and qualification protocol, with primary-source annexes on [agent APIs](research/desktop-selection-agents-2026-09-22.md), [desktops](research/desktop-selection-desktops-2026-09-22.md) and [browser delivery](research/desktop-selection-viewers-2026-09-22.md).
+- [Desktop and streaming assessment](SiloUI-DESKTOP-STACK-ASSESSMENT.md): September 2026 comparison of desktop environments, viewer stacks, Luda compatibility, maintenance evidence and selection criteria.
+- [Linux desktops for agents](SiloUI-LINUX-DESKTOP-RESEARCH.md): the original guest desktop proposal, agent compatibility, estimated costs and prototype acceptance.
+- [Codex, E2B and Luda computer use](research/codex-e2b-luda-computer-use-2026-09-22.md): observed native Codex interface, public API distinction, simplicity hypothesis and controlled comparison.
+- [Codex Linux engine probe](research/codex-linux-engine-probe-2026-09-22.md): official package distribution and a passing ARM64/X11 accessibility, input and screenshot test.
+- Historical Luda agent evidence: [acceptance tests](SiloUI-LUDA-AGENT-TESTS.md), [initial skill evaluation](SiloUI-LUDA-SKILL-EVALUATION.md), [accepted skill benchmark](SiloUI-LUDA-SKILL-BENCHMARK.md), and [upstream handoff](SiloUI-LUDA-UPSTREAM-HANDOFF.md).
+- Historical Luda upgrade verification: [0.3.1](SiloUI-LUDA-031-VERIFICATION.md), [0.3.2](SiloUI-LUDA-032-VERIFICATION.md), [0.3.3](SiloUI-LUDA-033-VERIFICATION.md) with its [selection-completion diagnosis](SiloUI-LUDA-033-DIAGNOSIS.md), and the last pinned [0.3.4](SiloUI-LUDA-034-VERIFICATION.md).
+
+### GitHub, logging and tooling
+
+- [Server-free GitHub research](SiloUI-GITHUB-SERVER-FREE-RESEARCH.md): primary sources and authorization constraints behind the native implementation.
+- [GitHub client-secret release audit](SiloUI-OAUTH-RELEASE-AUDIT.md): public 0.1.1 package inspection, live App settings, and independent PKCE enforcement checks.
+- [Logging and retention audit](SiloUI-LOGGING-AUDIT.md): current storage limits, log and activity presentation, and retention gaps.
+- [Development and release optimization plan](SiloUI-WORKFLOW-OPTIMIZATION-PLAN.md): measured bottlenecks, ranked changes, and benchmark acceptance gates.
+- [Workflow performance](SiloUI-WORKFLOW-PERFORMANCE.md): implementation, controlled measurements and hosted comparison.
+- [Workflow measurement data](measurements/): recorded dependency-cache and cold, cached and warm workflow samples used by the performance documents.
+- [Native compilation experiment](SiloUI-NATIVE-COMPILATION-EXPERIMENT.md): measured test-target reduction and the compiler-cache acceptance gate.
+- [Frontend test performance](SiloUI-FRONTEND-TEST-PERFORMANCE.md): controlled environment-split measurements.
+- [Frontend startup bundle baseline, 2026-10-02](research/frontend-startup-bundle-2026-10-02.md): O-03 production artifact sizes, heavy modules, and the evidence required before splitting.
+- [Streaming build inputs, 2026-10-02](research/stream-build-inputs-2026-10-02.md): verified file staging, bounded downloads, synthetic memory measurements and regression coverage; full runtime preparation was not measured.
+- [Application launch selection, 2026-10-02](research/application-launch-selection-2026-10-02.md): preserving Flatpak desktop-entry selectors and targeting the selected Ghostty bundle, with resolver and escaping tests rather than live application launches.
+- [Editor folder identity, 2026-10-02](research/editor-folder-identity-2026-10-02.md): rejecting control characters that URI serialization would discard, with extracted-function regression evidence and no live editor qualification.
+- [Editor environment wrapper follow-up, 2026-10-02](research/editor-env-directory-2026-10-02.md): preserving `env` working-directory operands when resolving and launching a supported Linux editor, with a temporary CLI regression and no GUI or live VM.
+- Editor follow-ups, 2026-10-02: [literal directories in SSH Includes](research/editor-ssh-include-2026-10-02.md) checks glob escaping with the system OpenSSH parser; [percent signs in Linux desktop entries](research/editor-desktop-percent-2026-10-02.md) checks field-code decoding with a temporary CLI. Neither qualifies a live editor connection.
+- [Guest image size experiment](SiloUI-GUEST-IMAGE-SIZE.md): measured image-size tradeoffs.
+- [Codex skills and context audit](CODEX-CONTEXT-AUDIT-2026-09-14.md): agent instruction and skill-trigger recommendations for working on this repository.
+- [Jev for natural-language commands](SiloUI-JEV-RESEARCH.md): primary-source findings, command-palette fit, limitations and proposed evaluation.
+
+### Product films and website
+
+- [README and website value review, 2026-09-29](research/public-docs-review-2026-09-29.md): reader decision gaps, broken GitHub explanation link, agent quickstart priority, and proposed observed-user validation.
+- [Release film](SiloUI-RELEASE-FILM.md): 59-second storyboard, product-claim sources, fixture boundaries, and rendering commands.
+- [Demo script](SiloUI-DEMO-SCRIPT.md): current `SiloDemo` cut and production-component boundaries, with [editing research](SiloUI-DEMO-EDITING-RESEARCH.md).
+- [Launch cut notes](SiloUI-LAUNCH-CUT-NOTES.md): feature evidence for the independent 54-second launch cut.
+- [Landing page reference](SiloUI-LANDING-REFERENCES.md): approved Zed direction, product evidence, and website implementation.
+- [Domain research](SiloUI-DOMAIN-RESEARCH-2026-09-19.md): domain availability, registrar pricing, and naming options checked on 2026-09-19.
+
+Shared branding files live in [`assets/`](../assets/). Generated native bundles,
+logs, and Rust outputs belong in the ignored `app/SiloUI/src-tauri/target/` tree;
+frontend build output belongs in the ignored `app/SiloUI/dist/` tree.
+
+## Historical records
+
+These no longer describe current behavior or active plans. They are kept for
+their evidence and reasoning.
+
+### Removed Luda integration
+
+Silo no longer installs Luda; [LCU](SiloUI-COMPUTER-USE-PLAN.md) replaces it. The
+[agent desktop tools](SiloUI-LUDA.md) description, [acceptance tests](SiloUI-LUDA-AGENT-TESTS.md),
+[skill evaluation](SiloUI-LUDA-SKILL-EVALUATION.md), [skill benchmark](SiloUI-LUDA-SKILL-BENCHMARK.md),
+[upstream handoff](SiloUI-LUDA-UPSTREAM-HANDOFF.md) and upgrade verification
+([0.3.1](SiloUI-LUDA-031-VERIFICATION.md), [0.3.2](SiloUI-LUDA-032-VERIFICATION.md),
+[0.3.3](SiloUI-LUDA-033-VERIFICATION.md), [0.3.3 diagnosis](SiloUI-LUDA-033-DIAGNOSIS.md),
+[0.3.4](SiloUI-LUDA-034-VERIFICATION.md)) are historical evidence.
+
+### Archived plans
+
+Superseded plans live in [`archive/`](archive/):
+
+- [Optional Kasm desktop plan](archive/SiloUI-DESKTOP-IMPLEMENTATION-PLAN.md): the original Kasm rollout; the detached desktop plan above replaced it.
+- [Luda integration plan](archive/SiloUI-LUDA-IMPLEMENTATION-PLAN.md): the original pinned-installer research and verification gates; [agent desktop tools](SiloUI-LUDA.md) documents the removed implementation.
+- [E2B replacement plan](archive/SiloUI-E2B-REPLACEMENT-PLAN.md): the proposed breaking replacement of Silo's backend, superseded on 2026-09-25 by MicroSandbox checkpoints and forks.
+- [E2B PoC investigation and completion handoff](archive/SiloUI-E2B-QUALIFICATION-HANDOFF.md): the 2026-09-23 brief for the E2B PoC, with its failure reproductions, evidence corrections and qualification gates.
+
+### E2B evaluation, 2026-09-22 to 2026-09-24
+
+Silo evaluated replacing its backend with a local E2B deployment, then kept
+MicroSandbox. The PoC in `experiments/e2b-local` was removed from `main`; it is
+kept on the `archive/media-and-experiments` branch and at
+[`c122a49`](https://github.com/amontlabs/silo/tree/c122a498da064f08321c29bff82a6e92056a917d/experiments/e2b-local).
+
+- [E2B fit for Silo](research/e2b-fit-2026-09-22.md): agent desktop capabilities, snapshots, local hosting requirements and the proposed comparison workflow.
+- [E2B adoption assessment](research/e2b-adoption-assessment-2026-09-24.md): feature inventory, established benefits and drawbacks, current-stack coverage limits, and the recommendation to refactor desktop packaging/viewing before replacing the backend.
+- [Executed local E2B desktop PoC](research/e2b-local-poc-2026-09-22.md): working ARM64 nested desktops, human handoff, memory snapshots, host restart recovery and measured resource costs.
+- [E2B + LCU qualification](research/e2b-lcu-qualification-2026-09-22.md): LCU, credentials, Git/LFS, SSH and native viewer results, with corrected limits on checkpoint/pause/restore attribution.
+- [E2B provenance and incident evidence audit](research/e2b-provenance-audit-2026-09-23.md): read-only inventory of the PoC's sources, revisions and incident evidence.
+- [E2B qualification work log](research/e2b-qualification-worklog-2026-09-23.md): scratch deployment, isolated SDK controls, changes made, and remaining runtime gates.
+- [E2B qualification gate matrix](research/e2b-qualification-gates-2026-09-23.md): investigation status, execution verdicts, evidence, and exact blocked or unrun work.
+- [E2B lifecycle source audit](research/e2b-lifecycle-source-audit-2026-09-23.md): D1/D2 call graphs and pause-upload shutdown boundary for the captured source.
+- [E2B D1 post-capture reproduction](research/e2b-d1-post-capture-repro-2026-09-23.md): controlled source-built failure, independent state oracles, survivor inventory, and restore limit.
+- [E2B D1 ResumeSandbox-boundary fault](research/e2b-d1-resume-allocation-boundary-2026-09-23.md): an unexecuted diagnostic patch at the resume allocation boundary.
+- [E2B D3 artifact audit](research/e2b-d3-artifact-audit-2026-09-23.md): exact failed restore identity, catalog row, panic/upload timeline, and canonical file hashes.
+- [E2B D3 controlled restarts](research/e2b-d3-controlled-restarts-2026-09-23.md): exact SDK control across orchestrator and clean host restart, including canonical readback and recovery limits.
+- [E2B fresh desktop and synthetic Git qualification](research/e2b-fresh-desktop-qualification-2026-09-23.md): two scratch-candidate runs, current-grant restore, browser/native viewer observations, cleanup, and remaining limits.
+- [E2B viewer input readiness](research/e2b-viewer-input-readiness-2026-09-23.md): native pointer/modifier diagnosis and two-viewer ownership evidence.
+- [E2B upstream report readiness](research/e2b-d1-report-readiness-2026-09-23.md): D1 checkpoint attribution and exact reproduction threshold; see also [D2 report readiness](research/e2b-d2-report-readiness-2026-09-23.md), [D2 report review](research/e2b-d2-independent-review-2026-09-23.md), [D3 restore review](research/e2b-d3-report-readiness-2026-09-23.md), and [release-source mapping](research/e2b-release-source-mapping-2026-09-23.md).
+- [E2B causal bounds, late session](research/e2b-causal-bounds-2026-09-23-late.md): D1 fault at the real `ResumeSandbox` call boundary, an actual kernel `fsync` EIO reproducing the exact historical pause error on the pinned release binary, D3 cache-topology finding plus an activity control, Gate A/R live results, a real-ENOMEM checkpoint reproduction on the release binary, the D2 physical-cause bound, and upstream issues e2b-dev/runtime#3658 and #3659.
+- [E2B D3 root cause](research/e2b-d3-root-cause-2026-09-23.md): deterministic 3/3 reproduction of the 41919-descriptor restore panic from hash-verified stored artifacts, clean previous-generation control, capture-time corruption during the documented full-disk window; upstream issue e2b-dev/runtime#3659.
+- [E2B real-provider qualification](research/e2b-real-provider-qualification-2026-09-24.md): nine-case GitHub matrix on a disposable private repo — Git/LFS round trips, REST/GraphQL, denied controls and credential-host accounting.
+- [E2B viewer input root cause](research/e2b-viewer-input-root-cause-2026-09-24.md): layer-by-layer isolation proving the WKWebView viewer chain delivers modifier-correct input; native-automation failures are macOS synthetic-event trust, not viewer defects.
+- [E2B two-computer and native-Linux qualification](research/e2b-gate-h-two-computer-2026-09-24.md): pinned Embed on bare-metal x86_64 with KVM, Mac-controlled lifecycle matrix, UFW deployment gap, teardown record.
+- [E2B canonical control readback](research/e2b-canonical-readback-2026-09-23.md): exact SDK pause control, transitive file hashes, and why current readback does not prove restart durability.
+- [E2B D2 error audit](research/e2b-d2-error-audit-2026-09-23.md): exact rootfs sync error, process/catalog timeline, and present artifact inventory.
+- [E2B D2 rootfs sync reproduction](research/e2b-d2-rootfs-sync-repro-2026-09-23.md): controlled source-built pause failure, SDK recovery checks, and limits of the synthetic EIO.
+- [E2B credential contract audit](research/e2b-credential-contract-2026-09-23.md): Silo grant policy at the time, PoC broker gaps, and synthetic receipt evidence.
+- [E2B credential-tool comparison](research/e2b-credential-tools-2026-09-24.md): existing brokers and proxy engines, iron-proxy and Infisical Agent Vault qualification order, disqualified alternatives, and the reuse-before-building rule.
+- [E2B access and viewer audit](research/e2b-access-viewer-audit-2026-09-23.md): transport, native editor, and viewer qualification gaps.
+
+### Other historical records
+
+- [Historical ext4 discard investigation](../artifacts/ext4-raw-image-root-cause.html): upstream MicroSandbox v0.6.8 reproduction and regression requirements; not current app validation.
+- Branding studies: [logo system](../artifacts/silo-logo-system.html), [proportions](../artifacts/silo-proportion-study.html), [structure](../artifacts/silo-structure-study.html), and [top-down study](../artifacts/silo-top-down-study.html).
+- Superseded film renders were removed from `main`; they remain on the `archive/media-and-experiments` branch and in the history of `artifacts/`.
+
+### Inlined linked README: Micro-review index and finding counts
+
+Source: https://github.com/amontlabs/silo/blob/main/docs/research/micro-reviews/README.md
+
+# Micro-review reports
+
+Original audits and fix-loop records. The original audits were copied from the
+shared `codex-micro` worktree; expanded integration records with the same names
+were preserved as `*-fix-loop.md` or `*-integration-followup*.md`.
+
+Counts include numbered findings and unnumbered defect entries, including fixed
+items. They exclude verification notes and rejected hypotheses. Zero means the
+report recorded no new finding. Findings recur across audits and follow-ups, so
+these counts are neither unique totals nor current open-defect counts. Check each
+report's revision, status and verification limits against current code.
+
+115 reports. Return to the [documentation index](../../README.md).
+
+| Report | Findings |
+| --- | ---: |
+| [a11y-application.md](a11y-application.md) | 10 |
+| [a11y-sandboxes.md](a11y-sandboxes.md) | 8 |
+| [app-menu-fix-loop.md](app-menu-fix-loop.md) | 3 |
+| [app-menu-integration-followup.md](app-menu-integration-followup.md) | 5 |
+| [app-menu.md](app-menu.md) | 2 |
+| [applications.md](applications.md) | 2 |
+| [atomic-writes-fixes.md](atomic-writes-fixes.md) | 6 |
+| [backup-controller-followup.md](backup-controller-followup.md) | 3 |
+| [backup-controller.md](backup-controller.md) | 2 |
+| [backup-followup.md](backup-followup.md) | 3 |
+| [backup.md](backup.md) | 1 |
+| [blocking-async.md](blocking-async.md) | 5 |
+| [cancellation.md](cancellation.md) | 5 |
+| [changesets.md](changesets.md) | 7 |
+| [chatgpt-app-fixes.md](chatgpt-app-fixes.md) | 3 |
+| [chatgpt-app-followup.md](chatgpt-app-followup.md) | 4 |
+| [chatgpt-app.md](chatgpt-app.md) | 3 |
+| [child-procs.md](child-procs.md) | 3 |
+| [computer-use-native-fix-loop.md](computer-use-native-fix-loop.md) | 2 |
+| [computer-use-native.md](computer-use-native.md) | 1 |
+| [css-contrast.md](css-contrast.md) | 9 |
+| [dependencies-fix-loop.md](dependencies-fix-loop.md) | 5 |
+| [dependencies.md](dependencies.md) | 1 |
+| [desktop-fix-loop.md](desktop-fix-loop.md) | 3 |
+| [desktop-proxy-fixes.md](desktop-proxy-fixes.md) | 7 |
+| [desktop-proxy.md](desktop-proxy.md) | 1 |
+| [desktop-viewer-fixes.md](desktop-viewer-fixes.md) | 5 |
+| [desktop-viewer.md](desktop-viewer.md) | 1 |
+| [desktop.md](desktop.md) | 1 |
+| [editor.md](editor.md) | 2 |
+| [effect-cleanup.md](effect-cleanup.md) | 8 |
+| [fe-application.md](fe-application.md) | 1 |
+| [fe-components-fix-loop.md](fe-components-fix-loop.md) | 8 |
+| [fe-components-round-2.md](fe-components-round-2.md) | 6 |
+| [fe-components.md](fe-components.md) | 3 |
+| [fe-desktop-contracts-fixes.md](fe-desktop-contracts-fixes.md) | 9 |
+| [fe-desktop-contracts.md](fe-desktop-contracts.md) | 0 |
+| [fe-github-fix-loop.md](fe-github-fix-loop.md) | 6 |
+| [fe-github.md](fe-github.md) | 1 |
+| [fe-lib-hooks-followups.md](fe-lib-hooks-followups.md) | 11 |
+| [fe-lib-hooks.md](fe-lib-hooks.md) | 2 |
+| [fe-onboarding-prefs.md](fe-onboarding-prefs.md) | 1 |
+| [fe-sandboxes-followups.md](fe-sandboxes-followups.md) | 5 |
+| [fe-sandboxes-second-loop.md](fe-sandboxes-second-loop.md) | 7 |
+| [fe-sandboxes.md](fe-sandboxes.md) | 2 |
+| [fe-status-storage-updates-fixes.md](fe-status-storage-updates-fixes.md) | 9 |
+| [fe-status-storage-updates.md](fe-status-storage-updates.md) | 2 |
+| [file-perms.md](file-perms.md) | 3 |
+| [fixture-drift.md](fixture-drift.md) | 3 |
+| [focus-keyboard.md](focus-keyboard.md) | 7 |
+| [github-http-followup.md](github-http-followup.md) | 4 |
+| [github-http.md](github-http.md) | 1 |
+| [github-native-follow-up.md](github-native-follow-up.md) | 3 |
+| [github-native-round-two.md](github-native-round-two.md) | 5 |
+| [github-native.md](github-native.md) | 2 |
+| [github-tokens-fix-loop.md](github-tokens-fix-loop.md) | 5 |
+| [github-tokens.md](github-tokens.md) | 1 |
+| [guest-scripts-follow-up.md](guest-scripts-follow-up.md) | 4 |
+| [guest-scripts.md](guest-scripts.md) | 2 |
+| [host-push-followup.md](host-push-followup.md) | 5 |
+| [host-push.md](host-push.md) | 2 |
+| [log-secrets.md](log-secrets.md) | 3 |
+| [native-entry-fix-loop.md](native-entry-fix-loop.md) | 7 |
+| [native-entry.md](native-entry.md) | 1 |
+| [network.md](network.md) | 2 |
+| [path-edge.md](path-edge.md) | 4 |
+| [python-guest-fixes.md](python-guest-fixes.md) | 7 |
+| [release-scripts-fixes.md](release-scripts-fixes.md) | 11 |
+| [release-scripts.md](release-scripts.md) | 2 |
+| [remote-core-followups.md](remote-core-followups.md) | 2 |
+| [remote-core-round2.md](remote-core-round2.md) | 3 |
+| [remote-core.md](remote-core.md) | 2 |
+| [remote-dir-a-fix-loop.md](remote-dir-a-fix-loop.md) | 2 |
+| [remote-dir-a-followup.md](remote-dir-a-followup.md) | 4 |
+| [remote-dir-a.md](remote-dir-a.md) | 1 |
+| [remote-dir-b-fix-loop.md](remote-dir-b-fix-loop.md) | 1 |
+| [remote-dir-b-followups.md](remote-dir-b-followups.md) | 2 |
+| [remote-dir-b.md](remote-dir-b.md) | 0 |
+| [remote-network-followup.md](remote-network-followup.md) | 5 |
+| [remote-network.md](remote-network.md) | 3 |
+| [rerenders.md](rerenders.md) | 5 |
+| [retry-backoff-fixes.md](retry-backoff-fixes.md) | 12 |
+| [runtime-activity-logs-followup.md](runtime-activity-logs-followup.md) | 4 |
+| [runtime-activity-logs.md](runtime-activity-logs.md) | 1 |
+| [runtime-core-followup.md](runtime-core-followup.md) | 2 |
+| [runtime-core.md](runtime-core.md) | 1 |
+| [runtime-dir-a.md](runtime-dir-a.md) | 1 |
+| [runtime-dir-b-followup.md](runtime-dir-b-followup.md) | 7 |
+| [runtime-dir-b.md](runtime-dir-b.md) | 2 |
+| [runtime-dir-c-followup.md](runtime-dir-c-followup.md) | 5 |
+| [runtime-dir-c.md](runtime-dir-c.md) | 2 |
+| [runtime-migration.md](runtime-migration.md) | 2 |
+| [secrets-followups.md](secrets-followups.md) | 4 |
+| [secrets.md](secrets.md) | 2 |
+| [settings-fix-loop.md](settings-fix-loop.md) | 1 |
+| [settings-integration-followup.md](settings-integration-followup.md) | 6 |
+| [settings.md](settings.md) | 2 |
+| [shellcheck.md](shellcheck.md) | 4 |
+| [ssh-access-followups.md](ssh-access-followups.md) | 1 |
+| [ssh-access.md](ssh-access.md) | 2 |
+| [system-integrations-fix-loop.md](system-integrations-fix-loop.md) | 4 |
+| [system-integrations.md](system-integrations.md) | 2 |
+| [tauri-config-fix-loop.md](tauri-config-fix-loop.md) | 1 |
+| [tauri-config.md](tauri-config.md) | 0 |
+| [timeouts.md](timeouts.md) | 5 |
+| [ts-types-fixes.md](ts-types-fixes.md) | 7 |
+| [unbounded-io.md](unbounded-io.md) | 6 |
+| [updates-native-fix-loop.md](updates-native-fix-loop.md) | 5 |
+| [updates-native-integration-followup.md](updates-native-integration-followup.md) | 8 |
+| [updates-native.md](updates-native.md) | 2 |
+| [user-docs-fix-loop.md](user-docs-fix-loop.md) | 3 |
+| [user-docs-integration-followup.md](user-docs-integration-followup.md) | 11 |
+| [user-docs.md](user-docs.md) | 1 |
+| [workflows-fixes.md](workflows-fixes.md) | 12 |
+| [workflows.md](workflows.md) | 2 |
+
+### Inlined linked README: website README
+
+Source: https://github.com/amontlabs/silo/blob/main/website/README.md
+
+# Silo website
+
+A static landing page for Silo, built with HTML, CSS, JavaScript, and Vite. The
+approved reference is [Zed](https://zed.dev/). The site uses Silo's branding and
+product demonstrations, self-hosted IBM Plex fonts, and direct release downloads.
+
+## Run
+
+Use Node.js 24. From the repository root:
+
+```sh
+npm --prefix app/SiloUI ci
+npm --prefix website ci
+npm --prefix website run dev
+```
+
+Preview: http://127.0.0.1:4173. This serves only the website, not the native app.
+
+```sh
+npm --prefix website run typecheck
+npm --prefix website test
+npm --prefix website run build
+npm --prefix website run preview
+```
+
+Stop the development server before running the production preview, since both
+use port 4173. Deploy `website/dist/` to a static host. No backend, environment
+variables, account, cookies, or analytics are required by the site.
+
+## Content and assets
+
+- `index.html`: copy, semantic layout, download links, and video dialog. Inline
+  first-paint rules constrain the logo and hide the skip link until focused,
+  even before external CSS arrives; keep these sizes aligned with `src/style.css`.
+- `src/style.css`: responsive layout and Zed-inspired typography/grid.
+- `src/main.js`: accessible workflow tabs and Linux architecture selection.
+- `src/tour.js`: video chapter playback, media-duration-aware chapter selection,
+  and dialog cleanup with focus restoration.
+- `src/downloads.js`: explicit Linux architecture-to-package mapping.
+- `demo.html` and `src/demo/`: an isolated, lazy-loaded React iframe using the
+  actual Silo sidebar, navigation history, and production pages. Sample files,
+  logs, repositories, secrets, computers, and backups come from bundled fixtures.
+  The overview includes local computers and a computer on Office Mac with expandable local
+  and network SSH access. The 680px embed fits both expanded sidebar groups.
+  Sidebar navigation, collapse/hover transitions, the production command palette,
+  SSH disclosures, computer action menus, and sample storage/history inspection
+  work. Commands navigate pages and computer views; native action commands are
+  omitted. The shared overview read-only mode disables mutations, clipboard
+  actions, native launches, and reordering; other
+  pages use a disabled fieldset and captured interaction events. Mutation adapters also reject
+  calls. Preferences and integrations use memory-only fixture stores. No native
+  application controller or live data source is created.
+- `vite.config.ts`: builds both static HTML entries and resolves shared app
+  components and one React runtime from `app/SiloUI`. Install both packages
+  before building; the deployed output needs neither Node nor the app installed.
+- `public/media/`: portable, versioned website assets. Six screenshot pairs show
+  the production glass UI with the read-only demo fixtures. Unsuffixed PNGs are
+  light; `-dark.png` variants are dark. Workflow captures are 1280 × 720;
+  GitHub, secrets, and backup captures are 1280 × 800. `overview.png` supplies
+  the computers screenshot. Regenerate the pairs with the dev server running
+  (`npm --prefix website run dev`) and `node website/scripts/capture-media.mjs
+  [name…]`, which drives Google Chrome headless against `demo.html` and paints
+  the landing-page gradient behind the transparent embed. The export screenshot
+  uses `demo.html?capture=export`, which shows the export entry the read-only
+  demo otherwise omits. `silo-tour.mp4` is the 59-second, 1920 × 1080 release
+  film, rendered at 30 fps from `demo/src/release-film.tsx`; `silo-tour.png` is its
+  matching poster. The film includes agent desktop use, local and remote
+  computers, familiar tools, SSH and an agent connection, repository access,
+  scoped secrets, a local backup, and port forwarding.
+- `public/theme.js`: first-paint theme selection shared by the page and demo.
+  The icon-only navbar selector defaults to System and follows live OS changes.
+  Explicit choices persist in local storage; blocked storage still allows
+  switching during the visit. Picture sources and the iframe follow the same
+  choice. Only same-origin parent messages can update the embedded demo.
+- `public/media/tour.vtt` and `tour-transcript.txt`: descriptions of the silent
+  demo. Keep these and the chapter timestamps aligned when replacing the film.
+- `public/fonts/`: self-hosted Latin WOFF2 IBM Plex Sans, Serif, and Mono under
+  the included SIL Open Font License. Fallbacks cover other character ranges.
+- `public/favicon.svg`: the existing Silo app icon from `assets/silo-logo.svg`.
+
+The Silo views in the demo and film use production components with inert sample
+data. The film's agent sessions, guest desktop, editor, terminal, browser content,
+and computer diagrams are illustrations. The backup sequence compresses waiting
+time. Playback never touches native APIs, credentials, or live computers.
+
+### Film chapters
+
+The category links and player buttons use these starts:
+
+| Start | Chapter | Category link |
+| --- | --- | --- |
+| 0:03 | Agent desktop | Player only |
+| 0:11 | Computers | Remote computer workflow |
+| 0:16 | Editor & terminal | Player only |
+| 0:21 | SSH & agents | Editor and agent workflow |
+| 0:32 | GitHub | GitHub access |
+| 0:37 | Secrets | Secrets |
+| 0:42 | Backups | Backups |
+| 0:47 | Networking | Development server workflow |
+
+`demo/src/release-timeline.ts` is the timing authority. `scripts/tour.test.mjs`
+compares every category and chapter destination, caption cue, transcript entry,
+and duration label against it using Node.js 24's built-in TypeScript support.
+Update the film, poster, HTML starts and duration, captions, and transcript
+together. The player's last chapter ends at the media's actual duration.
+
+Download filenames were verified against public release v0.9.0 on 2026-09-27.
+Links use GitHub's `releases/latest/download/` endpoint, so future releases must
+retain these stable filenames. Both Linux .deb and AppImage links follow the
+explicit architecture selector. A no-JavaScript fallback exposes ARM64 links.
+
+## Verification
+
+Verification includes TypeScript, the production build, download mapping tests,
+film timing and player interaction tests, and interactive demo tests covering sidebar history, disabled actions,
+fixture pages, and absence of live data requests. Browser checks covered the desktop layout and 320px, 390px, and 768px
+widths, loaded media, anchor targets, keyboard tab navigation, chapter seeking,
+video playback, Escape dismissal, focus restoration, architecture selection,
+and macOS installation disclosure. No horizontal page overflow was found.
+The interactive embed was also checked on desktop and at 390px and 320px,
+including collapsed sidebar navigation and page overflow.
+These checks validate website behavior and fixture presentation, not live computer
+operation or native package installation.
+
+See [design research](../docs/SiloUI-LANDING-REFERENCES.md) for the approved direction.
+
+## Vercel publication
+
+Production: [silo.amontlabs.com](https://silo.amontlabs.com), also set as the GitHub
+repository website. The Vercel deployment is available at
+[silo-theta.vercel.app](https://silo-theta.vercel.app).
+
+The Vercel `silo` project is connected to `amontlabs/silo`, and production is [silo.amontlabs.com](https://silo.amontlabs.com). Pushes and merges
+to `main` trigger production deployments; other branches receive preview deployments.
+The project settings use Node.js 24 and the repository root with:
+
+- Install command: `npm --prefix app/SiloUI ci && npm --prefix website ci`
+- Build command: `npm --prefix website run build`
+- Output directory: `website/dist`
+
+Both packages are required because the website imports shared app components.
+These settings are saved in Vercel. Git deployment behavior follows Vercel's
+[Git integration documentation](https://vercel.com/docs/git), checked on 2026-09-19.
+
+For a manual deployment, build locally, package the static output, and publish
+the linked `silo` project:
+
+```sh
+npm --prefix website run typecheck
+npm --prefix website test
+npm --prefix website run build:vercel
+npx --yes vercel@59.16.0 deploy --prebuilt --prod --yes --cwd website
+```
+
+For a new checkout, first run `npx --yes vercel@59.16.0 link --yes --project silo --cwd website`.
+The deployment uploads only compiled public assets from `.vercel/output/`.
+Vercel project metadata and local environment files are ignored. No native
+build inputs or local configuration are published by this prebuilt command.
+
+This follows Vercel's [prebuilt deployment](https://vercel.com/docs/cli/deploy)
+and [Build Output API v3](https://vercel.com/docs/build-output-api/configuration)
+documentation, checked on 2026-09-18.
+
+### Shared UI boundary
+
+The demo directly imports `ApplicationShell`, `OverviewPage`, and the other
+production page components from `app/SiloUI/src`. It has its own page composition
+and read-only data adapters rather than mounting the native application entry
+point. The demo opens Settings expanded and retains the production sidebar footer placement.
+Its CSS adjusts the outer window sizing and makes the embed canvas transparent so
+the showcase card’s computer-style wallpaper shows through the sidebar and title bar.
+The same wallpaper extends behind the heading and caption;
+sidebar icon positioning belongs to the shared `components/sidebar-shell.css`.
+After the alignment fix, browser measurements found zero x/y/size difference
+across all ten visible navigation icons when toggling sidebar collapse.
+
+## Refresh screenshots
+
+Copy `scripts/capture.html` to `website/capture.html`, start the website dev
+server, and open `/capture.html` or `/capture.html?theme=dark`. The harness
+imports the same production components and inert fixtures as the demo. It
+shows the default glass material even when the capture device has reduced
+transparency enabled; the shipped demo uses the website background instead, disables blur for reduced
+transparency, and uses opaque surfaces for increased contrast.
+Capture Overview, Overview with personal’s SSH disclosure expanded (tools),
+and Network at 1280 × 720. Capture GitHub, Secrets, and Backup at 1280 × 800.
+Click the empty title bar to clear hover styling before saving each PNG.
+Remove the temporary root capture file afterward; it is not a build entry.
+
+Theme verification covers System changes, explicit choices, persistence,
+blocked storage, and synchronization between documents. Screenshot checks
+use fixture data, not live computers or credentials.
+
+---
+
+## Amont Labs / LCU
+
+Source: https://github.com/amontlabs/lcu
+
+<p align="center">
+  <img src="docs/assets/lcu-icon.svg" width="120" height="120" alt="LCU logo">
+</p>
+
+<h1 align="center">LCU</h1>
+
+<p align="center"><strong>Codex computer use, decoupled from the Codex app.</strong></p>
+
+https://github.com/user-attachments/assets/bd9d0809-8a6c-4931-a51c-b98daf05cb5f
+
+LCU exposes Codex's original computer-use runtime to your harness without requiring Codex authentication. The official ChatGPT desktop app must still be installed locally: it supplies the runtime and instructions, while LCU handles setup and harness integration.
+
+## Quick start
+
+Copy this into your agent:
+
+```text
+Install and configure LCU for this harness using the latest release.
+Follow https://raw.githubusercontent.com/amontlabs/lcu/main/docs/INSTALLATION.md
+Check my OS, architecture, and prerequisites, then guide me through any required permissions.
+```
+
+In Claude Code on an Apple Silicon Mac, two commands do the same through its plugin manager; see [Claude Code plugin](docs/INSTALLATION.md#claude-code-plugin):
+
+```sh
+claude plugin marketplace add amontlabs/lcu
+claude plugin install lcu@lcu
+```
+
+## Features
+
+- **Desktop apps:** read windows, click, type, and take screenshots.
+- **Chrome, when enabled:** read and control tabs through the official extension, with site approval.
+- **In your harness:** adapters are available for Pi, Codex CLI, and Claude Code, with experimental Oh My Pi, Hermes and DeepSeek Harness integrations. See [setup and verification limits](docs/ADAPTERS.md).
+
+## Approve apps from Claude, natively
+
+The first time an agent controls an app (Zed, Notes, Safari), the computer-use runtime asks you to allow it. The Claude app's Code tab used to fail that request with "Computer Use was not approved". `lcu setup --agent claude-code` now installs a small Claude Code mod, `lcu-approve`, that asks the question natively: as a question card in the Claude app, which flags the session as needing input, and as a **Computer use approval** pane in the terminal.
+
+<p align="center"><img src="docs/assets/approval-demo.gif" width="720" alt="The Computer use approval pane in Claude Code: Allow this conversation, a high-risk app with its warning, and the Approved apps panel"></p>
+
+- **Allow this conversation** for the current chat only.
+- **Always allow** to remember the app (offered only when the runtime allows it).
+- **Deny** to refuse.
+
+The `/computer-use-apps` command opens an **Approved apps** panel in the same place: one line per always-allowed app with Revoke (macOS asks for Touch ID or your password), apps that are no longer installed grouped below, this conversation's grants, and an Allow field.
+
+Only you can answer: the model cannot see, press or fake the pane. High-risk apps show the runtime's own warning (reworded to say "computer use" and "the agent"), and the app hosting the agent is never approved. Needs the Claude app or Claude Code 2.1.287+. [How it works](docs/ADAPTERS.md#native-app-approvals-in-claude-code-and-the-claude-app), [how to remove it](docs/INSTALLATION.md#uninstall).
+
+In the Claude app, register LCU through Claude Code (`lcu setup --agent claude-code`), not through Settings > Connectors; see [installation](docs/INSTALLATION.md#native-approvals-in-the-claude-app).
+
+## Manage approved apps with Touch ID
+
+"Always allow" is remembered. Review and change that list from the terminal (macOS), without opening the Codex app:
+
+```sh
+lcu apps                 # what is always allowed today
+lcu apps allow Zed       # Touch ID (or your password), then Zed is allowed
+lcu apps revoke Zed      # take it back
+```
+
+<p align="center"><img src="docs/assets/approved-apps.png" width="720" alt="The Approved apps panel opened with /computer-use-apps"></p>
+
+- Pass an app name, a bundle identifier or an `.app` path.
+- Listing is free; `allow` and `revoke` need you at the machine, so an agent running them is stopped by the prompt.
+- Running sessions pick the change up immediately.
+- Browsers, password managers and other high-risk apps come with a warning; apps Computer Use refuses outright (Terminal, iTerm2) are declined.
+
+[Details](docs/INSTALLATION.md#manage-approved-apps).
+
+## Keep Computer Use across turns (Claude Code)
+
+In Claude Code, Computer Use normally ends with the turn that started it. A background subagent still working after that turn ended, or a turn that reuses an ended turn id, is told "Computer Use is unavailable because the current turn ended." An opt-in setting keeps it available for every turn of the session:
+
+```sh
+lcu cross-turn           # status
+lcu cross-turn on        # Touch ID (or your password) on macOS
+lcu cross-turn off       # no prompt
+```
+
+- Off by default. `lcu setup --cross-turn on|off` sets it too; interactive setup asks once.
+- It affects only the Claude Code relay; Codex, Pi, Oh My Pi and Hermes ignore it. Per-app approvals (macOS and Windows) and your harness's tool approvals still apply.
+- A foreground subagent finishing no longer ends the parent's Computer Use, with the setting on or off.
+- A guard against accidents, not a security boundary: anything running as your account can edit the file or pass `--unattended` (for disposable sandbox machines, where nobody can answer the prompt).
+
+[Details](docs/INSTALLATION.md#cross-turn-computer-use).
+
+## Permissions
+
+Your harness decides whether the agent may call LCU's tools (Claude's "don't ask again" on the first card, Codex's tool approval, and so on). LCU decides, per app, whether that agent may touch it, in every permission mode. `lcu setup --approval auto` is optional and meant for unattended machines (VMs, CI): it pre-allows LCU's two model tools in the harness, and leaves per-app approval in force. See [approval mode](docs/INSTALLATION.md#approval-mode).
+
+## Requirements
+
+Install [the official ChatGPT desktop app](https://chatgpt.com/download/) and your harness first. LCU needs nothing else: no Python on any platform. It runs on the Node that ships inside the app, checks the installed app for compatibility and uses its original runtime. For Codex CLI, [update before setup](docs/ADAPTERS.md#codex-cli) to get the required hook support.
+
+| Platform | Requirements |
+| --- | --- |
+| Linux ARM64 or x86-64 | Ubuntu 24.04-compatible glibc system, an active X11 desktop, and D-Bus |
+| macOS on Apple Silicon | The signed ChatGPT app, with Accessibility and screen-recording permissions approved during first use |
+
+Windows 11 x64 remains a [candidate](docs/INSTALLATION.md#windows-11-x64-candidate-deferred-from-this-delivery). Intel Macs, native Wayland, and musl Linux are unsupported. See [verification and limits](docs/PARITY-STATUS.md) for tested behavior.
+
+## Install manually
+
+Download the archive and matching `.sha256` file from the [latest release](https://github.com/amontlabs/lcu/releases/latest):
+
+| Platform | Archive |
+| --- | --- |
+| macOS on Apple Silicon | `lcu-<version>-darwin-arm64.tar.gz` |
+| Linux ARM64 | `lcu-<version>-linux-arm64.tar.gz` |
+| Linux x86-64 | `lcu-<version>-linux-x64.tar.gz` |
+
+Follow the [installation guide](docs/INSTALLATION.md) to verify the checksum, extract the archive, and register LCU in your harness. Setup offers an agent chooser and desktop-readiness guidance. Chrome and computer-audio recording are opt-in.
+
+For development, see [building from source](docs/DEVELOPMENT.md#building-from-source).
+
+## Enable Chrome
+
+Ask your agent:
+
+```text
+Enable Chrome control in my LCU setup using the installation guide:
+https://raw.githubusercontent.com/amontlabs/lcu/main/docs/INSTALLATION.md#desktop-and-browser
+```
+
+Enable the official extension in your Chrome profile and restart your harness. Then restart Chrome, or turn the ChatGPT extension off and on in `chrome://extensions`; an extension that was already connected keeps the original native host until it reconnects. Then ask your agent to use LCU to list Chrome tabs. Sites still require approval. Claude Code's Chrome support remains experimental because some interruptions do not trigger tab cleanup; see [adapter limitations](docs/ADAPTERS.md). If Chrome calls fail with `requires caller identity`, see [Chrome troubleshooting](docs/INSTALLATION.md#chrome-extension-fails-with-requires-caller-identity).
+
+## Enable computer-audio recording
+
+Pass `--audio` when setting up a maintained harness, for example:
+
+```sh
+~/.local/share/lcu/current/bin/lcu setup --agent pi --audio
+```
+
+The installer does not add `lcu` to your `PATH`; run its installed path (`/opt/lcu/current/bin/lcu` on Linux). See [the `lcu` command](docs/INSTALLATION.md#the-lcu-command).
+
+This enables the installed original runtime's optional computer-audio recording API and its original approval flow. LCU does not add audio-specific instructions, and a saved recording is not audio delivered to the model. See the [audio opt-in verification record](docs/verification/audio-opt-in-2026-09-27.md).
+
+## Pi commands
+
+In interactive Pi, `/lcu stop` requests original Computer Use Stop for a selected app during the active LCU turn (macOS only). `/lcu pick` selects an original app or browser target and appends it to the editor draft while Pi is idle; review and submit the draft yourself. See [adapter command behavior and limits](docs/ADAPTERS.md#pi-extension).
+
+## Documentation
+
+- [Installation](docs/INSTALLATION.md): downloads, harness setup, permissions, sessions, and upgrades. Update with `lcu update`; [update notices](docs/INSTALLATION.md#update-notices) can be turned off with `LCU_NO_UPDATE_CHECK=1`.
+- [Harness adapters](docs/ADAPTERS.md): custom clients, approvals, lifecycle, and result handling.
+- [Verification](docs/PARITY-STATUS.md): tested behavior and remaining gaps.
+- [Development](docs/DEVELOPMENT.md): source builds and isolated desktop tests.
+
+LCU is [MIT licensed](LICENSE). Release archives contain LCU and third-party setup dependencies. The OpenAI app and its instructions come from your local installation and retain their own terms; see [dependency provenance](docs/PROVENANCE.md).
+
+---
+
+## Amont Labs / Sic
+
+Source: https://github.com/amontlabs/sic
+
+# Sic — « Ce qu'ils disent, vérifié en direct »
+
+> [!WARNING]
+> Heavy work in progress. The pipeline and the app change daily; expect rough edges and breaking changes.
+
+Sic transcribes political debates, identifies who is speaking, detects checkable factual claims and
+fact-checks them against official sources — live or on any replay. Built for the French presidential
+election (1st round: 18 April 2027). Domain: sic.vote.
+
+> *[sic]* — what journalists write after a quote to say "this is exactly what was said, errors included".
+
+## How it works
+
+```
+audio ──► speech-to-text ──► who speaks ──► claim detection ──► verification ──► feed / replay
+          whisper-large-v3   voice clusters   GLM 5.3 over a     1. pre-checked library (instant)
+          turbo (MLX)        + names from     rolling window      2. agent with tools: INSEE, Eurostat,
+                             context (LLM)                           Assemblée votes, web search
+```
+
+1. **Speech-to-text** — `mlx-whisper` (large-v3-turbo) on Apple Silicon: 2h50 of debate in ~5 min.
+2. **Who speaks** — anonymous voice clusters (sherpa-onnx: pyannote segmentation + speaker embeddings),
+   then an LLM names them from context ("Madame Le Pen, à vous…"). **No face recognition and no stored
+   voiceprints** — biometric identification is GDPR art. 9 territory.
+3. **Claims** — the LLM extracts *checkable* facts (figures, votes, laws, history, quotes) and skips
+   opinions and promises. Every claim keeps the verbatim quote, aligned to word timestamps.
+4. **Verification** —
+   - first the **library**: fact-checks published *before* the debate (politicians repeat themselves);
+   - otherwise a tool-using agent: **INSEE** (51k series, publication-lag aware), **Eurostat** (27 datasets),
+     **Assemblée nationale** votes since 2012 (18k scrutins, every deputy's position), **Wikipédia** (read
+     *as it was on the debate day*, permalinked revisions) and **web search** (trusted domains first).
+   - Product rules enforced in code: no verdict without a cited source; « Faux / Trompeur / Imprécis » need
+     an official, parliamentary or published fact-check source with a precise link; low confidence →
+     « Invérifiable »; « mensonge » / « menteur » are rewritten (we judge facts, not intentions).
+5. **Strict live mode** — when replaying an old debate, Sic only uses information available on the
+   debate day (data published later, and articles about the debate itself, are filtered out).
+
+## Repository
+
+| Path | What |
+|---|---|
+| `pipeline/` | Python package `sic` (uv): ASR, diarization, claims, verification, live mode, API server, evaluation |
+| `pipeline/src/sic/sources/` | Data connectors: `insee.py`, `eurostat.py`, `assemblee.py`, `wikipedia.py`, `web.py` |
+| `web/` | React + Vite + Tailwind app: home, replay `/d/:id`, live second screen `/live/:id`, share cards |
+| `data/debates/` | Debate metadata (roster, date, media) |
+| `data/runs/<id>/` | Processed artifacts (`run.json` is what the app loads) |
+| `data/library/` | Pre-debate fact-check library (2022 campaign, 91 entries) |
+| `data/gold/` | Published fact-checks of the 2022 debate, used for evaluation (56 claims) |
+| `data/eval/` | Evaluation reports |
+| `docs/API.md` | HTTP API contract |
+
+## Setup
+
+Requirements: macOS on Apple Silicon (MLX), `uv`, `bun`, `ffmpeg`, `yt-dlp`.
 
 ```bash
+# secrets: z.ai API key (GLM models + web search). Never committed.
+echo "ZAI_API_KEY=..." > .env
+# optional, better web citations: BRAVE_API_KEY=...
+
+cd pipeline && uv sync && cd ..
+./scripts/fetch_models.sh                                   # speech models (VAD, diarization)
+cd pipeline && uv run python -m sic.sources.assemblee build # Assemblée index (~30 s, 115 MB, cached)
+```
+
+## Run
+
+```bash
+# 1. get the 2022 debate (TF1 replay) — dev only, never redistributed
+yt-dlp -f "bv*[height<=720][ext=mp4]+ba[ext=m4a]" --merge-output-format mp4 \
+  -o data/raw/debat-2022.mp4 "https://www.youtube.com/watch?v=elgTG9oDiJY"
+
+# 2. process it (each stage is cached and resumable)
+cd pipeline && uv run python -m sic.pipeline run 2022-macron-lepen
+
+# 3. API + web app
+uv run python -m sic.server            # http://localhost:8787
+cd ../web && bun install && bun run dev  # http://localhost:5173
+```
+
+- Replay: http://localhost:5173/d/2022-macron-lepen
+- Live second screen (simulated from the processed run): http://localhost:5173/live/2022-macron-lepen?speed=4
+- Truly live pipeline on the audio, in real time: `GET /api/debates/2022-macron-lepen/live?mode=pipeline`,
+  or record a live run with latency stats: `uv run python -m sic.live 2022-macron-lepen --from 600 --minutes 10`
+- Any YouTube link: paste it on the home page (downloads audio, infers participants, processes).
+- Operator review (mark a verdict as human-checked / correct it): add `?operator=1` to a replay URL.
+  Write endpoints only accept localhost unless `SIC_OPERATOR_TOKEN` is set on the server; then open the app
+  once with `?token=<token>` (stored locally, sent as `X-Sic-Operator`). See `docs/API.md` → Access control.
+
+Environment variables: `ZAI_API_KEY` (required), `BRAVE_API_KEY` (better web citations), `SIC_OPERATOR_TOKEN`,
+`SIC_CORS_ORIGINS`, `SIC_LLM_CONCURRENCY` / `SIC_VERIFY_CONCURRENCY` (throughput), `SIC_LLM_SMART` /
+`SIC_LLM_FAST` (models, default `glm-5.3` / `glm-5.3-flash`).
+
+## Tests
+
+```bash
+cd pipeline && uv run pytest -m "not network"     # unit + API tests (no network, no LLM calls)
+cd pipeline && uv run pytest -m network           # live checks against INSEE / Eurostat / AN
+cd web && bun run test && bun run typecheck       # unit/component tests
+cd web && bun run e2e                             # Playwright, against a mock API
+cd web && bunx playwright test -c playwright.real.config.ts   # Playwright against the real stack
+cd pipeline && uv run python -m sic.evaluate 2022-macron-lepen  # compare with published fact-checks
+```
+
+## Evaluation (2022 Macron–Le Pen debate, strict live mode)
+
+Compared with the 56 claims fact-checked by Le Monde, franceinfo, Libération, AFP, TF1, 20 Minutes and
+others (`data/gold/`). Sic only used information available on 20 April 2022. Full table:
+[`data/eval/2022-macron-lepen.md`](data/eval/2022-macron-lepen.md).
+
+| Metric | Result |
+|---|---|
+| Newsroom-checked claims also caught by Sic | **86 %** (48/56) |
+| Same category (correct / problem) when Sic gives a verdict | **70 %** |
+| Critical errors (Sic "true" vs newsroom "false" or the reverse) | **1** (a contested one) |
+| Matched claims Sic left « Invérifiable » | 18/48 (web search quota exhausted, see below) |
+| Claims extracted over the whole debate | 279 (Macron 154 · Le Pen 104 before filtering) |
+
+Real-time run (10 min of audio at 1×, `data/runs/2022-macron-lepen/live-700-10m.json`): 26 claims, all
+verified. Latency from the end of the sentence (median / 90th pct): transcript 6 s / 27 s, claim 28 s /
+60 s, verdict 68 s / 135 s.
+
+## Known limitations / next steps
+
+- **Web search is the main bottleneck.** z.ai's search/reader have their own monthly quota (separate from
+  LLM usage) — it was exhausted during development (resets 2026-10-30) — and often return homepage-only
+  links. The fallback (Brave HTML) is rate-limited. A Brave Search API key (`BRAVE_API_KEY`) fixes both
+  coverage and citations; most « Invérifiable » verdicts are search failures.
+- INSEE does not expose data vintages: strict mode filters by estimated publication date, but values are
+  the latest revisions (stated in every tool output).
+- Verdict latency (~1 min median live) comes from `glm-5.3` with reasoning + throttled search. Quality first:
+  `glm-5.3-flash` was ~2× faster but made wrong calls. Library matches are instant.
+- The library (`data/library/`) was compiled from published fact-checks and is marked `reviewed: false`
+  until a Sic editor validates entries.
+- Live audio input is a file played in real time; plugging a broadcast stream (HLS/DVB) in is the next step.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+---
+
+## Amont Labs / Hartlib
+
+Source: https://github.com/amontlabs/hartlib
+
+# Hartlib
+
+Hartlib gives you one research conversation across everything you subscribe to — professional briefings, specialist publications, official records. Ask in your own words and get one cited answer you can actually understand, explained with visuals that fit how you think.
+
+> [!NOTE]
+> **Paused.** We're focused on Fjord and Sic for now. What we learn there about working with agents, grounding answers in sources and designing the interface will carry back into Hartlib when we pick it up again.
+
+## What makes it different
+
+1. **One chat, many agents.** Each question puts several agents to work at once: one selects the earlier messages that matter, another your saved memories, the rest search your sources. You see one answer.
+2. **It reads what you don't.** Briefings, confidential letters, and official records are dense and scattered; few people read them end to end. Hartlib navigates them for you.
+3. **Plain questions.** No query syntax, no copying context by hand. Ask as you would ask a colleague. Independent parts of a question are researched in parallel and joined into one answer.
+4. **Every answer cited.** Claims point to the exact issue, document, or page they came from, and completed answers keep their citations.
+5. **Answers you can see.** Charts and visualizations grow beside the conversation. With each turn the agent learns which forms make things clearest for you and shapes future visuals accordingly. Today Hartlib returns cited text, summaries, comparisons, and tables; live charts arrive with the visual companion.
+
+## Who it serves
+
+**Clients** work in one continuing conversation over every subscription at once. They read delivered issues, search the archive directly, and share or archive past work without starting over. When allowed, web search joins their sources.
+
+**Publishers** create private subscriptions, publish issues, invite client companies, and manage delivery. They keep their content and client relationships; their subscribers get a searchable, cited research service over the archive.
+
+**Website:** [hartlib.ai](https://hartlib.ai)
+
+## Try it locally
+
+### Requirements
+
+- [Bun](https://bun.sh/)
+- Docker with Compose
+- A Z.AI API key (`ZAI_API_KEY`) for local AI chat
+
+### Start the demo
+
+```sh
 bun install
-bun run dev
-bun run inspect:app -- --workspace /absolute/path/to/repository
-bun run inspect:app -- --workspace /absolute/path/to/repository --stub-provider
-bun run build
-bun run run
-bun run typecheck
-bun run test
-# Source-checkout maintenance helper; not a shipped product workflow runtime.
-bun run workflow:implement-feature -- --spec docs/specs/foo.spec.md --poc docs/pocs/foo.poc.ts
+cp .env.example .env
 ```
 
-## E2E
+Set `ZAI_API_KEY` in `.env`, then run:
 
-Use the OrbStack machine lane for end-to-end tests:
-
-```bash
-bun run setup:e2e
-bun run test:e2e
-bun run test:e2e -- e2e/svvy-smoke.test.ts
-bun run test:e2e:startup-soak
-bun run check:e2e-coverage
-bun run check:e2e-coverage:complete
+```sh
+bun run dev:web
 ```
 
-`inspect:app` launches an isolated real dev app, prints compact browser-tools connection and
-semantic-driving commands, self-provisions missing pinned Electrobun release assets with bounded
-validated downloads, and owns the complete dev process group for deterministic cleanup. Add
-`--stub-provider` for a credential-free real prompt/stream/usage plus concurrent first-turn title
-generation lifecycle; the launcher prints the exact semantic smoke commands and its `Ctrl+C`
-cleanup contract. `setup:e2e`
-pre-provisions the dedicated native ARM64 OrbStack machine; every `test:e2e` invocation verifies and
-repairs that lane when its declared image, architecture, Bun version, or system packages drift.
-Linux dev and stable builds use the packaged CEF renderer, and the live harness rejects a fallback
-to WebKitGTK or an invalid persistent CEF profile. The app runtime currently uses Bun's official
-canary channel (minimum 1.4.0) because the latest stable runtime lacks a required native-thread FFI
-fix; every run records the actual revision. E2E runs retain host-visible runner logs, exact runtime
-provenance, fail on native cores even when journey assertions passed, and retain failure
-diagnostics under `e2e-results/<runId>/`. The authoritative operator, evidence, and exhaustive coverage contract is
-[docs/specs/testing-and-live-inspection.spec.md](./docs/specs/testing-and-live-inspection.spec.md).
-
----
-
-## svvy / electrobun-browser-tools
-
-Source: https://github.com/0xpolarzero/electrobun-browser-tools
-
-# electrobun-browser-tools
-
-Inspection-first bridge, CLI, and Playwright-style driver for Electrobun and Electron-backed desktop apps.
-
-It models the runtime as:
-
-`app -> window -> view -> layout -> node`
-
-The package now has two complementary surfaces:
-
-- `electrobun-browser-tools`: programmatic JS client, inspection CLI, bridge mounting helpers, catalog metadata, and shared types
-- `electrobun-browser-tools/bridge`: runtime-side bridge mounting helpers
-
-## Mount The Bridge
-
-The CLI and driver only work against apps that expose the bridge.
-
-For Electrobun apps, the standard setup is:
-
-```ts
-import { mountElectrobunToolBridge } from 'electrobun-browser-tools/bridge'
-
-await mountElectrobunToolBridge({
-  mainWindow,
-})
-```
-
-That starts a local Bun endpoint, registers the app by `appId`, and exposes the inspection and driver commands over the same transport.
-
-Common optional inputs include:
-
-- `appId`, `appName`, `appVersion`
-- `state`
-- `instrumentation`
-- `describeView`, `describeWindow`
-- `getActiveViewId`, `getActiveWindowId`
-- `windows`, `browserView`, `buildConfig`
-
-Use `mountToolBridge(...)` when you want the built-in server with a custom adapter. Use `createToolBridge(...)` when you want the fetch handler and will mount it yourself.
-
-## Inspection Mode
-
-Inspection mode is still the baseline capability set. It is read-heavy and centered on discovery, layout snapshots, live DOM reads, buffered events/logs/errors, state namespaces, and optional capture/network/perf helpers.
-
-Start with machine-readable output:
-
-```bash
-electrobun-browser-tools catalog --json
-electrobun-browser-tools doctor --app <app-id> --json
-electrobun-browser-tools status --app <app-id> --json
-electrobun-browser-tools tree --app <app-id> --json
-electrobun-browser-tools layout snapshot --app <app-id> --summary --json
-```
-
-Then drill into one target:
-
-```bash
-electrobun-browser-tools layout explain testid:checkout-submit --app <app-id> --json
-electrobun-browser-tools dom html testid:checkout-submit --outer --app <app-id> --json
-electrobun-browser-tools events tail --types dialog.opened --app <app-id> --json
-electrobun-browser-tools logs summary --app <app-id> --json
-electrobun-browser-tools state list --app <app-id> --json
-```
-
-If you already know the endpoint, use `--url <bridge-url>` instead of `--app <app-id>`.
-
-The CLI resolves connections in this order:
-
-- `--url`
-- `--app` through the local bridge registry
-- the only mounted bridge, when exactly one is registered
-
-Useful environment variables:
-
-- `EBT_APP`, `EBT_URL`, `EBT_TOKEN`, `EBT_WINDOW`, `EBT_VIEW`, `EBT_TIMEOUT`
-- `ELECTROBUN_BROWSER_TOOLS_APP`, `ELECTROBUN_BROWSER_TOOLS_URL`, `ELECTROBUN_BROWSER_TOOLS_TOKEN`, `ELECTROBUN_BROWSER_TOOLS_WINDOW`, `ELECTROBUN_BROWSER_TOOLS_VIEW`, `ELECTROBUN_BROWSER_TOOLS_TIMEOUT`
-
-To inspect the built-in mock fixture without a live app:
-
-```bash
-electrobun-browser-tools doctor --url mock://default --json
-```
-
-## Driver Mode
-
-The JavaScript client now covers both inspection and live-driving from the root package entrypoint. Locator actions resolve against the current DOM on each attempt instead of operating on stale snapshot node ids.
-
-```ts
-import { connect } from 'electrobun-browser-tools'
-
-const driver = await connect({
-  url: process.env.EBT_URL,
-  timeout: 15_000,
-})
-
-const page = driver.page('active')
-
-await page.getByTestId('customer-name').fill('Ada Lovelace')
-await page.getByTestId('order-notes').fill('Fragile')
-await page.locator('select[data-testid="shipping-speed"]').selectOption('express')
-await page.getByRole('radio', { name: /card/i }).check()
-await page.getByTestId('accept-terms').check()
-await page.getByTestId('reveal-secret').click()
-await page.getByTestId('secret-offer').waitFor({ state: 'visible' })
-await page.getByTestId('dismiss-promo').click()
-await page.waitForRequest(/submit/)
-await page.getByTestId('checkout-submit').click()
-await page.waitForURL(/#complete$/)
-
-console.log(await page.url())
-```
-
-Current high-level JavaScript surface:
-
-- `connect(options)`
-- `createCatalogPayload()`
-- `driver.doctor()`, `driver.status()`, `driver.tree()`
-- `driver.windows()`, `driver.window(ref).info()`, `driver.window(ref).focus()`, `driver.window(ref).screenshot()`
-- `driver.views(windowRef?)`
-- `driver.eventsWait()`, `driver.eventsTail()`, `driver.eventsSummary()`
-- `driver.logsTail()`, `driver.logsSearch()`, `driver.logsSummary()`
-- `driver.errorsList()`, `driver.errorsGet()`, `driver.errorsWatch()`
-- `driver.stateList()`, `driver.stateGet()`
-- `driver.networkTail()`, `driver.networkSummary()`, `driver.networkWait()`
-- `driver.perfSummary()`, `driver.perfMarks()`
-- `driver.compareSnapshots(before, after)`, `driver.exportSnapshot(snapshot)`
-- `driver.page(ref?)`
-- `driver.window(ref?)`
-- `page.locator(selector)`
-- `page.getByRole(role, { name? })`
-- `page.getByText(text)`
-- `page.getByTestId(testId)`
-- `page.view()`, `page.devtools(action)`
-- `page.url()`, `page.snapshot()`, `page.screenshot()`
-- `page.node()`, `page.hitTest()`, `page.explain()`
-- `page.ancestors()`, `page.descendants()`
-- `page.query()`, `page.text()`, `page.attrs()`, `page.style()`, `page.html()`
-- `page.waitForURL(url)`
-- `page.waitForEvent(eventName, { match? })`
-- `page.waitForRequest(url, { match? })`
-- `page.waitForResponse(url, { match? })`
-- `locator.filter({ has, hasText, visible })`
-- `locator.first()`, `locator.nth(index)`
-- `locator.resolve()`, `locator.count()`
-- `locator.textContent()`, `locator.innerHTML()`, `locator.isVisible()`, `locator.boundingBox()`
-- `locator.waitFor({ state })`
-- `locator.click()`, `locator.fill()`, `locator.clear()`, `locator.press()`
-- `locator.focus()`, `locator.blur()`, `locator.hover()`
-- `locator.check()`, `locator.uncheck()`, `locator.selectOption()`
-
-Action helpers accept `timeout`, and mutating locator actions also accept `force` when you need to bypass visibility or occlusion checks.
-
-## CLI Driver Commands
-
-The CLI now exposes the same live-driving capabilities in a bash-friendly form.
-
-Page-scoped commands:
-
-- `page view`
-- `page snapshot`
-- `page screenshot`
-- `page url`
-- `page resolve <targetRef>`
-- `page count <targetRef>`
-- `page text-content <targetRef>`
-- `page inner-html <targetRef>`
-- `page is-visible <targetRef>`
-- `page bounding-box <targetRef>`
-- `page click <targetRef>`
-- `page fill <targetRef> <value>`
-- `page clear <targetRef>`
-- `page press <targetRef> <key>`
-- `page focus <targetRef>`
-- `page blur <targetRef>`
-- `page hover <targetRef>`
-- `page check <targetRef>`
-- `page uncheck <targetRef>`
-- `page select-option <targetRef> <value>` or `--values a,b`
-- `page wait-for <targetRef>`
-- `page wait-for-url <matcher>`
-- `page wait-for-event <eventName>`
-- `page wait-for-request <matcher>`
-- `page wait-for-response <matcher>`
-
-Window-scoped alias:
-
-- `window screenshot`
-
-Example flow:
-
-```bash
-electrobun-browser-tools page fill testid:customer-name "Ada Lovelace" --app <app-id> --json
-electrobun-browser-tools page select-option testid:shipping-speed express --app <app-id> --json
-electrobun-browser-tools page check testid:accept-terms --app <app-id> --json
-electrobun-browser-tools page click testid:reveal-secret --app <app-id> --json
-electrobun-browser-tools page wait-for testid:secret-offer --state visible --app <app-id> --json
-electrobun-browser-tools page wait-for-request '/customer=Ada/' --app <app-id> --json
-electrobun-browser-tools page click testid:checkout-submit --app <app-id> --json
-electrobun-browser-tools page wait-for-url '*#complete' --app <app-id> --json
-electrobun-browser-tools page text-content testid:summary-output --app <app-id> --json
-```
-
-CLI page commands use live locator refs:
-
-- `css:button[data-testid="checkout-submit"]`
-- `testid:checkout-submit`
-- `role:button`
-- `role:button:Place order`
-- `text:Place order`
-
-`node:` refs are intentionally rejected for driver actions because they come from snapshots and are not stable live targets.
-
-For more complex locator composition, target-based page commands also accept:
-
-- `--scope` or `--within`
-- `--has`
-- `--has-text`
-- `--first`
-- `--nth`
-- `--visible true|false`
-- `--locator-json '{"kind":"role","role":"button","filters":[{"visible":true}]}'`
-
-Action commands support `--timeout`, and mutating commands also support `--force`.
-
-## Common Refs
-
-Window refs:
-
-- `active`
-- `id:2`
-- `title:Checkout`
-
-View refs:
-
-- `active`
-- `id:21`
-- `host:11`
-- `url:*checkout*`
-
-Target refs for layout and DOM inspection:
-
-- `node:n12`
-- `css:button[data-testid="checkout-submit"]`
-- `testid:checkout-submit`
-- `role:button`
-- `role:button:Place order`
-- `text:Place order`
-
-Most layout and DOM commands can reuse a cached snapshot with `--snapshot <snapshot-id>`.
-
-## Capabilities And Limits
-
-- Sandboxed views remain partial. They can expose events and metadata, but live DOM inspection and DOM-based driver actions require a DOM-capable view.
-- Screenshot capture is runtime-specific. Built-in Electrobun screenshot support currently targets the visible on-screen region instead of full-page content.
-- The built-in Electrobun screenshot path is currently tied to the default `electrobun/bun` runtime on macOS.
-- `page.screenshot()` and `window.screenshot()` route through the existing capture layer, so unsupported platforms and runtimes still fail explicitly rather than silently degrading.
-- `page.waitForRequest()` and `page.waitForResponse()` use the bridge's in-page network instrumentation, so they depend on mounted instrumentation rather than generic browser devtools parity.
-- `unsafe.evaluate()` is intentionally not part of the first stable driver surface.
-
-Run `doctor --json` to inspect both legacy capability booleans and the richer detailed capability flags exposed by the bridge.
-
-## Lower-Level APIs
-
-If you need a custom adapter or want to mount the bridge yourself, the lower-level APIs are still available:
-
-- `createToolBridge(options)`
-- `mountToolBridge(options)`
-- `mountElectrobunToolBridge(options)`
-
-`mountElectrobunToolBridge(...)` accepts the lower-level bridge options too, including `host`, `port`, `path`, buffer sizes, `capabilities`, and `getRecent`.
-
-Apps still own domain-specific state. Use the bridge `state` option to expose that cleanly:
-
-```ts
-await mountElectrobunToolBridge({
-  mainWindow,
-  state: {
-    workspace: () => ({
-      cwd: process.cwd(),
-      branch: currentBranch,
-    }),
-    sessions: () => ({
-      activeSessionId,
-      total: sessions.length,
-    }),
-  },
-})
-```
-
-## Testing
-
-The repo now validates the driver and inspection surfaces with:
-
-- protocol and capability registry tests
-- subprocess CLI tests
-- typed JavaScript client and driver API tests
-- a live Bun-hosted Electrobun runtime fixture
-- a live Electron fixture through the lower-level bridge API
-
-Useful local checks:
-
-```bash
-bun run typecheck
-bun run build
-bun run test
-```
-
----
-
-## svvy / electrobun-e2e
-
-Source: https://github.com/0xpolarzero/electrobun-e2e
-
-# electrobun-e2e
-
-`electrobun-e2e` is a small shared package for running Electrobun end-to-end suites headless on Linux inside an OrbStack machine.
-
-It is intentionally narrow:
-
-- one execution path only: synced from the current macOS checkout into an OrbStack Ubuntu machine
-- one display mode only: headless under `dbus-run-session` plus `xvfb-run`
-- reusable Electrobun launch/build/orchestration helpers with consumer-defined app readiness and fixtures
-
-It does not provide:
-
-- Docker support
-- visible local desktop e2e runs
-- a framework for app-specific selectors, fixtures, auth seeding, or product assertions
-
-## Prerequisites
-
-- macOS with OrbStack installed and running
-- Bun installed on the host
-- an Electrobun app repository
-- the consumer repository depending on this package via a sibling `file:../electrobun-e2e` dependency
-
-## Consumer Integration
-
-1. Add the sibling dependency:
-
-```json
-{
-  "devDependencies": {
-    "electrobun-e2e": "file:../electrobun-e2e"
-  }
-}
-```
-
-2. Add an `electrobun-e2e.config.ts` file in the consumer repo:
-
-```ts
-import { defineElectrobunE2EConfig } from "electrobun-e2e/config";
-
-export default defineElectrobunE2EConfig({
-  appName: "my-app",
-  runtimeEnv: {
-    MY_APP_E2E_HEADLESS: "1",
-  },
-});
-```
-
-3. Point package scripts at the shared CLI:
-
-```json
-{
-  "scripts": {
-    "setup:e2e": "electrobun-e2e setup",
-    "test:e2e": "electrobun-e2e run"
-  }
-}
-```
-
-4. Wrap the shared runtime launcher inside the consumer harness:
-
-```ts
-import {
-  createJsonBridgeMetadataParser,
-  ensureElectrobunBuilt,
-  launchElectrobunApp,
-  withElectrobunApp,
-} from "electrobun-e2e";
-
-const PROJECT_ROOT = process.cwd();
-
-const bridgeMetadata = {
-  metadataLabel: "my-app bridge metadata",
-  parseLine: createJsonBridgeMetadataParser("my-app bridge:"),
-  processLabel: "my-app",
-};
-
-export function ensureBuilt() {
-  return ensureElectrobunBuilt({ projectRoot: PROJECT_ROOT });
-}
-
-export function launchMyApp() {
-  return launchElectrobunApp({
-    projectRoot: PROJECT_ROOT,
-    bridgeMetadata,
-    ready: async ({ page }) => {
-      await page.getByRole("button", { name: "Open settings" }).waitFor({ state: "visible" });
-    },
-    env: {
-      MY_APP_E2E_HEADLESS: "1",
-    },
-  });
-}
-
-export function withMyApp(fn: (app: Awaited<ReturnType<typeof launchMyApp>>) => Promise<void>) {
-  return withElectrobunApp(
-    {
-      projectRoot: PROJECT_ROOT,
-      bridgeMetadata,
-      ready: async ({ page }) => {
-        await page.getByRole("button", { name: "Open settings" }).waitFor({ state: "visible" });
-      },
-      env: {
-        MY_APP_E2E_HEADLESS: "1",
-      },
-    },
-    fn,
-  );
-}
-```
-
-The harness is where app-specific behavior belongs:
-
-- bridge log prefix assumptions
-- environment variable names
-- workspace-ready selectors
-- seeded fixture files and auth/session state
-- product assertions
-
-## OrbStack Machine Setup
-
-Create or update the Linux machine once from the consumer repository:
-
-```bash
-bun run setup:e2e
-```
-
-By default this:
-
-- creates an OrbStack machine named `<app-name>-e2e`
-- installs Bun matching the consumer repo's `packageManager`
-- installs the base Linux packages Electrobun needs to build and launch
-- prepares `$HOME/code`
-
-Supported config fields:
-
-- `appName`: required, used for default machine and workspace names
-- `machineName`: optional override for the OrbStack machine name
-- `linuxWorkspaceDir`: optional override for the Linux checkout path
-- `machineImage`: optional override, defaults to `ubuntu:24.04`
-- `extraAptPackages`: optional extra Ubuntu packages
-- `runtimeEnv`: optional extra environment variables for the test run
-- `syncExcludes`: optional extra rsync excludes
-- `testFileGlobs`: optional discovery globs when no explicit test args are passed
-- `testCommand`: optional command override; forwarded args are appended
-- `installCommand`: optional install command, defaults to `bun install --frozen-lockfile`
-- `buildCommand`: optional build command, defaults to `bun run build`
-- `localDependencyPaths`: optional extra sibling-style directories to sync before install
-
-Environment overrides:
-
-- `ELECTROBUN_E2E_ORB_MACHINE`
-- `ELECTROBUN_E2E_ORB_WORKSPACE`
-- `ELECTROBUN_E2E_LAUNCH_RETRIES`
-- `ELECTROBUN_E2E_LAUNCH_RETRY_DELAY_MS`
-
-## Headless Test Runs
-
-Run the full suite from the consumer repository:
-
-```bash
-bun run test:e2e
-```
-
-Run a subset by forwarding test files after `--`:
-
-```bash
-bun run test:e2e -- e2e/smoke.test.ts
-```
-
-The shared runner:
-
-- syncs the consumer repo into the Linux machine
-- syncs this shared package into a sibling Linux path so `file:../electrobun-e2e` installs still work
-- installs synced sibling Bun packages before installing the consumer workspace
-- installs dependencies inside the Linux workspace
-- builds the Electrobun app
-- runs tests under `dbus-run-session` and `xvfb-run`
-
-## What The Consumer Must Provide
-
-- a local sibling dependency on `../electrobun-e2e`
-- an `electrobun-e2e.config.ts` file
-- app-specific readiness checks for the renderer shell
-- app-specific bridge log parsing strategy when the default JSON prefix helper is not enough
-- any app-specific temp-home fixtures, control files, or seeded auth/session state
-- product assertions and selectors
+Open [http://localhost:5173](http://localhost:5173). Check the API at [http://localhost:3000/health](http://localhost:3000/health).
+
+The startup command waits for PostgreSQL, creates the configured database when
+needed, applies migrations, and then starts the API, worker, and demo together.
+Set `HARTLIB_POSTGRES_HOST_PORT` and the matching port in `DATABASE_URL` when
+5432 is already in use. `bun run dev` is an alias for the same local demo
+startup. `DATABASE_URL` must use a loopback host and an explicit user; the
+startup process rejects routing query overrides (including the case-insensitive
+`connectionString` override), credential-bearing PostgreSQL query parameters,
+raw ASCII control characters, paths that do not name exactly one database
+segment (including literal or encoded dot segments), ambiguous encoded
+URI-reserved characters, and database names above PostgreSQL's 63-byte limit.
+
+The startup database check uses the container's local TCP endpoint and the
+credentials from `DATABASE_URL`; the published host port binds to `127.0.0.1`
+only. Local development orchestration supports macOS and Linux only and rejects
+Windows before starting Docker or any application process. The canonical
+`DATABASE_URL` keeps its supported query options for migrations and apps; the
+`psql` maintenance check copies only its explicit libpq connection-option
+allowlist, so options such as `statement_timeout` do not enter that URL. See
+[the local development specification](docs/engineering.spec.md#local-development-startup)
+for the full option policy.
+
+To let Hartlib search the web, set `TINYFISH_API_KEY` in `.env`.
+
+## Specifications
+
+- [Product and user flows](docs/design.spec.md)
+- [Architecture and development rules](docs/engineering.spec.md)
+- [AI chat runtime](docs/ai-chat-runtime.spec.md)
+- [Public-source marketplace and ingestion](docs/public-source-marketplace.research.md)
+- [Commercial model](docs/commercial-model.spec.md)
+- [Production readiness](docs/production-readiness.spec.md)
+- [Localization](docs/localization.spec.md)
+
+## License
+
+[MIT](LICENSE)
 
 ---
 
@@ -6774,5 +7293,3 @@ A deep appreciation goes to Patrick Collins for this free and thorough course. T
 - Could not fetch README for Tevm (https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-matchers)
 - Could not fetch README for Tevm (https://github.com/evmts/tevm-monorepo/tree/main/extensions/test-node)
 - Skipped README outside GitHub owner allowlist: https://github.com/smartcontractkit/full-blockchain-solidity-course-js
-- Skipped README outside GitHub owner allowlist: https://github.com/amontlabs/silo
-- Skipped README outside GitHub owner allowlist: https://github.com/amontlabs/lcu

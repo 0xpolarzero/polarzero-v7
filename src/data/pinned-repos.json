@@ -1,13 +1,13 @@
 {
   "repos": [
     {
-      "name": "silo",
-      "nameWithOwner": "amontlabs/silo",
-      "url": "https://github.com/amontlabs/silo",
-      "description": "Computers for your agents. Run Linux sandboxes locally or remotely, with a desktop and computer use.",
-      "language": "Rust",
-      "languageColor": "#dea584",
-      "stars": 5,
+      "name": "fjord",
+      "nameWithOwner": "amontlabs/fjord",
+      "url": "https://github.com/amontlabs/fjord",
+      "description": "[WIP] The power without the storm: Fjord connects your agents to everything they work with.",
+      "language": "Swift",
+      "languageColor": "#F05138",
+      "stars": 0,
       "forks": 1
     },
     {
@@ -17,18 +17,28 @@
       "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 2015,
-      "forks": 126
+      "stars": 2016,
+      "forks": 128
     },
     {
-      "name": "svvy",
-      "nameWithOwner": "0xpolarzero/svvy",
-      "url": "https://github.com/0xpolarzero/svvy",
-      "description": "A strategic coding workbench for directing bounded, workflow-backed agent work.",
-      "language": "TypeScript",
-      "languageColor": "#3178c6",
-      "stars": 3,
-      "forks": 2
+      "name": "silo",
+      "nameWithOwner": "amontlabs/silo",
+      "url": "https://github.com/amontlabs/silo",
+      "description": "Computers for agents: sandboxed Linux and macOS VMs with a desktop and computer use.",
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "stars": 5,
+      "forks": 1
+    },
+    {
+      "name": "sic",
+      "nameWithOwner": "amontlabs/sic",
+      "url": "https://github.com/amontlabs/sic",
+      "description": "[WIP] Live fact-checking of political debates against official sources.",
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "stars": 0,
+      "forks": 0
     },
     {
       "name": "evmstate",
@@ -48,16 +58,6 @@
       "language": "TypeScript",
       "languageColor": "#3178c6",
       "stars": 13,
-      "forks": 4
-    },
-    {
-      "name": "savvy",
-      "nameWithOwner": "polareth/savvy",
-      "url": "https://github.com/polareth/savvy",
-      "description": "An interface for the EVM in the browser, to simulate and visualize your onchain activity.",
-      "language": "TypeScript",
-      "languageColor": "#3178c6",
-      "stars": 27,
       "forks": 4
     }
   ]

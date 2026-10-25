@@ -14,6 +14,10 @@ export const SOCIALS = [
     href: "https://x.com/0xpolarzero",
   },
   {
+    label: "Sponsor",
+    href: "https://github.com/sponsors/amontlabs",
+  },
+  {
     label: "Email",
     href: "mailto:contact@polarzero.xyz",
     copy: "contact@polarzero.xyz",

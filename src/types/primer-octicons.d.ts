@@ -9,6 +9,7 @@ declare module "@primer/octicons" {
     mention: Octicon;
     star: Octicon;
     "repo-forked": Octicon;
+    heart: Octicon;
   };
 
   export default octicons;

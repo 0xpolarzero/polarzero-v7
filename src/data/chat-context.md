@@ -40,6 +40,7 @@ Email: contact@polarzero.xyz
 
 - GitHub: https://github.com/0xpolarzero
 - Twitter: https://x.com/0xpolarzero
+- Sponsor: https://github.com/sponsors/amontlabs
 - Email: contact@polarzero.xyz
 
 # Shared description links
@@ -80,7 +81,7 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2207
+Stars: 2211
 Forks: 141
 
 ## silo

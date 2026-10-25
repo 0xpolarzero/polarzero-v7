@@ -80,7 +80,7 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2203
+Stars: 2207
 Forks: 141
 
 ## silo
@@ -1322,7 +1322,7 @@ claude plugin install lcu@lcu
 
 - **Desktop apps:** read windows, click, type, and take screenshots.
 - **Chrome, when enabled:** read and control tabs through the official extension, with site approval.
-- **In your harness:** adapters are available for Pi, Codex CLI, and Claude Code, with experimental Oh My Pi, Hermes and DeepSeek Harness integrations. See [setup and verification limits](docs/ADAPTERS.md).
+- **In your harness:** adapters are available for Pi, Codex CLI, and Claude Code, with experimental Oh My Pi, Hermes, DeepSeek Harness and Junie integrations. With Junie, app approvals are permanent until revoked: Junie cannot show LCU's per-app prompt, so it runs `lcu apps allow <App>` itself and each approval lasts until `lcu apps revoke <App>`. See [setup and verification limits](docs/ADAPTERS.md).
 
 ## Approve apps from Claude, natively
 

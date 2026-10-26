@@ -17,8 +17,8 @@
       "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 2228,
-      "forks": 145
+      "stars": 2236,
+      "forks": 146
     },
     {
       "name": "silo",
@@ -27,7 +27,7 @@
       "description": "Computers for agents: sandboxed Linux and macOS VMs with a desktop and computer use.",
       "language": "Rust",
       "languageColor": "#dea584",
-      "stars": 5,
+      "stars": 6,
       "forks": 1
     },
     {

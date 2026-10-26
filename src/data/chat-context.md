@@ -81,8 +81,8 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2228
-Forks: 145
+Stars: 2236
+Forks: 146
 
 ## silo
 
@@ -90,7 +90,7 @@ Repository: amontlabs/silo
 URL: https://github.com/amontlabs/silo
 Description: Computers for agents: sandboxed Linux and macOS VMs with a desktop and computer use.
 Primary language: Rust
-Stars: 5
+Stars: 6
 Forks: 1
 
 ## sic

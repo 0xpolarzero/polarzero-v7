@@ -81,8 +81,8 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2265
-Forks: 151
+Stars: 2277
+Forks: 152
 
 ## silo
 

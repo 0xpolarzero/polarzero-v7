@@ -17,14 +17,14 @@
       "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 2371,
+      "stars": 2376,
       "forks": 156
     },
     {
       "name": "silo",
       "nameWithOwner": "amontlabs/silo",
       "url": "https://github.com/amontlabs/silo",
-      "description": "Computers for agents: sandboxed Linux and macOS VMs with a desktop and computer use.",
+      "description": "Embeddable engine that runs each AI agent in its own sandboxed Linux or macOS VM, with scoped GitHub access and credentials it can use but not read. Host: macOS on Apple Silicon today; Linux engine builds in CI, daemon next.",
       "language": "Rust",
       "languageColor": "#dea584",
       "stars": 7,

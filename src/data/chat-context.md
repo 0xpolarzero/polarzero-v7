@@ -81,14 +81,14 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2371
+Stars: 2376
 Forks: 156
 
 ## silo
 
 Repository: amontlabs/silo
 URL: https://github.com/amontlabs/silo
-Description: Computers for agents: sandboxed Linux and macOS VMs with a desktop and computer use.
+Description: Embeddable engine that runs each AI agent in its own sandboxed Linux or macOS VM, with scoped GitHub access and credentials it can use but not read. Host: macOS on Apple Silicon today; Linux engine builds in CI, daemon next.
 Primary language: Rust
 Stars: 7
 Forks: 1
@@ -666,7 +666,7 @@ Computers for agents. Silo is an engine that runs sandboxed Linux and macOS virt
 
 Apps embed Silo through `silod`, a daemon they talk to over a local socket with a versioned JSON protocol. [Fjord](https://github.com/amontlabs/fjord) is built on it.
 
-[Engine releases](https://github.com/amontlabs/silo/releases?q=engine-v&expanded=true) · [Documentation](docs/README.md) · [Silo app](#silo-app) · [Website and demo](https://silo.amontlabs.com)
+[Engine releases](https://github.com/amontlabs/silo/releases?q=engine-v&expanded=true) · [Documentation](docs/README.md) · [Threat model](docs/THREAT-MODEL.md) · [Roadmap](docs/ROADMAP.md) · [Silo app](#silo-app) · [Website and demo](https://silo.amontlabs.com)
 
 ## What it does
 
@@ -713,7 +713,7 @@ The engine, computer runtime, base Linux image, and Git tools are bundled. Silo 
 
 | Platform | Requirements | Download |
 | --- | --- | --- |
-| macOS | Apple Silicon, macOS 14+ | [DMG](https://github.com/amontlabs/silo/releases/latest/download/Silo-macos-arm64.dmg) |
+| macOS | Apple Silicon, macOS 15+ | [DMG](https://github.com/amontlabs/silo/releases/latest/download/Silo-macos-arm64.dmg) |
 
 **macOS:** open the DMG and drag Silo to Applications. The app is not notarized; first launch may require **System Settings → Privacy & Security → Open Anyway**.
 
@@ -750,7 +750,7 @@ and `src-tauri/silod/`, the app's React in `src/` and Tauri shell in `src-tauri/
 and build tooling in `scripts/`. Start with the [repository README](../README.md)
 to embed the engine or install the app, [Using the Silo app](SiloUI-APP.md), or the
 [source-build guide](SiloUI-BUILD-FROM-SOURCE.md) to develop it with your own
-GitHub App.
+GitHub App. Planned work is in the [roadmap](ROADMAP.md).
 
 This index has three parts: [current implementation](#current-implementation-and-operations),
 [current research and evidence](#current-research-and-design-evidence), and
@@ -766,6 +766,7 @@ that every platform or live VM workflow has been exercised.
 
 | Area | Documents |
 | --- | --- |
+| Security | [Threat model](THREAT-MODEL.md): attacker, assets, trust boundaries with code references, and non-goals |
 | Vocabulary | [Silo vocabulary](SiloUI-VOCABULARY.md): the terms (computer, device, Connections, workspace, sandboxed) and the identifiers that keep older names |
 | Build and release | [Build from source](SiloUI-BUILD-FROM-SOURCE.md), [build channels (production and Dev)](SiloUI-BUILD-CHANNELS.md), [release workflow and CI](SiloUI-RELEASES.md), [historical Linux system updates](SiloUI-LINUX-UPDATES.md), [historical distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
 | Using the app | [Using the Silo app](SiloUI-APP.md): create a computer, open a project and development server, open the desktop, and connect another device |
@@ -775,11 +776,12 @@ that every platform or live VM workflow has been exercised.
 | Native tests | [Rust test support and live-test boundaries](SiloUI-RUST-TEST-SUPPORT.md), [skipped and ignored test audit, 2026-10-02](SiloUI-TEST-SKIP-AUDIT-2026-10-02.md) |
 | Platform verification | [Historical Linux host verification](SiloUI-LINUX-VERIFICATION.md), [Linux verification session, 2026-09-30](research/linux-verification-2026-09-30.md), [Linux acceptance, 2026-09-25](research/silo-linux-acceptance-2026-09-25.md), [macOS VM library loading](SiloUI-LIBRARY-CONSTRAINTS.md), [dependencies, export and import testing](SiloUI-DEPENDENCIES-BACKUP-TESTING.md) |
 | Connections | [Connections and Quit behavior](SiloUI-CONNECTIONS.md), [managed SSH access](SiloUI-MANAGED-SSH.md) |
+| Security evals | [Isolation evals](evals/README.md): re-runnable scenarios that try to reach the Mac's files and network, other computers, secrets and ungranted repositories from inside a computer, with published results |
 | GitHub and secrets | [GitHub implementation](SiloUI-GITHUB-IMPLEMENTATION.md), [personal GitHub tokens](SiloUI-GITHUB-PERSONAL-TOKENS.md), [secrets](SiloUI-SECRETS.md), [secret placeholders in agent requests](SiloUI-AGENT-PLACEHOLDER-STALL.md), [0.4.4 authentication investigation](SiloUI-GITHUB-044-AUTH-INVESTIGATION.md) |
 | Computer tools | [Working account](SiloUI-WORKING-ACCOUNT.md), [computer migration](SiloUI-WORKING-ACCOUNT-MIGRATION.md), [Linux desktop](SiloUI-DESKTOP.md), [macOS computers](SiloUI-MACOS-COMPUTERS.md), [computer-use plan](SiloUI-COMPUTER-USE-PLAN.md), [Files](SiloUI-FILES.md), [network](SiloUI-NETWORK-PLAN.md), [terminal handoff](SiloUI-TERMINAL-HANDOFF.md), [editor and browser handoff](SiloUI-EDITOR-HANDOFF.md) |
 | Logs | [Retained history, search and export](SiloUI-LOGS.md), [computer failure reporting](SiloUI-FAILURE-REPORTING.md) |
 | Storage | [Workspace disk reclamation policy and verification](SiloUI-STORAGE-RECLAMATION.md), [disk discard regression](SiloUI-STORAGE-DISCARD-RESEARCH.md) |
-| Desktop | [Built-in desktop and computer use plan](SiloUI-COMPUTER-USE-PLAN.md): approved 2026-10-01, replaces optional desktops and Luda for new computers. [Pinned ChatGPT app manager](SiloUI-CHATGPT-APP.md): device download, verification and extraction. [Background preparation](SiloUI-PREPARATION.md): launch-time computer image import and LCU download. [Detached desktop implementation record](SiloUI-DETACHED-DESKTOP-IMPLEMENTATION-PLAN.md): September Selkies rollout and its original design evidence. Existing Kasm guests remain supported until explicit update. [Viewer integration plan](SiloUI-VIEWER-INTEGRATION-PLAN.md): proposed clipboard, file transfer, audio and window-sized screen work. [Viewer direction](SiloUI-DESKTOP-VIEWER-DIRECTION.md) and [experience research](SiloUI-DESKTOP-EXPERIENCE-RESEARCH.md) record rationale and limits. |
+| Desktop | [Built-in desktop and computer use plan](SiloUI-COMPUTER-USE-PLAN.md): approved 2026-10-01, replaces optional desktops and Luda for new computers. The plan now starts with the 2026-11-03 Cua Driver decision for Linux and macOS computers; LCU and the ChatGPT app are history there. [Pinned ChatGPT app manager (superseded)](archive/SiloUI-CHATGPT-APP.md): the removed device download. [Background preparation](SiloUI-PREPARATION.md): launch-time computer image import. [Cua Driver vs Codex computer use, 2026-11-03](research/cua-vs-codex-computer-use-2026-11-03.md): why Cua Driver. [Detached desktop implementation record](SiloUI-DETACHED-DESKTOP-IMPLEMENTATION-PLAN.md): September Selkies rollout and its original design evidence. Existing Kasm guests remain supported until explicit update. [Viewer integration plan](SiloUI-VIEWER-INTEGRATION-PLAN.md): proposed clipboard, file transfer, audio and window-sized screen work. [Viewer direction](SiloUI-DESKTOP-VIEWER-DIRECTION.md) and [experience research](SiloUI-DESKTOP-EXPERIENCE-RESEARCH.md) record rationale and limits. |
 | Desktop behavior | [Settings](SiloUI-SETTINGS.md), [native menus](SiloUI-NATIVE-MENUS.md), [status panel](SiloUI-STATUS-PANEL.md), [notifications](SiloUI-NOTIFICATIONS.md), [macOS title-bar alignment](SiloUI-TITLEBAR-ALIGNMENT.md), [glass material](SiloUI-GLASS-STUDY.md) |
 
 [Bundled application help](../app/SiloUI/docs/silo-help.html) describes the user-facing
@@ -794,7 +796,8 @@ above for current behavior and build commands.
 
 - [Second code review pass, 2026-10-02](SiloUI-CODE-REVIEW-PASS-2-2026-10-02.md): 11 additional findings at `a1197ae` from three specialist subagents and integration review, covering log redaction, GitHub policy preservation, checkpoint restore contracts, and native routing/repair; verifies the earlier approval-race fix and separately records a compilation failure on an intermediate revision.
 - [Comprehensive code review, 2026-10-02](SiloUI-CODE-REVIEW-2026-10-02.md): consolidates 26 findings and 11 improvement opportunities, including four additional settings, migration, remote-checkpoint, and status-subscription defects; separates fresh verification from prior evidence and defines regression and live-qualification criteria.
-- [Background preparation flows, 2026-10-03](research/background-preparation-flows-2026-10-03.md): VM image import, LCU archive, creation boot, operation queue and start flow, with verified code paths and open questions. The resulting design is in [background preparation](SiloUI-PREPARATION.md).
+- [Cua Driver vs Codex computer use, 2026-11-03](research/cua-vs-codex-computer-use-2026-11-03.md): the comparison behind the move from LCU and the ChatGPT app to Cua Driver on Linux and macOS, with licence and DMCA exposure.
+- [Background preparation flows, 2026-10-03](research/background-preparation-flows-2026-10-03.md): VM image import, LCU archive (since removed), creation boot, operation queue and start flow, with verified code paths and open questions. The resulting design is in [background preparation](SiloUI-PREPARATION.md).
 - [LCU registration for harnesses installed later, 2026-10-03](research/lcu-agent-preregistration-2026-10-03.md): what LCU 0.8.7 does for absent harnesses, what each registers, existing multi-client installers, and the `--allow-missing` plus `--reconcile` design.
 - [Independent current-checkout review, 2026-10-02](research/codebase-review-current-2026-10-02.md): 22 findings and 10 improvement opportunities, including six additional defects and a follow-up on the concurrent computer-use merge, independently checked reproductions, verification results, and explicit qualification gaps.
 - [Code review, 2026-10-02](research/codebase-review-2026-10-02.md): 16 current findings and 9 improvement opportunities, with deterministic reproductions, prioritized fixes, local check results, and live-verification limits.
@@ -931,6 +934,126 @@ kept on the `archive/media-and-experiments` branch and at
 - [Historical ext4 discard investigation](../artifacts/ext4-raw-image-root-cause.html): upstream MicroSandbox v0.6.8 reproduction and regression requirements; not current app validation.
 - Branding studies: [logo system](../artifacts/silo-logo-system.html), [proportions](../artifacts/silo-proportion-study.html), [structure](../artifacts/silo-structure-study.html), and [top-down study](../artifacts/silo-top-down-study.html).
 - Superseded film renders were removed from `main`; they remain on the `archive/media-and-experiments` branch and in the history of `artifacts/`.
+
+### Inlined linked README: Isolation evals
+
+Source: https://github.com/amontlabs/silo/blob/main/docs/evals/README.md
+
+# Isolation evals
+
+These scripts check, on a real Mac, what code running inside a Silo computer can and
+cannot reach. Each scenario plays the attacker Silo is built for: a prompt-injected
+agent with **root inside a Linux computer**. It tries to cross one boundary, and a
+positive control in the same scenario proves the probe itself worked. Anyone can
+re-run them and compare against the published results.
+
+Results are reported as they come out. A scenario that is expected to leak today
+says so up front (`known-gap`) instead of being left out.
+
+## Scenarios
+
+| ID | Attempt from inside the guest | Boundary under test | Expected today |
+| --- | --- | --- | --- |
+| `host-files` | Find a random canary written to the Mac's home folder and `/tmp`, by reading every file in the guest; write into the read-only folders older computers keep | VM boundary; the guest gets its own disk and `/workspace`; computers from before Cua Driver also keep empty read-only `/opt/silo/chatgpt` and `/opt/silo/lcu` | pass |
+| `host-network` | Connect to a listener on the Mac's `127.0.0.1`, the Mac's LAN address, and `169.254.169.254`, through `host.microsandbox.internal` and the default gateway | Runtime network policy: default deny, allow public addresses and host DNS (port 53) only ([profile](../../app/SiloUI/src-tauri/guest/github-network-default.json)) | pass |
+| `computer-to-computer` | Connect to a listener in a second computer, directly and through that computer's published port | Separate network stack per computer; published ports bind to the Mac's `127.0.0.1` | pass |
+| `secret-in-guest` | Read a disposable secret's real value from the environment, any process, or any file | Placeholder substitution in the runtime's TLS proxy ([secrets](../SiloUI-SECRETS.md)) | pass |
+| `secret-other-hosts` | Send the secret to a host outside its allowed list, and to an allowed host over plain HTTP | Allowed-host list and TLS identity requirement | pass |
+| `secret-reflected` | Send the secret to its allowed host, which echoes headers back | None: an allowed server receives the real value and can return it | known-gap |
+| `open-egress` | Post a file from `/workspace` to an arbitrary public host | None yet: there is no egress allowlist | known-gap |
+| `github-scope` | Push a branch to a repository granted read-only, and to a repository not granted; look for a real GitHub token | GitHub App user token scoped per computer, injected only for GitHub hosts ([GitHub](../SiloUI-GITHUB-IMPLEMENTATION.md)) | pass |
+| `engine-socket` | (On the Mac) reach the engine socket as another macOS user | Socket folder mode `0700`; `silod` checks the peer's uid | pass |
+| `same-user-client` | (On the Mac) drive the engine from an unsigned script run as the same user | None yet: the socket has no client authentication | known-gap |
+
+Verdicts: `pass` (the boundary held and the control worked), `fail` (the boundary did
+not hold), `known-gap` (a documented limitation was reproduced), `inconclusive` (a
+control failed, so the run proves nothing either way), `skipped` (prerequisites not
+given), `error` (the eval broke). The script exits non-zero on any `fail` or `error`.
+
+### What these evals do not cover
+
+- Malware already running as your macOS user. It can use the engine socket directly
+  (`same-user-client`) and read anything your user can; Silo does not defend against it.
+- Hypervisor or kernel escapes. The evals check configuration and policy, not
+  Apple's Virtualization framework or libkrun for memory-safety bugs.
+- macOS computers. Every scenario targets Linux computers.
+- Personal-token GitHub mode, which grants the token's full permissions by design.
+- Denial of service, resource exhaustion, and side channels.
+
+## Run them
+
+You need an Apple Silicon Mac with the Silo app installed and running, and about
+20 minutes. The scripts use only the macOS `python3` (3.9 or newer) and talk to the
+engine over `~/.silo/engine.sock`, the same socket the app uses.
+
+1. **Create two disposable computers** in Silo named `silo-eval-a` and `silo-eval-b`
+   (any size; a desktop is not needed) and start both. The script refuses to run
+   against computers whose names do not start with `silo-eval`, because it runs
+   commands as root in them, adds and removes a secret, and restarts `silo-eval-a`.
+2. **For `github-scope`** (optional): in Silo, connect GitHub with the Silo GitHub
+   App (not a personal token). Grant `silo-eval-a` **read-only** access to one
+   repository, preferably private, for example a scratch repository. Pick a second
+   repository you can push to that is **not** granted to `silo-eval-a`. The scenario
+   pushes an empty orphan branch named `silo-eval-<random>` and deletes it again if
+   the push ever succeeds.
+3. **Run** from a checkout of this repository:
+
+   ```sh
+   python3 docs/evals/silo_eval.py \
+     --computer silo-eval-a --peer silo-eval-b \
+     --github-readable OWNER/READ-ONLY-REPO \
+     --github-ungranted OWNER/OTHER-REPO
+   ```
+
+   Add `--other-user nobody` to try the socket as another user (needs passwordless
+   `sudo`). Use `--only <id> ...` to run some scenarios, `--no-secrets` to skip the
+   secret scenarios, `--channel development` for a Silo Dev build, and `--list` to
+   print the scenarios.
+4. **Read and publish the result.** The run writes
+   `docs/evals/results/<date>-<commit>.md` and a `.json` with the full evidence.
+   Check the evidence for anything private before committing it: it contains guest
+   mount lists, network addresses, and the names of the repositories you passed.
+   The secret's value is replaced with `<REAL-SECRET-VALUE>` in the report.
+
+What the run changes, and undoes at the end: a canary file in your home folder and
+`/tmp`; a listener on `127.0.0.1` and on your LAN address for a few seconds (macOS
+may ask whether Python may accept incoming connections: either answer works, and
+Deny is the stricter test); a secret named `EVAL_CANARY_<random>` (a new name each run, so none of your secrets is touched) assigned to `silo-eval-a`
+with allowed host `httpbingo.org` (macOS may ask for Keychain access); one restart of
+`silo-eval-a`; a published port on `silo-eval-b`; temporary files in both guests.
+
+Network services used: `example.com` (connectivity control), `httpbingo.org` and
+`postman-echo.com` (echo services that show what the guest actually sent).
+
+### How the probes avoid fooling themselves
+
+- Every blocked attempt is paired with an attempt that must succeed: the guest must
+  reach `example.com`, the Mac must reach its own listener, the peer's listener must
+  answer locally and on its published port, the read-only repository must be readable.
+  If a control fails the verdict is `inconclusive`, never `pass`.
+- The canary and the secret are sent to the guest's scanner hex-encoded, so the scan
+  cannot find its own arguments.
+- The self-tests (`test_silo_eval.py`) run every scenario against a fake engine
+  whose "guest" is the test machine itself, with no isolation at all, and require
+  `fail` verdicts. CI runs them on every pull request.
+
+## Results
+
+| Date | Eval commit | Silo app | Result |
+| --- | --- | --- | --- |
+| 2026-11-03 | `0dae8805` | Silo Dev 0.11.1, engine 0.1.1 | [6 pass, 3 known-gap, 1 skipped](results/2026-11-03-0dae8805.md); `github-scope` skipped (GitHub not connected) |
+| 2026-11-03 | `74bd4f0a` | Silo Dev 0.11.1, engine 0.1.1 | [2 pass](results/2026-11-03-74bd4f0a.md): `github-scope` and `engine-socket` only |
+
+Add a row per published run, linking its report in `results/`. See the [results template](results/TEMPLATE.md) for the report format.
+
+## Files
+
+- [`silo_eval.py`](silo_eval.py): the runner and the scenarios.
+- [`engine_client.py`](engine_client.py): a small client for the engine socket's
+  length-prefixed JSON protocol.
+- [`probes/`](probes/): the Python programs each scenario runs inside the guest.
+- [`test_silo_eval.py`](test_silo_eval.py): self-tests against a fake engine.
+- [`results/`](results/): published reports.
 
 ### Inlined linked README: Micro-review index and finding counts
 
@@ -1078,11 +1201,10 @@ This is the standalone Rust crate for Silo's canonical engine wire contract.
 It owns only serde types and schema generation; it has no dependency on Tauri
 or engine behavior.
 
-When the engine workspace is ready, add this crate as a workspace member and
-depend on it by path. If `app/SiloUI/src-tauri/Cargo.toml` is the workspace
-root, the member path is `../api` and the dependency is
-`silo-api = { path = "../api" }`. Keep the crate's own manifest so it remains
-buildable on its own.
+The crate is a member of the Cargo workspace rooted at `app/SiloUI/Cargo.toml`.
+Workspace crates depend on it by path, for example
+`silo-api = { path = "../api" }` from `app/SiloUI/client`. Keep the crate's own
+manifest so it remains buildable on its own.
 
 The contract source is in `src/`. The checked-in schema is
 `schema/silo-api.schema.json` and is regenerated from the Rust types.

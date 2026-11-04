@@ -17,8 +17,8 @@
       "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 2377,
-      "forks": 157
+      "stars": 2382,
+      "forks": 158
     },
     {
       "name": "silo",
@@ -29,16 +29,6 @@
       "languageColor": "#dea584",
       "stars": 7,
       "forks": 1
-    },
-    {
-      "name": "sic",
-      "nameWithOwner": "amontlabs/sic",
-      "url": "https://github.com/amontlabs/sic",
-      "description": "[WIP] Live fact-checking of political debates against official sources.",
-      "language": "Python",
-      "languageColor": "#3572A5",
-      "stars": 0,
-      "forks": 0
     },
     {
       "name": "evmstate",
@@ -58,6 +48,16 @@
       "language": "TypeScript",
       "languageColor": "#3178c6",
       "stars": 13,
+      "forks": 4
+    },
+    {
+      "name": "savvy",
+      "nameWithOwner": "polareth/savvy",
+      "url": "https://github.com/polareth/savvy",
+      "description": "An interface for the EVM in the browser, to simulate and visualize your onchain activity.",
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "stars": 27,
       "forks": 4
     }
   ]

@@ -81,8 +81,8 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2377
-Forks: 157
+Stars: 2382
+Forks: 158
 
 ## silo
 
@@ -92,15 +92,6 @@ Description: Embeddable engine that runs each AI agent in its own sandboxed Linu
 Primary language: Rust
 Stars: 7
 Forks: 1
-
-## sic
-
-Repository: amontlabs/sic
-URL: https://github.com/amontlabs/sic
-Description: [WIP] Live fact-checking of political debates against official sources.
-Primary language: Python
-Stars: 0
-Forks: 0
 
 ## evmstate
 
@@ -118,6 +109,15 @@ URL: https://github.com/primodiumxyz/dex-indexer-stack
 Description: A full-stack for indexing DEX trades on Solana using Yellowstone GRPC and Timescale.
 Primary language: TypeScript
 Stars: 13
+Forks: 4
+
+## savvy
+
+Repository: polareth/savvy
+URL: https://github.com/polareth/savvy
+Description: An interface for the EVM in the browser, to simulate and visualize your onchain activity.
+Primary language: TypeScript
+Stars: 27
 Forks: 4
 
 # Portfolio and timeline
@@ -759,7 +759,7 @@ Researched 2026-11-03 from each project's own documentation; corrections welcome
 | Guests | Linux (Ubuntu 24.04, arm64 on Apple Silicon) and macOS | Unchanged |
 | Intel Macs | Not supported | Not planned |
 
-Silo app releases up to v0.11.1 also shipped Linux `.deb` and AppImage packages. Those builds predate the engine and are frozen at v0.11.1: they get no further updates.
+Silo app releases up to v0.11.1 also shipped Linux `.deb` and AppImage packages. Those builds predate the engine and are frozen at v0.11.1: they get no further updates, and their APT source is no longer re-signed, so `apt update` reports it as expired. Remove it with `sudo rm /etc/apt/sources.list.d/silo.sources`.
 
 ## How it fits together
 
@@ -792,7 +792,7 @@ The Silo app is a desktop app built on the engine. It manages local and remote c
 
 ### Install
 
-The engine, computer runtime, and Git tools are bundled. The base Linux image (about 400 MB) downloads once in the background before your first computer, is checked against a pinned checksum, and is reused across updates. For computer use, each new Linux computer fetches Cua Driver's pinned, checksummed release archive (about 37 MB) from GitHub once at first start, until a guest image that includes it is published. macOS computers fetch Cua Driver's pinned, checksummed macOS archive (about 85 MB) the same way. Computers created before the built-in desktop download optional desktop packages when you add a desktop.
+The engine, computer runtime, and Git tools are bundled. The base Linux image (about 350 MB) downloads once in the background before your first computer, is checked against a pinned checksum, and is reused until an update pins a new image. For computer use, new Linux computers have Cua Driver built into their image; a computer created from an earlier image fetches Cua Driver's pinned, checksummed release archive (about 37 MB) from GitHub once at first start. For macOS computers, Silo downloads Cua Driver's pinned, checksummed macOS archive (about 85 MB) once to this Mac and installs it during setup. Computers created before the built-in desktop download optional desktop packages when you add a desktop.
 
 | Platform | Requirements | Download |
 | --- | --- | --- |

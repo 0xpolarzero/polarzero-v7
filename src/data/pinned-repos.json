@@ -27,7 +27,7 @@
       "description": "Embeddable engine that runs each AI agent in its own sandboxed Linux or macOS VM, with scoped GitHub access and credentials it can use but not read. Host: macOS on Apple Silicon today; Linux engine builds in CI, daemon next.",
       "language": "Rust",
       "languageColor": "#dea584",
-      "stars": 7,
+      "stars": 8,
       "forks": 1
     },
     {

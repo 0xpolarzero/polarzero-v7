@@ -81,14 +81,14 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2407
+Stars: 2411
 Forks: 161
 
 ## silo
 
 Repository: amontlabs/silo
 URL: https://github.com/amontlabs/silo
-Description: Embeddable engine that runs each AI agent in its own sandboxed Linux or macOS VM, with scoped GitHub access and credentials it can use but not read. Host: macOS on Apple Silicon today; Linux engine builds in CI, daemon next.
+Description: Isolated computers for AI agents. Run untrusted code with a desktop and computer use, branch checkpoints, and diff states.
 Primary language: Rust
 Stars: 8
 Forks: 1
@@ -662,7 +662,9 @@ Source: https://github.com/amontlabs/silo
 
 # Silo
 
-Computers for agents. Silo is an embeddable engine that gives each AI agent its own Linux or macOS virtual machine, with only the repositories and credentials you pick, a desktop with computer use, and checkpoints to roll back to.
+Isolated computers for AI agents. Run untrusted code with a desktop and computer use, branch checkpoints, and diff states.
+
+Silo gives each AI agent its own sandboxed Linux or macOS virtual machine—away from your host, with scoped repositories, credentials it can use but never read, and checkpoints you can branch, diff, and fold back like a Git repo.
 
 Apps embed Silo through `silod`, a daemon they talk to over a local socket with a versioned JSON protocol. [Fjord](https://github.com/amontlabs/fjord) is built on it.
 

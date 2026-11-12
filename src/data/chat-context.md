@@ -81,7 +81,7 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2418
+Stars: 2417
 Forks: 163
 
 ## silo
@@ -664,7 +664,7 @@ Source: https://github.com/amontlabs/silo
 
 Isolated computers for AI agents. Run untrusted code with a desktop and computer use, branch checkpoints, and diff states.
 
-Silo gives each AI agent its own sandboxed Linux or macOS virtual machine—away from your host, with scoped repositories, credentials it can use but never read, and checkpoints you can branch, diff, and fold back like a Git repo.
+Silo gives each AI agent its own sandboxed Linux or macOS virtual machine—away from your host, with scoped repositories, credentials it can use but never read, and checkpoints you can branch, diff, and merge back like a Git repo.
 
 Apps embed Silo through `silod`, a daemon they talk to over a local socket with a versioned JSON protocol. [Fjord](https://github.com/amontlabs/fjord) is built on it.
 
@@ -699,7 +699,7 @@ Each mechanism, with the code that implements it, is in the [threat model](docs/
 - **Credentials can be used.** A scoped secret or GitHub token works for the agent within its scope: it can spend credits or write to a repository you granted for changes.
 - **Allowed hosts that echo headers reveal secrets.** If an allowed host reflects the request back, the guest reads the real value. The eval reproduces this.
 - **Write grants reach CI.** A repository granted for changes includes `workflows: write`, so the agent can edit its Actions workflows and use whatever they can reach.
-- **Personal access tokens are not scoped.** In personal-token mode the agent gets the token's full permissions.
+- **Personal access tokens are not scoped.** A computer that uses a personal token gets the token's full permissions.
 - **Other processes on your Mac are trusted.** Any process running as your user can drive the engine socket; there is no per-client authentication or audit log yet. Same-user malware, hypervisor escapes and hostile apps that embed the engine are out of scope.
 - **Also out of scope.** Outbound bandwidth and connection counts are not capped. Imported macOS computer archives are mounted on the Mac, so import only archives you trust. Published ports are reachable by any local process. A VM escape gives the attacker your user account, because the runtime runs as you without the App Sandbox.
 - **macOS computers during setup.** Until setup completes, and in Recovery, a macOS computer uses Apple's NAT and can reach the Mac and the LAN.
@@ -957,7 +957,8 @@ and `src-tauri/silod/`, the app's React in `src/` and Tauri shell in `src-tauri/
 and build tooling in `scripts/`. Start with the [repository README](../README.md)
 to embed the engine or install the app, [Using the Silo app](SiloUI-APP.md), or the
 [source-build guide](SiloUI-BUILD-FROM-SOURCE.md) to develop it with your own
-GitHub App. Planned work is in the [roadmap](ROADMAP.md).
+GitHub App. What Silo is meant to become is in the [product direction](DIRECTION.md);
+planned work is in the [roadmap](ROADMAP.md).
 
 This index has three parts: [current implementation](#current-implementation-and-operations),
 [current research and evidence](#current-research-and-design-evidence), and
@@ -974,10 +975,10 @@ that every platform or live VM workflow has been exercised.
 | Area | Documents |
 | --- | --- |
 | Security | [Threat model](THREAT-MODEL.md): attacker, assets, trust boundaries with code references, and non-goals |
-| Vocabulary | [Silo vocabulary](SiloUI-VOCABULARY.md): the terms (computer, device, Connections, workspace, sandboxed) and the identifiers that keep older names |
+| Vocabulary | [Silo vocabulary](SiloUI-VOCABULARY.md): the terms (computer, device, Connections, workspace, merge, replace main, approval, recipe) and the identifiers that keep older names |
 | Build and release | [Build from source](SiloUI-BUILD-FROM-SOURCE.md), [build channels (production and Dev)](SiloUI-BUILD-CHANNELS.md), [release workflow and CI](SiloUI-RELEASES.md), [historical Linux system updates](SiloUI-LINUX-UPDATES.md), [historical distribution acceptance](SiloUI-DISTRIBUTION-PLAN.md), [release history](releases/) |
 | Command line | [`silo` CLI and MCP server](SiloUI-CLI.md): commands, `.silo/` files, and MCP setup |
-| In-guest client | [`silo --in-guest`](SiloUI-IN-GUEST-CLIENT.md): a scoped token and bridge folder so an agent inside a computer can fork and ask for review; what it may and may not do |
+| Silo's tools in a computer | [`silo` inside a computer](SiloUI-IN-GUEST-CLIENT.md): a loopback port and a token per computer, so an agent inside it uses Silo as that computer; what it may and may not do is [the policy](SiloUI-POLICY.md) |
 | Recipes | [Recipes and `silo up`](SiloUI-RECIPES.md): the recipe format, the build cache, forks and the desktop setting |
 | CI runner | [Silo as the machine GitHub Actions jobs run on](SiloUI-CI-RUNNER.md): `silo-runner`, a fresh computer per job, private repositories only |
 | Forks, sharing, CI runner and container computers | [Build plan](forks-ci/PLAN.md) and [log](forks-ci/BUILD_LOG.md) of the November 2026 build; [container computers plan](forks-ci/CONTAINERS-PLAN.md): an opt-in kind for Linux hosts that is less isolated than a VM, set up as in [the engine on a Linux host](SiloUI-ENGINE.md#container-computers-optional) |

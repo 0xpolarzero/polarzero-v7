@@ -81,8 +81,8 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2414
-Forks: 161
+Stars: 2418
+Forks: 163
 
 ## silo
 
@@ -100,7 +100,7 @@ URL: https://github.com/polareth/evmstate
 Description: A TypeScript library for tracing, and visualizing EVM state changes with detailed human-readable labeling.
 Primary language: TypeScript
 Stars: 34
-Forks: 6
+Forks: 5
 
 ## dex-indexer-stack
 

@@ -70,7 +70,7 @@ These links are applied by the website when matching technology/tool names in ti
 
 Repository: amontlabs/fjord
 URL: https://github.com/amontlabs/fjord
-Description: [WIP] The power without the storm: Fjord connects your agents to everything they work with.
+Description: Everything in its right place.
 Primary language: Swift
 Stars: 0
 Forks: 1
@@ -81,8 +81,8 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2418
-Forks: 163
+Stars: 2421
+Forks: 165
 
 ## silo
 
@@ -550,7 +550,7 @@ Source: https://github.com/amontlabs/fjord
 
 # Fjord
 
-**The power without the storm.**
+**Everything in its right place.**
 
 Coding agents multiply what you ship, and what you have to keep up with. Fjord sits between them and everything they work with, and brings you only what you need to know or decide.
 

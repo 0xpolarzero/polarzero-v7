@@ -17,7 +17,7 @@
       "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 2431,
+      "stars": 2432,
       "forks": 166
     },
     {
@@ -27,7 +27,7 @@
       "description": "Isolated computers for AI agents. Run untrusted code with a desktop and computer use, branch checkpoints, and diff states.",
       "language": "Rust",
       "languageColor": "#dea584",
-      "stars": 8,
+      "stars": 9,
       "forks": 1
     },
     {

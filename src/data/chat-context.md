@@ -81,7 +81,7 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2460
+Stars: 2462
 Forks: 172
 
 ## silo
@@ -1573,20 +1573,17 @@ zig build test-opcodes
 
 ## 🧰 SDKs (Experimental)
 
-All SDKs in this repo are vibecoded proof-of-concepts. APIs are unstable and may change without notice. We're actively seeking early users to try things out and tell us what APIs you want. Please open an issue or ping us on Telegram with feedback.
+Guillotine officially ships three integration surfaces:
 
-- [Go](sdks/go) — Go bindings with FFI to Zig EVM
-- [Bun](sdks/bun) — Native Bun bindings around the Zig EVM
-- [C](sdks/c) — C/C++ FFI surface for embedding
-- [Rust](sdks/rust) — Idiomatic Rust wrapper over FFI
-- [TypeScript](sdks/typescript) — WASM/TS APIs for Node, Bun, Browser
+- **Zig native bindings** — the repository's native EVM API in `src/root.zig`.
+- **[C FFI](sdks/c)** — native embedding and custom language bindings.
+- **[`@tevm/guillotine` TypeScript](sdks/typescript)** — WASM APIs for Node, Bun, and browsers, with build support in `sdks/wasm`.
 
-**Looking for Contributors:**
-- **Python** — Help us build Python bindings and primitives
-- **Swift** — Help us build Swift bindings for Apple platforms
-- **Kotlin** — Help us build Kotlin/JVM bindings
-
-See each SDK's README for install, quick start, and current API.
+The C and TypeScript APIs are experimental and may change. For Python, Go,
+Rust, Swift, Kotlin/JNI, or native Bun FFI, use the
+[custom SDK guide](docs/building-custom-sdks.md) and
+[SDK builder skill](.agents/skills/guillotine-sdk-builder/SKILL.md).
+See [sdks/README.md](sdks/README.md) for the maintained SDK scope and build commands.
 
 ---
 
@@ -1818,6 +1815,19 @@ MIT License. Free for all use. 🌍
 
 <a href="https://shazow.net/posts/permissive-vs-copyleft/"><img width="256" height="256" alt="image" src="https://github.com/user-attachments/assets/644c2d29-8e7f-44f4-a17f-285a1f4c20e7" /></a>
 
+
+## Osaka ModExp
+
+Configure `Evm(.{ .eips = .{ .hardfork = .OSAKA } })` to activate EIP-7823's
+1,024-byte per-operand limit and EIP-7883 pricing for ModExp (`0x05`). The minimum
+is 500 gas. Prague retains its prior pricing and operand acceptance. The full
+engine and reference interpreter share the synchronized vendored precompile.
+See [the precompile contract](lib/voltaire/src/precompiles/modexp.zig.md).
+
+Run `zig build test-modexp` for the vendored arithmetic and precompile tests,
+`zig build test-opcodes-0xfa` for ModExp STATICCALL regression checks, and
+`zig build test-opcodes` for the complete gate (including `test-modexp`).
+
 ### Inlined linked README: specs/README.md
 
 Source: https://github.com/evmts/guillotine/blob/main/specs/README.md
@@ -1825,6 +1835,239 @@ Source: https://github.com/evmts/guillotine/blob/main/specs/README.md
 # Ethereum Execution Specs
 
 This directory contains the Ethereum execution specification tests for Guillotine EVM.
+
+## Official EEST state tests (`eest_runner.zig`)
+
+`specs/eest_runner.zig` runs the official **pre-filled** Ethereum Execution Spec
+Tests `state_tests/**/*.json` fixtures. A case passes only when the post-state
+Merkle Patricia Trie root equals `post[fork][i].hash` and the RLP logs hash
+equals `post[fork][i].logs`. It does not read the legacy `:asm` / `:yul`
+fillers that the sections below describe.
+
+### Fetch the fixtures
+
+```bash
+scripts/fetch-eest-fixtures.sh             # latest ethereum/execution-specs "tests@v*" release
+EEST_RELEASE_TAG='tests@v21.0.3' scripts/fetch-eest-fixtures.sh
+EEST_CACHE_DIR=/shared/cache scripts/fetch-eest-fixtures.sh --print-dir
+```
+
+The script downloads `fixtures.tar.gz`, checks it against the SHA-256 digest
+that GitHub publishes for the asset, and extracts only `fixtures/state_tests`.
+A `STAMP` file records the tag and digest, so a second run for the same release
+downloads nothing. The cache directory ignores itself in version control.
+
+```
+.cache/eest-fixtures/
+├── current -> tests_v21.0.3
+└── tests_v21.0.3/
+    ├── STAMP                                  tag, asset, sha256
+    └── fixtures/state_tests/
+        ├── for_frontier/ … for_osaka/         one tree per fork the tests were filled for
+        │   └── <fork>/<eip or suite>/…/*.json
+        └── for_amsterdam/                     skipped: fork not implemented
+```
+
+### Run
+
+The runner is a standalone executable that imports the `evm` and `crypto`
+modules. Every option is an environment variable with an equivalent flag; the
+flag wins.
+
+| Variable | Flag | Meaning |
+| --- | --- | --- |
+| `EEST_FIXTURES_DIR` | `--fixtures=<dir>` | Fixture root. Default `.cache/eest-fixtures/current/fixtures/state_tests`. |
+| `EEST_FORK` | `--fork=<a,b>` | Run only these forks. Unset runs Frontier through Osaka. |
+| `EEST_FILTER` | `--filter=<text>` | Substring of `<file>::<test name>`. |
+| `EEST_REPORT_JSON` | `--report=<path>` | Write the JSON summary. |
+| `EEST_JOBS` | `--jobs=<n>` | Worker processes. Default: CPU count. `0` runs in-process. |
+| `EEST_TIMEOUT_SECS` | `--timeout=<secs>` | Per-case limit for worker processes. Default 600. |
+| `EEST_VERBOSE` | `--verbose` | Print every failure and keep worker stderr. |
+
+```bash
+eest-runner --fork=Cancun,Prague --report=eest.json
+eest-runner --filter='eip3855_push0' --verbose
+eest-runner --filter='push0_contracts.json::test_push0_contracts[fork_Shanghai-state_test-key_sstore]' --jobs=0 --verbose
+```
+
+Exit code `0` means every case passed, `1` means at least one failure, `2`
+means a usage error (missing fixtures, unknown fork, nothing matched).
+
+Fork names follow the fixtures: `Frontier`, `Homestead`, `TangerineWhistle`
+(`EIP150`), `SpuriousDragon` (`EIP158`), `Byzantium`, `Constantinople`,
+`ConstantinopleFix` (`Petersburg`), `Istanbul`, `Berlin`, `London`, `Paris`
+(`Merge`), `Shanghai`, `Cancun`, `Prague`, `Osaka`. Posts for any other fork
+(`Amsterdam`, `BPO*`) are counted under `skipped_forks`.
+
+### Build wiring
+
+`build.zig` belongs to another lane. Contract 3 maps onto the runner as follows:
+
+```zig
+const eest_mod = b.createModule(.{
+    .root_source_file = b.path("specs/eest_runner.zig"),
+    .target = target,
+    .optimize = optimize,
+});
+eest_mod.addImport("evm", modules.evm_mod);
+eest_mod.addImport("crypto", modules.crypto_mod);
+const eest_exe = b.addExecutable(.{ .name = "eest-runner", .root_module = eest_mod, .use_llvm = true });
+if (bn254_lib) |bn254| eest_exe.linkLibrary(bn254);
+eest_exe.linkLibC();
+
+const run_eest = b.addRunArtifact(eest_exe);
+if (b.option([]const u8, "spec-fork", "EEST fork(s)")) |fork| run_eest.addArg(b.fmt("--fork={s}", .{fork}));
+if (test_filter) |filter| run_eest.addArg(b.fmt("--filter={s}", .{filter}));
+if (b.option([]const u8, "spec-report", "EEST JSON report path")) |path| run_eest.addArg(b.fmt("--report={s}", .{path}));
+b.step("state-tests", "Run official EEST state tests").dependOn(&run_eest.step);
+```
+
+`b.addTest` on the same module runs the runner's unit tests (RLP, trie, hex,
+intrinsic gas, blob fee, signature decoding).
+
+### What one case does
+
+```
+post[fork][i]
+   │
+   ├─ load `pre` into a fresh Database (balance, nonce, code, storage;
+   │  a Prague 0xef0100 designator becomes Account.delegated_address)
+   ├─ select data / gasLimit / value / access list by `indexes`
+   ├─ validate the transaction ──► TransactionException or valid
+   │     type gating, intrinsic gas, EIP-7623 floor, nonce, initcode size,
+   │     EIP-7825 gas cap, block gas limit, blob count and fees, signature
+   │     ranges and chain id (from `txbytes`), EIP-1559 fees, balance, EIP-3607
+   │
+   ├─ expectException set?  the raised exception must be one of the listed
+   │                        alternatives, and the untouched pre-state must
+   │                        hash to `hash`
+   └─ valid transaction:
+        buy gas, bump nonce ─► warm sender / target / precompiles / coinbase /
+        access list ─► EIP-7702 authorizations ─► Evm(fork).inner_call ─►
+        refund cap (1/2, 1/5 from London) ─► EIP-7623 floor ─► sender refund ─►
+        coinbase tip (EIP-1559 burn) ─► apply SELFDESTRUCT records ─►
+        EIP-161 empty-account deletion
+   ▼
+stateRoot = MPT(keccak(address) → rlp[nonce, balance, storageRoot, codeHash])
+logsHash  = keccak(rlp([[address, [topics], data], …]))
+```
+
+The runner computes both hashes itself: `Database.get_state_root` trusts the
+stored `storage_root` field instead of the storage slots, and `src/trie` is not
+exported by the `evm` module.
+
+The runner owns the transaction layer because `Evm.call` does not implement it
+(it charges a flat 21000 or 53000, ignores calldata, access lists, blobs,
+authorizations, the upfront balance check, selfdestruct and EIP-161). Three
+choices follow from the EVM's current interface:
+
+- A message call that spends exactly its intrinsic gas and targets an account
+  with no code is applied by the runner, because `Evm.inner_call` rejects a
+  call that carries zero gas.
+- A create transaction passes `gas + 32000` because `inner_call` charges the
+  CREATE gas itself.
+- EIP-161 uses `Evm.touched_addresses`, which also records read-only accesses
+  (`BALANCE`, `EXTCODE*`). An empty pre-state account that a transaction only
+  reads is therefore deleted.
+
+### Failure reasons
+
+Each failing case gets one reason, the first that applies:
+
+| Reason | Meaning |
+| --- | --- |
+| `expected_exception_not_raised` | Fixture expects an invalid transaction; the runner accepted it. |
+| `wrong_exception` | Rejected, but with an exception the fixture does not list. |
+| `unexpected_tx_rejection` | A valid transaction was rejected. |
+| `status_mismatch` | Receipt status differs from the EVM result. |
+| `gas_used_mismatch` | Receipt `cumulativeGasUsed` differs. |
+| `account_missing`, `unexpected_account` | Account set differs from `post.state`. |
+| `nonce_mismatch`, `code_mismatch`, `storage_mismatch`, `balance_mismatch` | First differing field against `post.state`. |
+| `state_root_mismatch_unexplained` | Accounts equal `post.state` but the root differs. A non-zero count is a runner bug. |
+| `logs_hash_mismatch` | State root matches, logs hash differs. |
+| `crash`, `timeout` | The worker process died or exceeded the limit on this case. |
+| `runner_error`, `fixture_error` | An error inside the runner, or a fixture the strict parser rejects. |
+
+### Process model
+
+```
+parent ──spawn──► worker 0 ──┐   each worker owns files where index % jobs == shard
+        ──spawn──► worker 1 ──┤   and streams one line per case on stdout:
+        ──spawn──► worker N ──┘   F file · S case start · P pass · X fail · K skip · D file done · E end
+
+worker dies or exceeds the limit on case k  ─►  parent records `crash` / `timeout` for k
+                                             ─►  restarts the worker at case k + 1
+```
+
+A crash or a hang in the EVM costs one case, never the run. Workers run on a
+1 GiB stack because the EVM recurses once per call depth. Debug builds use
+`std.heap.DebugAllocator` and report `leak_check` (`clean` or `leaked`).
+
+### Baseline (2026-11-22)
+
+`tests@v21.0.3` (sha256 `46bd48fb…04fd24`), 10,693 files, ReleaseFast, 66,652
+cases in 470 s on a MacBook Pro. All 4,370 invalid-transaction cases agree with
+the fixtures, and no root mismatch is unexplained, so the remaining failures
+are EVM behavior, not runner bookkeeping.
+
+| Fork | Passed | Failed | Total | Pass % |
+| --- | ---: | ---: | ---: | ---: |
+| Frontier | 194 | 619 | 813 | 23.86 |
+| Homestead | 198 | 685 | 883 | 22.42 |
+| TangerineWhistle | 197 | 684 | 881 | 22.36 |
+| SpuriousDragon | 234 | 727 | 961 | 24.35 |
+| Byzantium | 251 | 2,081 | 2,332 | 10.76 |
+| ConstantinopleFix | 262 | 2,263 | 2,525 | 10.38 |
+| Istanbul | 264 | 2,388 | 2,652 | 9.95 |
+| Berlin | 558 | 3,035 | 3,593 | 15.53 |
+| London | 830 | 3,044 | 3,874 | 21.42 |
+| Paris | 830 | 3,059 | 3,889 | 21.34 |
+| Shanghai | 864 | 3,224 | 4,088 | 21.14 |
+| Cancun | 2,202 | 9,376 | 11,578 | 19.02 |
+| Prague | 2,808 | 11,111 | 13,919 | 20.17 |
+| Osaka | 2,808 | 11,856 | 14,664 | 19.15 |
+| **Total** | **12,500** | **54,152** | **66,652** | **18.75** |
+
+| Reason | Cases | First example |
+| --- | ---: | --- |
+| `gas_used_mismatch` | 40,684 | `60015f55` (cold `SSTORE` 0→1) uses 43,205 gas, fixture 43,105 |
+| `status_mismatch` | 13,046 | valid `CALL` contract fails with `StackUnderflow`; `ecpairing` |
+| `crash` | 266 | worker `SIGSEGV`, for example `frontier/opcodes/log/gas.json` |
+| `nonce_mismatch` | 125 | Frontier contract created with nonce 1, fixture 0 |
+| `storage_mismatch` | 29 | `ripemd` precompile result, initcode gas |
+| `balance_mismatch` | 2 | `stRandom2/random_statetest642` |
+
+16,907 Amsterdam posts are skipped.
+
+### JSON report
+
+```json
+{
+  "schema": "guillotine-eest-report/v1",
+  "release": "tests@v21.0.3",
+  "totals": { "files": 0, "cases": 0, "passed": 0, "failed": 0, "skipped": 0 },
+  "forks": {
+    "Cancun": {
+      "passed": 0, "failed": 0,
+      "failure_reasons": { "gas_used_mismatch": 0 },
+      "suites": { "cancun/eip4844_blobs": { "passed": 0, "failed": 0 } }
+    }
+  },
+  "skipped_forks": { "Amsterdam": 0 },
+  "failure_reasons": {
+    "gas_used_mismatch": {
+      "count": 0,
+      "examples": [ { "fork": "", "file": "", "test": "", "index": 0, "detail": "" } ]
+    }
+  },
+  "leak_check": "clean"
+}
+```
+
+The report also carries `fixtures_dir`, `fork_filter`, `test_filter`,
+`optimize`, `jobs` and `duration_ms`. Each reason keeps its first five examples.
+
+## Legacy filler specs
 
 ## Test Results
 
@@ -1897,6 +2140,149 @@ The test runner:
 - Assembly code tests are skipped (not supported)
 - Post-state validation not yet implemented
 - Some edge cases may cause crashes in normal mode (use isolated mode for safety)
+
+### Inlined linked README: sdks/README.md
+
+Source: https://github.com/evmts/guillotine/blob/main/sdks/README.md
+
+# Guillotine SDKs
+
+Guillotine officially ships three integration surfaces:
+
+| Surface | Source | Use |
+| --- | --- | --- |
+| Zig native bindings | Repository root, `src/root.zig` | Import the EVM and its types directly from Zig. |
+| C FFI bindings | [`c/`](c/), `src/evm_c_api.zig` | Embed the native EVM or build a custom language SDK. |
+| `@tevm/guillotine` TypeScript npm package | [`typescript/`](typescript/), [`wasm/`](wasm/) | Use the WebAssembly SDK from JavaScript/TypeScript, including Bun. |
+
+The C and TypeScript APIs are experimental and may change. The TypeScript
+package source is `sdks/typescript`; the WASM build support is `sdks/wasm`.
+
+Python, Go, Rust, Swift, Kotlin/JNI, and native Bun FFI integrations are custom
+SDKs built on the C/Zig FFI, rather than separately maintained language SDKs in
+this repository. Start with [Building custom SDKs](../docs/building-custom-sdks.md)
+and the [SDK builder skill](../.agents/skills/guillotine-sdk-builder/SKILL.md)
+(also available at [`skills/guillotine-sdk-builder`](../skills/guillotine-sdk-builder/SKILL.md)).
+
+## Build from the repository root
+
+Use the Zig version required by `build.zig.zon` and the repository's native
+crypto toolchain. The root build resolves the module and native dependencies:
+
+```sh
+zig build
+zig build shared
+zig build static
+```
+
+Native artifacts are installed under `zig-out/lib/`:
+
+- Shared: `libguillotine_ffi.dylib` on macOS, `libguillotine_ffi.so` on Linux
+  (Windows uses a DLL).
+- Static: `libguillotine_ffi_static.a` on Unix targets.
+
+The [C header](c/include/guillotine.h) describes the native library. The
+[custom SDK guide](../docs/building-custom-sdks.md) covers ownership, layouts,
+exported symbols, linking, and language templates. WASM has a separate ABI;
+use the TypeScript SDK's loader for it.
+
+## Bun
+
+Bun applications can use `@tevm/guillotine` through the TypeScript/WASM SDK.
+For direct native calls through `bun:ffi`, see the
+[TypeScript Bun notes](typescript/README.md#bun-native-ffi) and the custom SDK
+guide. There is no separate Bun package in this repository.
+
+### Inlined linked README: TypeScript Bun notes
+
+Source: https://github.com/evmts/guillotine/blob/main/sdks/typescript/README.md
+
+# @tevm/guillotine
+
+TypeScript bindings for the [Guillotine](https://github.com/evmts/guillotine) EVM. The package calls the native `libguillotine_ffi` library through [Bun FFI](https://bun.sh/docs/api/ffi); the ABI is `sdks/c/include/guillotine.h`.
+
+| Runtime | Status |
+| --- | --- |
+| Bun ≥ 1.1 | Supported |
+| Node.js, browsers | Not supported. The WASM backend was removed because it ran a stale binary with a different ABI. |
+
+## Install
+
+```bash
+bun add @tevm/guillotine
+```
+
+The package loads the native library from, in order:
+
+1. `GuillotineEvm.create(block, { libraryPath })`
+2. the `GUILLOTINE_LIB_PATH` environment variable
+3. `prebuilds/<platform>-<arch>/libguillotine_ffi.<dylib|so|dll>` inside the package
+
+## Use
+
+```ts
+import { Address, Bytes, GuillotineEvm, U256 } from '@tevm/guillotine';
+
+using evm = await GuillotineEvm.create({ chainId: 1n });
+
+const caller = Address.fromHex('0x00000000000000000000000000000000000000a1');
+const contract = Address.fromHex('0x00000000000000000000000000000000000000c0');
+
+// PUSH1 2 PUSH1 3 ADD PUSH1 0 MSTORE PUSH1 32 PUSH1 0 RETURN
+await evm.setCode(contract, Bytes.fromHex('0x600260030160005260206000f3'));
+
+const gas = 1_000_000n;
+const result = await evm.call({ caller, to: contract, value: U256.zero(), input: Bytes.empty(), gas });
+
+result.success; // true
+U256.fromBytes(result.output.toBytes()).toBigInt(); // 5n
+result.getGasUsed(gas); // includes the 21000 intrinsic gas
+```
+
+`using` releases the native handle at scope exit. Without it, call `evm.dispose()` (or `close()`); both are idempotent. Handles are not released by garbage collection.
+
+## API
+
+| Method | Mainnet EVM | Tracing EVM |
+| --- | --- | --- |
+| `call(params)` | ✓ | ✓, returns `traceJson` |
+| `simulate(params)` (CALL only, no state commit) | ✓ | throws `UnsupportedOperation` |
+| `setBalance`, `setNonce`, `setCode` | ✓ | ✓ |
+| `setStorage`, `getStorage`, `getBalance`, `getCode` | ✓ | throws `UnsupportedOperation` |
+
+Create a tracing EVM with `GuillotineEvm.create(block, { tracing: true })`. The native library has no state readers for tracing handles, so the SDK refuses those calls instead of passing an incompatible handle.
+
+`ExecutionResult` holds `success`, `gasLeft`, `output` (return or revert data), `logs`, `selfdestructs`, `accessedAddresses`, `accessedStorage`, `createdAddress`, and `traceJson`. A reverted call returns `success: false` with its revert data; it does not throw. `errorMessage` is `null` unless the native library reports a reason.
+
+Errors are `GuillotineError` instances with a `type`:
+
+| `type` | Cause |
+| --- | --- |
+| `InvalidValue` | Input outside its native range: u64 fields, `chainId` > 65535, `prevRandao` not 32 bytes, unknown call type |
+| `UnsupportedOperation` | Operation not available on this handle type |
+| `VMNotInitialized` | Handle already disposed |
+| `VMCreationFailed`, `ExecutionFailed`, `StateError` | Native failure; the message includes `guillotine_get_last_error()` |
+| `InitializationFailed` | Native library missing or not loadable |
+
+## Develop
+
+From the repository root, build the native library, then work in `sdks/typescript`:
+
+```bash
+zig build shared
+cd sdks/typescript
+bun install
+bun run build       # dist/ via tsup
+bun run typecheck
+bun test            # loads ../../zig-out/lib unless GUILLOTINE_LIB_PATH is set
+bun run lint:package  # publint + are-the-types-wrong on the packed tarball
+```
+
+`bun run build:native` builds a ReleaseFast library and copies it into `prebuilds/<platform>-<arch>/`. `prepublishOnly` runs it, so a publish ships only the host platform's prebuild. Publishing for more platforms requires building each one into `prebuilds/` before `npm publish`.
+
+## License
+
+MIT
 
 ---
 
@@ -2017,10 +2403,30 @@ Call `evm_destroy(handle)` when finished with an instance. See the complete
 ```mermaid
 flowchart TB
   C["Caller · vm.call(CallParams) / root_c.zig"] --> E["Evm(config) · src/evm.zig\nStorage · AccessList · Snapshots · Refunds · Arena"]
-  E --> F["Frame(config) · src/frame.zig\n1024-slot Stack · Sparse Memory · PC · JUMPDEST Bitmap"]
+  E --> F["Frame(config) · src/frame.zig\n1024-slot Stack · Contiguous Memory · PC · JUMPDEST Bitmap"]
   E -. "optional vtable" .-> H["HostInterface · src/host.zig\nExternal Balances · Code · Nonces · Storage"]
   F --> V["Voltaire · primitives, crypto (BN254, BLS12-381, KZG), precompiles"]
   E --> V
+```
+
+## Benchmarks (Incremental via Smithers)
+
+Performance benchmarks cover every Zig core EVM module, Zig client subsystem, WASI WASM reactor, C-FFI bridge, and TypeScript / `client-ts` package. Each module declares fine-grained `PACKAGE.ts` targets so Smithers only re-runs benchmarks whose dependencies changed and replays cached output on hits:
+
+```bash
+# Run only benchmarks affected by your current changes (with live output & cache-hit replay)
+smithers-build affected test '//:bench_all' --include-exclusive --verbose
+
+# Run a single module benchmark
+smithers-build test //:bench_opcodes --verbose
+smithers-build test //client/rpc:bench --verbose
+smithers-build test //client-ts/txpool:bench --verbose
+
+# View unified summary across all collected JSON benchmark reports
+smithers-build run //:bench_summary
+
+# Or run Zig benchmarks directly
+zig build bench -Doptimize=ReleaseFast
 ```
 
 ## Docs

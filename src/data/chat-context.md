@@ -81,7 +81,7 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2462
+Stars: 2465
 Forks: 172
 
 ## silo
@@ -1346,7 +1346,7 @@ Source: https://github.com/evmts/tevm-monorepo
 
 # TEVM
 
-TEVM embeds the native ZEVM node in Node.js and exposes it through viem clients, an event emitter, and HTTP, WebSocket, and IPC JSON-RPC servers. ZEVM owns execution, mining, transaction admission, receipts, filters, snapshots, and fork state. It uses Voltaire primitives/state and Guillotine Mini bytecode execution.
+TEVM is a thin TypeScript/JavaScript wrapper around [ZEVM](https://github.com/evmts/zevm) and pluggable WASM-based EVM backends, exposing them through viem clients, an event emitter, and HTTP, WebSocket, and IPC JSON-RPC servers. ZEVM (powered by Voltaire primitives/state and Guillotine Mini bytecode execution) owns execution, mining, transaction admission, receipts, filters, snapshots, and fork state; TEVM stays razor-thin on top.
 
 This checkout contains a breaking native-engine migration. Previously published JavaScript-engine releases do not implement this API. See [the migration guide](docs/native-engine-migration.md).
 
@@ -1377,7 +1377,18 @@ The install build compiles ZEVM's Node-API addon from the sibling Zig sources. `
 mise exec -- node scripts/factory/build-native.mjs
 ```
 
-There is no alternate engine fallback. Local builds use the sibling source; published clients require ZEVM native platform packages. A missing native addon is an error.
+By default, `createZevmEngine()` and `createMemoryClient()` load `@evmts/zevm`'s native Node-API addon. To plug in a **WASM-based EVM** (such as a ZEVM WASM build) or any custom JSON-RPC runtime without loading native bindings, pass a minimal `backend` implementing `{ rpc(json), close() }` (sync or async):
+
+```js
+import { createMemoryClient } from '@tevm/memory-client'
+
+const client = createMemoryClient({
+  backend: {
+    rpc: (json) => wasmEvm.rpc(json), // returns string | null | Promise<string | null>
+    close: () => wasmEvm.close(),
+  },
+})
+```
 
 ## In-memory client
 
@@ -1426,7 +1437,7 @@ try {
 pnpm native:server
 ```
 
-This starts HTTP and WebSocket on `127.0.0.1:8545`. Browsers connect to this server with viem's `http` or `webSocket` transport. The native addon is not a browser WASM engine.
+This starts HTTP and WebSocket on `127.0.0.1:8545`. Browsers can connect to this server with viem's `http` or `webSocket` transport, or run in-process by plugging a WASM EVM `backend` into `createZevmEngine` / `createMemoryClient`.
 
 ```js
 import { createMemoryClient } from '@tevm/memory-client'
@@ -1478,7 +1489,7 @@ Source: https://github.com/evmts/guillotine
   </a>
 </p>
 
-<a href="docs/pages"><img width="833" height="444" alt="Guillotine Logo" src="https://github.com/user-attachments/assets/1effa677-d931-4453-8e98-2a70372efd91" /></a>
+<a href="https://guillotine.tevm.sh"><img width="833" height="444" alt="Guillotine Logo" src="https://github.com/user-attachments/assets/1effa677-d931-4453-8e98-2a70372efd91" /></a>
 
 **The ultrafast EVM for every language and platform**
 
@@ -1496,21 +1507,20 @@ Guillotine is not suitable for production use at this time. Any use of Guillotin
 
 ### 📊 Ethereum Specification Test Results
 
-**Latest Test Run**: 2251 tests executed
-- ✅ **1165 passing** (~52% pass rate)
-- ❌ **1086 failing** (~48% fail rate)
+Two spec suites run from the repository root:
 
-Most failures are in ecmul/BN254 elliptic curve tests. Run specs with: `zig build specs`
+- `zig build specs` runs the execution-spec filler tests from the `specs/execution-specs` submodule. Commit `7501b986` (2026-11-23) cut its failures from 1,031 to 581 with no regressions.
+- `zig build state-tests` runs the official pre-filled EEST state tests. The 2026-11-22 baseline in [specs/README.md](specs/README.md) passed 12,500 of 66,652 cases (`tests@v21.0.3`).
 
-See [specs/README.md](specs/README.md) for detailed instructions on running the test suite.
+See [specs/README.md](specs/README.md) for how to fetch fixtures, filter by fork, and read the failure report.
 
 **Current Development Focus**: Our primary goal is achieving 100% Ethereum specification compliance while ensuring complete safety, debuggability, and observability through our tracer system ([`src/tracer/tracer.zig`](src/tracer/tracer.zig)). The tracer provides comprehensive execution monitoring, differential testing against a reference implementation, and detailed error reporting for every opcode.
 
-For an in-depth understanding of Guillotine's design and implementation, see our comprehensive [Architecture Documentation](docs/pages/architecture.mdx). Follow the [issue tracker](https://github.com/evmts/Guillotine/issues) for features planned for Beta.
+For an in-depth understanding of Guillotine's design and implementation, see the [documentation site](https://guillotine.tevm.sh) ([architecture](docs/src/pages/concepts/architecture.mdx)) and the [developer deep dive](docs/dev/README.md). Follow the [issue tracker](https://github.com/evmts/guillotine/issues) for features planned for Beta.
 
-**Network Support**: Currently only **Ethereum Mainnet** is supported. Planned for Beta:
+**Network Support**: The EVM executes **Ethereum Mainnet** rules. [`src/layer2`](src/layer2) (exported as `layer2` from `src/root.zig`, tested by `zig build test-layer2`) implements OP Stack and Base fee, deposit and precompile rules as standalone helpers; `EvmConfig` does not select them yet. Planned for Beta:
 
-- **OP Stack** support (Optimism, Base, etc.)
+- **OP Stack** execution (Optimism, Base, etc.)
 - **Arbitrum Nitro** support
 
 ---
@@ -1520,44 +1530,38 @@ For an in-depth understanding of Guillotine's design and implementation, see our
 🚧 = Coming soon. Consider opening a discussion if you have any API recommendations or requested features.
 
 - ⚡ **Extreme speed**
-- 🌐 **Universal** - Planned and experimental support for many languages and platforms
-  - **Golang** - Available with FFI bindings
-  - **Zig**
-  - **C**
-  - **TypeScript** - Wasm or Bun
-  - **Rust**
-  - **Wasm**
-  - **🚧 Python** - Looking for contributors
-  - **🚧 Swift** - Looking for contributors
-  - **🚧 Kotlin** - Looking for contributors
+- 🌐 **Universal** - Planned and experimental support for many languages and platforms (see [SDKs](#-sdks-experimental))
+  - **Zig** - native API
+  - **C** - FFI library (`zig build shared` / `zig build static`)
+  - **TypeScript** - Bun FFI package over the native library
+  - **🚧 Go, Rust, Python, Swift, Kotlin** - build your own on the C ABI with the [custom SDK guide](docs/building-custom-sdks.md)
 - 📦 **Minimal bundle size**
   - Zig `comptime` configuration means you only pay for features you actually use
   - Skip precompiles or use specific hard forks without bundle size or runtime overhead
 - 📚 **Well documented**
 - 🎨 **Fun** - Guillotine is a fun way to dive into Zig and fun/easy to [contribute](./CONTRIBUTING.md) to
 - 🤖 **LLM-friendly**
-- 🧪 **Robust** - Guillotine takes testing and architecture very seriously with [full unit tests](./src) for all files, a robust [E2E test suite](./test/e2e), [fuzz testing](./test/fuzz), [differential testing](./test/differential) using MinimalEvm, and [benchmark testing](./test/benchmark)
-- ✨ **Useful** - 🚧 Coming soon 🚧 Guillotine is building a powerful [CLI](https://github.com/evmts/Guillotine/issues) and [native app](https://github.com/evmts/Guillotine/issues) that you can think of as a local-first, Tenderly-like tool
+- 🧪 **Robust** - Guillotine takes testing and architecture very seriously with [unit tests](./src) in source files, [integration tests](./test), [fuzz testing](./test/fuzz), [differential testing](./test/differential) using MinimalEvm, [formal verification](./verify), and [benchmarks](./bench)
+- ✨ **Useful** - 🚧 Coming soon 🚧 Guillotine is building a powerful [CLI](https://github.com/evmts/guillotine/issues) and [native app](https://github.com/evmts/guillotine/issues) that you can think of as a local-first, Tenderly-like tool
 
 ---
 
 ## 🔨 Building from Source
 
-**Currently Supported**: macOS
-**Planned**: Linux support
+CI builds and tests on macOS (arm64) and Linux (x86_64).
 
 ### Prerequisites
 
-- **Zig 0.15.1** (exactly - use [zvm](https://github.com/marler182/zvm) to manage versions)
-- **Rust toolchain** 1.75+ (for cryptographic dependencies)
+- **Zig 0.15.x**: CI uses 0.15.2; `build.zig.zon` requires at least 0.15.1. Zig 0.16 and later are not supported. Use [zvm](https://github.com/tristanisham/zvm) to manage versions.
+- **Rust toolchain** (stable, with Cargo): `zig build` runs Cargo for the cryptographic and Foundry dependencies.
 - **Git** (with submodule support)
 
 ### Build Steps
 
 ```bash
 # 1. Clone with submodules
-git clone --recursive https://github.com/evmts/Guillotine.git
-cd Guillotine
+git clone --recursive https://github.com/evmts/guillotine.git
+cd guillotine
 
 # Or if already cloned:
 git submodule update --init --recursive
@@ -1577,10 +1581,10 @@ Guillotine officially ships three integration surfaces:
 
 - **Zig native bindings** — the repository's native EVM API in `src/root.zig`.
 - **[C FFI](sdks/c)** — native embedding and custom language bindings.
-- **[`@tevm/guillotine` TypeScript](sdks/typescript)** — WASM APIs for Node, Bun, and browsers, with build support in `sdks/wasm`.
+- **[`@tevm/guillotine` TypeScript](sdks/typescript)** — Bun FFI bindings to the native `libguillotine_ffi` library (Bun ≥ 1.1; Node.js and browsers are not supported).
 
 The C and TypeScript APIs are experimental and may change. For Python, Go,
-Rust, Swift, Kotlin/JNI, or native Bun FFI, use the
+Rust, Swift, or Kotlin/JNI, use the
 [custom SDK guide](docs/building-custom-sdks.md) and
 [SDK builder skill](.agents/skills/guillotine-sdk-builder/SKILL.md).
 See [sdks/README.md](sdks/README.md) for the maintained SDK scope and build commands.
@@ -2067,79 +2071,382 @@ are EVM behavior, not runner bookkeeping.
 The report also carries `fixtures_dir`, `fork_filter`, `test_filter`,
 `optimize`, `jobs` and `duration_ms`. Each reason keeps its first five examples.
 
-## Legacy filler specs
+## Legacy filler specs (`zig build specs`)
 
-## Test Results
+`zig build specs` compiles `specs/cases/root.zig`, a generated aggregator that
+imports 2,245 Zig test files under `specs/cases/eest/` (one per execution-spec
+filler), and runs them with `test_runner.zig`. Commit `7501b986` (2026-11-23)
+recorded 581 failures, down from 1,031, with no regressions.
 
-Current status: **2124 pass / 1043 fail** (3167 expect() calls total)
-
-## Running the Specs
-
-### Quick Start
+### Running the Specs
 
 ```bash
-# Run all specs (default: first 100 files)
+# Run every legacy spec test (Zig runner)
 zig build specs
 
-# Run with more files
-zig build specs -- -Dspec-max-files=500
+# Run tests whose name matches a pattern (compile-time test filter; pass it once)
+zig build specs -Dtest-filter='sstore'
 
-# Run all available spec files
-zig build specs -- -Dspec-max-files=10000
-
-# Run specs matching a specific pattern
-zig build specs -- -Dspec-pattern='add*.json'
-
-# Run in isolated mode (each test in separate process)
-zig build specs -- -Dspec-isolated=true
+# Run the Bun/TypeScript runner in specs/bun-runner (needs bun on PATH)
+zig build specs-bun
+zig build specs-bun -Dspec-max-files=500
 ```
 
 ### Build Options
 
-- `-Dspec-max-files=N` - Limit the number of spec files to run (default: 100)
-- `-Dspec-pattern='*.json'` - Pattern to match test files (default: '*.json')
-- `-Dspec-isolated=true` - Run each test in an isolated process (safer but slower)
-- `-Dspec-args` - Additional arguments to pass to the test runner
-
-### Test Modes
-
-1. **Normal Mode** (`ethereum-specs.test.ts`) - Default mode, runs tests in the same process
-2. **Isolated Mode** (`ethereum-specs-safe.test.ts`) - Each test runs in a separate worker process to prevent crashes from affecting other tests
+- `-Dtest-filter=PATTERN` - Run only tests whose name contains `PATTERN` (both runners).
+- `-Dspec-max-files=N` - Limit the number of spec files. Only the Bun runner reads it
+  (`MAX_SPEC_FILES`); the Zig runner ignores it even though the `specs` step description mentions it.
+- `-Dspec-skip-files=N` - Sets `SKIP_SPEC_FILES`, which no runner reads yet.
 
 ### Directory Structure
 
 ```
 specs/
-├── README.md                     # This file
-├── CLAUDE.md                     # AI assistant instructions
-├── test_report.md                # Detailed test results
-├── execution-specs/              # Git submodule with official Ethereum tests
-│   └── tests/                    # Test JSON files organized by category
-└── bun-runner/                   # Bun test runner implementation
-    ├── ethereum-specs.test.ts    # Main test runner
-    ├── ethereum-specs-safe.test.ts # Isolated test runner
-    ├── test-worker.js            # Worker script for isolated mode
-    ├── generate-specs.ts         # (unused) Test generator
-    └── package.json              # Bun dependencies
+├── README.md              # This file
+├── CLAUDE.md              # AI assistant instructions
+├── eest_runner.zig        # Official EEST state test runner (zig build state-tests)
+├── runner.zig             # Legacy filler runner: pre-state, execution, post/expect checks
+├── assembler.zig, lll.zig # Compile (asm ...)/:asm and LLL filler code
+├── cases/
+│   ├── root.zig           # Generated aggregator imported by zig build specs
+│   └── eest/              # One generated Zig test per filler
+├── bun-runner/            # Bun runner (zig build specs-bun)
+│   ├── ethereum-specs.test.ts
+│   └── post-state-validation.test.ts
+└── execution-specs/       # Git submodule: ethereum/execution-specs
 ```
 
 ## Implementation Details
 
-The test runner:
-1. Recursively finds all JSON test files in `execution-specs/tests/`
-2. Groups tests by category (directory name)
-3. For each test case:
-   - Sets up the blockchain environment (block info)
-   - Initializes pre-state (accounts, balances, code)
-   - Executes transaction(s)
-   - Validates the result didn't crash
-   - (Post-state validation not yet implemented)
+For each filler test case, `specs/runner.zig`:
+1. Sets up the block environment and pre-state (accounts, balances, code, storage)
+2. Compiles `(asm ...)`, `:asm` and LLL code with `assembler.zig` and `lll.zig`
+3. Executes the transaction under Prague with an uncapped block gas limit
+4. Checks balances, nonces, code and storage against `post`, or against the `expect`
+   entries whose `indexes` select data/gas/value 0
 
 ## Known Limitations
 
-- Assembly code tests are skipped (not supported)
-- Post-state validation not yet implemented
-- Some edge cases may cause crashes in normal mode (use isolated mode for safety)
+- `:yul` filler code is not compiled; those cases return `TestTodo`
+- Only the first transaction variant (data/gas/value index 0) is checked
+
+### Inlined linked README: developer deep dive
+
+Source: https://github.com/evmts/guillotine/blob/main/docs/dev/README.md
+
+# Developer Documentation
+
+Deep dive documentation for understanding and contributing to Guillotine. These docs contain actual code excerpts, detailed architecture explanations, and step-by-step execution traces.
+
+```
+                           GUILLOTINE EVM
+    ┌─────────────────────────────────────────────────────────┐
+    │                                                         │
+    │   ┌─────────────┐              ┌─────────────────────┐  │
+    │   │  Mini EVM   │              │  Performance EVM    │  │
+    │   │  (Clarity)  │              │  (Speed)            │  │
+    │   │             │              │                     │  │
+    │   │  PC-based   │              │  Dispatch-based     │  │
+    │   │  46 files   │              │  187 files          │  │
+    │   │  (.zig)     │              │  (.zig)             │  │
+    │   └─────────────┘              └─────────────────────┘  │
+    │          │                              │               │
+    │          └──────────────┬───────────────┘               │
+    │                         │                               │
+    │                    Shared Primitives                    │
+    │              (Address, U256, Gas, Hardfork)             │
+    └─────────────────────────────────────────────────────────┘
+```
+
+## Quick Start for New Developers
+
+### 1. Understand the Two EVMs
+
+| Aspect | Mini EVM | Performance EVM |
+|--------|----------|-----------------|
+| **Location** | `mini/src/` | `src/` |
+| **Philosophy** | Clarity first | Speed first |
+| **Execution** | Sequential PC loop | Tail-call dispatch |
+| **Use case** | Learning, testing | Production |
+| **Start here** | `mini/src/frame.zig` | `src/frame/frame.zig` |
+
+### 2. Read in This Order
+
+```
+START HERE
+    │
+    ▼
+┌─────────────────────────────────┐
+│ 1. ARCHITECTURE.md              │  ← Understand the structure
+│    - Core components            │
+│    - How pieces fit together    │
+└─────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────┐
+│ 2. EXECUTION-MODELS.md          │  ← See both EVMs side-by-side
+│    - Mini: while loop           │
+│    - Performance: tail calls    │
+└─────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────┐
+│ 3. STATE-MANAGEMENT.md          │  ← How storage works
+│    - Storage, journal           │
+│    - Warm/cold access           │
+└─────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────┐
+│ 4. GAS-METERING.md              │  ← Gas calculation rules
+│    - Static/dynamic costs       │
+│    - SSTORE gas table           │
+└─────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────┐
+│ 5. CONTRIBUTING.md              │  ← Ready to contribute
+│    - Code patterns              │
+│    - Adding opcodes             │
+└─────────────────────────────────┘
+```
+
+### 3. Run Your First Test
+
+```bash
+# Build the project
+zig build
+
+# Run unit tests from src/ (CI runs this)
+zig build test-unit
+
+# Run the per-opcode differential tests (CI runs this)
+zig build test-opcodes
+
+# Run only tests whose names contain "ADD"
+zig build test-opcodes -Dtest-filter='ADD'
+
+# No output = success!
+```
+
+`zig build test` also runs the legacy `specs` suite, which does not pass yet.
+Pass `-Dtest-filter` once; Zig rejects a repeated `-D` option.
+
+## Documentation Index
+
+| Document | Description | Read When... |
+|----------|-------------|--------------|
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Unified architecture with code excerpts | Understanding codebase structure |
+| [EXECUTION-MODELS.md](./EXECUTION-MODELS.md) | Side-by-side Mini vs Performance | Comparing implementations |
+| [STATE-MANAGEMENT.md](./STATE-MANAGEMENT.md) | Storage, journal, warm/cold tracking | Working with storage |
+| [GAS-METERING.md](./GAS-METERING.md) | Gas calculation patterns and costs | Debugging gas issues |
+| [TESTING.md](./TESTING.md) | Test organization and debugging | Running/writing tests |
+| [HARDFORKS.md](./HARDFORKS.md) | EIP support matrix and feature flags | Adding hardfork features |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Development workflow and conventions | Making contributions |
+
+## Quick Navigation by Topic
+
+### "How does X work?"
+
+| Question | Document | Section |
+|----------|----------|---------|
+| How does the EVM execute bytecode? | [EXECUTION-MODELS.md](./EXECUTION-MODELS.md) | Execution Loop |
+| What is dispatch-based execution? | [ARCHITECTURE.md](./ARCHITECTURE.md#dispatch-system) | Dispatch System |
+| How do synthetic opcodes work? | [../performance/SYNTHETIC-OPCODES.md](../performance/SYNTHETIC-OPCODES.md) | All |
+| How is storage managed? | [STATE-MANAGEMENT.md](./STATE-MANAGEMENT.md#storage-architecture) | Storage Architecture |
+| What is the journal system? | [STATE-MANAGEMENT.md](./STATE-MANAGEMENT.md#journal-system-performance-only) | Journal System |
+| How does warm/cold tracking work? | [STATE-MANAGEMENT.md](./STATE-MANAGEMENT.md#access-list-eip-2929) | Access List |
+| How is gas calculated? | [GAS-METERING.md](./GAS-METERING.md) | All |
+| What are memory expansion costs? | [GAS-METERING.md](./GAS-METERING.md#memory-expansion) | Memory Expansion |
+| How do SSTORE refunds work? | [GAS-METERING.md](./GAS-METERING.md#sstore-gas-eip-22003529) | SSTORE Gas |
+
+### "How do I..."
+
+| Task | Document | Section |
+|------|----------|---------|
+| Run tests? | [TESTING.md](./TESTING.md#test-commands) | Test Commands |
+| Debug a failing test? | [TESTING.md](./TESTING.md#debugging-failures) | Debugging Failures |
+| Add a new opcode? | [CONTRIBUTING.md](./CONTRIBUTING.md#adding-a-new-opcode) | Adding a New Opcode |
+| Add hardfork support? | [HARDFORKS.md](./HARDFORKS.md#implementation-checklist) | Implementation Checklist |
+| Write a handler? | [CONTRIBUTING.md](./CONTRIBUTING.md#handler-patterns) | Handler Patterns |
+
+## Key File Map
+
+```
+src/                              mini/src/
+├── evm.zig (340KB)               ├── evm.zig (97KB)
+│   └── Orchestrates execution    │   └── Complete EVM
+│                                 │
+├── frame/                        ├── frame.zig (26KB)
+│   └── frame.zig (31KB)          │   └── Execution loop
+│       └── Dispatch execution    │
+│                                 │
+├── instructions/                 ├── instructions/
+│   ├── handlers_arithmetic.zig   │   ├── handlers_arithmetic.zig
+│   ├── handlers_storage.zig      │   ├── handlers_storage.zig
+│   ├── handlers_system.zig       │   ├── handlers_system.zig
+│   └── handlers_*_synthetic.zig  │   └── (no synthetics)
+│                                 │
+├── preprocessor/                 └── (no preprocessor)
+│   └── dispatch.zig (63KB)
+│       └── Schedule builder
+│
+├── storage/
+│   ├── database.zig (120KB)
+│   ├── journal.zig (53KB)
+│   └── access_list.zig
+│
+└── tracer/
+    └── tracer.zig (42KB)
+```
+
+## Core Concepts at a Glance
+
+### Execution Flow
+
+```
+                    MINI EVM                           PERFORMANCE EVM
+                    ────────                           ───────────────
+                        │                                    │
+              ┌─────────▼──────────┐              ┌─────────▼──────────┐
+              │  Read bytecode[PC] │              │  Preprocess once   │
+              └─────────┬──────────┘              │  into schedule     │
+                        │                         └─────────┬──────────┘
+              ┌─────────▼──────────┐                        │
+              │  Switch on opcode  │              ┌─────────▼──────────┐
+              │  (256 cases)       │              │  schedule[0].gas   │
+              └─────────┬──────────┘              │  (block metadata)  │
+                        │                         └─────────┬──────────┘
+              ┌─────────▼──────────┐                        │
+              │  Execute handler   │              ┌─────────▼──────────┐
+              └─────────┬──────────┘              │  handler(cursor)   │
+                        │                         │  tail-call next    │
+              ┌─────────▼──────────┐              └─────────┬──────────┘
+              │  PC += 1           │                        │
+              │  Continue loop     │                        │
+              └─────────┬──────────┘              ┌─────────▼──────────┐
+                        │                         │  Never returns     │
+                   Loop back                      │  Error = exit      │
+                                                  └────────────────────┘
+```
+
+### Stack Operations
+
+```
+LIFO Stack (both implementations)
+─────────────────────────────────
+
+   pushStack(5)  pushStack(3)  popStack()   Result
+        │              │            │
+        ▼              ▼            ▼
+   ┌─────────┐   ┌─────────┐   ┌─────────┐
+   │    5    │   │    3    │ ←─│ returns │   Stack now: [5]
+   ├─────────┤   ├─────────┤   │    3    │
+   │  empty  │   │    5    │   └─────────┘
+   └─────────┘   └─────────┘
+
+   First pop = top of stack (most recently pushed)
+```
+
+### Gas Metering
+
+```
+MINI: Per-operation                PERFORMANCE: Per-block
+─────────────────                  ────────────────────
+
+  ADD: check 3 gas                  Block entry:
+  SUB: check 3 gas                    check 9 gas (3+3+3)
+  MUL: check 5 gas
+                                    ADD: no check
+  Total: 3 checks                   SUB: no check
+                                    MUL: no check
+
+                                    Total: 1 check
+```
+
+## Code Conventions Quick Reference
+
+### Do This
+
+```zig
+// Logging
+const log = @import("log.zig");
+log.debug("Op: {}", .{opcode});
+
+// Assertions (in a handler)
+(&self.getEvm().tracer).assert(cond, "message");
+
+// Error handling
+try operation();  // Always propagate
+
+// Memory
+const x = try alloc.create(T);
+defer alloc.destroy(x);
+```
+
+### Never Do This
+
+```zig
+// NEVER: std.debug.print
+std.debug.print("debug", .{});  // Use log module
+
+// NEVER: std.debug.assert
+std.debug.assert(cond);  // Use tracer.assert
+
+// NEVER: Swallow errors
+operation() catch {};  // Propagate or handle!
+
+// NEVER: Skip tests
+// test "broken" { }  // Fix it or delete it
+```
+
+## Related Documentation
+
+- **[CLAUDE.md](../../CLAUDE.md)** - Project-level instructions and rules
+- **[mini/CLAUDE.md](../../mini/CLAUDE.md)** - Mini EVM specific instructions
+- **[Performance EVM](../performance/)** - Performance-specific deep dives
+- **[Mini EVM](../mini/)** - Mini-specific documentation
+- **[TypeScript Port](../mini/typescript/)** - TypeScript implementation docs
+
+## Building Mental Models
+
+### The EVM is a Stack Machine
+
+```
+Bytecode: PUSH1 05  PUSH1 03  ADD
+          ─────────────────────────
+              │         │       │
+              ▼         ▼       ▼
+Stack:      [5]      [3,5]    [8]
+```
+
+### Storage is Address-Scoped
+
+```
+Contract A (0xAAA...)           Contract B (0xBBB...)
+├── slot[0] = 100               ├── slot[0] = 200
+├── slot[1] = 42                └── slot[1] = 0
+└── slot[2] = 0
+
+Same slot number, different values per contract
+```
+
+### Frames Create Isolation
+
+```
+CALL creates new frame
+──────────────────────
+
+Frame 1 (caller)              Frame 2 (callee)
+├── stack: [...]              ├── stack: []         ← Fresh
+├── memory: [...]             ├── memory: []        ← Fresh
+├── gas: 90000                ├── gas: 60000        ← Subset
+└── address: 0xAAA            └── address: 0xBBB    ← Different
+
+On RETURN: Frame 2 destroyed, Frame 1 continues
+On REVERT: Frame 2 state rolled back
+```
 
 ### Inlined linked README: sdks/README.md
 
@@ -2153,12 +2460,13 @@ Guillotine officially ships three integration surfaces:
 | --- | --- | --- |
 | Zig native bindings | Repository root, `src/root.zig` | Import the EVM and its types directly from Zig. |
 | C FFI bindings | [`c/`](c/), `src/evm_c_api.zig` | Embed the native EVM or build a custom language SDK. |
-| `@tevm/guillotine` TypeScript npm package | [`typescript/`](typescript/), [`wasm/`](wasm/) | Use the WebAssembly SDK from JavaScript/TypeScript, including Bun. |
+| `@tevm/guillotine` TypeScript npm package | [`typescript/`](typescript/) | Call the native library from Bun through Bun FFI (Bun ≥ 1.1; Node.js and browsers are not supported). |
 
 The C and TypeScript APIs are experimental and may change. The TypeScript
-package source is `sdks/typescript`; the WASM build support is `sdks/wasm`.
+package source is `sdks/typescript`. `sdks/wasm/build.zig` is not called by the
+root build and the TypeScript package does not use it.
 
-Python, Go, Rust, Swift, Kotlin/JNI, and native Bun FFI integrations are custom
+Python, Go, Rust, Swift, and Kotlin/JNI integrations are custom
 SDKs built on the C/Zig FFI, rather than separately maintained language SDKs in
 this repository. Start with [Building custom SDKs](../docs/building-custom-sdks.md)
 and the [SDK builder skill](../.agents/skills/guillotine-sdk-builder/SKILL.md)
@@ -2183,17 +2491,16 @@ Native artifacts are installed under `zig-out/lib/`:
 
 The [C header](c/include/guillotine.h) describes the native library. The
 [custom SDK guide](../docs/building-custom-sdks.md) covers ownership, layouts,
-exported symbols, linking, and language templates. WASM has a separate ABI;
-use the TypeScript SDK's loader for it.
+exported symbols, linking, and language templates.
 
 ## Bun
 
-Bun applications can use `@tevm/guillotine` through the TypeScript/WASM SDK.
-For direct native calls through `bun:ffi`, see the
-[TypeScript Bun notes](typescript/README.md#bun-native-ffi) and the custom SDK
-guide. There is no separate Bun package in this repository.
+Bun applications use `@tevm/guillotine`, which loads `libguillotine_ffi`
+through `bun:ffi`. Build the native library for it with `bun run build:native`
+in `sdks/typescript` (it runs `zig build shared -Doptimize=ReleaseFast` from
+the repository root). See [the package README](typescript/README.md).
 
-### Inlined linked README: TypeScript Bun notes
+### Inlined linked README: the package README
 
 Source: https://github.com/evmts/guillotine/blob/main/sdks/typescript/README.md
 
@@ -2300,11 +2607,11 @@ Source: https://github.com/evmts/guillotine-mini
     <a href="https://github.com/evmts/guillotine-mini">
        <img src="https://img.shields.io/badge/zig-0.15.1+-orange.svg" alt="zig version" />
     </a>
-    <a href="https://github.com/evmts/guillotine-mini/actions">
-      <img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="build status" />
+    <a href="https://github.com/evmts/guillotine-mini/actions/workflows/ci.yml">
+      <img src="https://github.com/evmts/guillotine-mini/actions/workflows/ci.yml/badge.svg" alt="CI" />
     </a>
-    <a href="https://github.com/evmts/guillotine-mini">
-      <img src="https://img.shields.io/badge/tests-all%20hardforks%20passing-brightgreen.svg" alt="tests" />
+    <a href="https://github.com/evmts/guillotine-mini/actions/workflows/wasm.yml">
+      <img src="https://github.com/evmts/guillotine-mini/actions/workflows/wasm.yml/badge.svg" alt="WASM" />
     </a>
   </sup>
 </div>
@@ -2313,16 +2620,54 @@ Source: https://github.com/evmts/guillotine-mini
 
 ## Requirements
 
-- Zig 0.15.1+
-- Cargo (for Rust crypto deps)
-- Python 3.8+ (optional, test generation)
+- Zig 0.15.1+ (CI uses 0.15.2)
+- Cargo (Voltaire builds its Rust crypto archive)
+- A `../voltaire` checkout at the revision pinned in `native-dependencies.json`
+- Python 3 and [uv](https://docs.astral.sh/uv/) for `zig build test` and `zig build specs` (execution-specs fills fixtures with Python 3.11+)
+- Binaryen `wasm-opt` for building either WASM EVM reactor (CI uses 132.0.0)
+- Node 22+ for `zig build test-wasm` and `examples/wasm.mjs`
 
 ## Install
 
-**Use as a Zig dependency (recommended)**
+**Build from source**
+
+`build.zig.zon` resolves Voltaire (primitives, crypto, precompiles) from the
+adjacent `../voltaire` directory. Clone both repositories side by side and check
+out the Voltaire revision pinned in `native-dependencies.json`:
 
 ```bash
-zig fetch --save https://github.com/evmts/guillotine-mini/archive/main.tar.gz
+git clone --recurse-submodules https://github.com/evmts/guillotine-mini.git
+git clone https://github.com/evmts/voltaire.git
+git -C voltaire checkout "$(jq -r .voltaire.revision guillotine-mini/native-dependencies.json)"
+cd guillotine-mini
+zig build
+```
+
+The first build runs Cargo inside `../voltaire` to compile the Rust crypto
+archive. Plain `zig build` installs no artifacts; use `zig build native` for the
+C ABI static library and `zig build wasm` for the WASI reactor.
+
+`zig build test` runs the unit tests and the execution-specs state tests. It reads
+fixtures from the `execution-specs` and `ethereum-tests` submodules and, on the
+first run, uses `uv` to fill the execution-specs fixtures and `python3` to generate
+the spec test wrappers. If you cloned without submodules, run
+`git submodule update --init execution-specs ethereum-tests`. The Nethermind
+trie diff runs only when `dotnet` is installed; pass `-Dnethermind-diff=false` to
+skip it explicitly.
+
+**Use as a Zig dependency**
+
+Because `build.zig.zon` points at `../voltaire`, consume Guillotine Mini as a
+path dependency from a sibling checkout. `zig fetch --save` of a GitHub tarball
+fails with `dependency path outside project`. Place your project next to the
+`guillotine-mini` and `voltaire` checkouts above, then declare both in your
+`build.zig.zon`:
+
+```zig
+.dependencies = .{
+    .guillotine_mini = .{ .path = "../guillotine-mini" },
+    .voltaire = .{ .path = "../voltaire" },
+},
 ```
 
 ```zig
@@ -2330,30 +2675,22 @@ const guillotine_dep = b.dependency("guillotine_mini", .{
     .target = target,
     .optimize = optimize,
 });
-const guillotine_mod = guillotine_dep.module("guillotine_mini");
-exe.root_module.addImport("guillotine_mini", guillotine_mod);
-
-const primitives_dep = b.dependency("guillotine_primitives", .{
+const voltaire_dep = b.dependency("voltaire", .{
     .target = target,
     .optimize = optimize,
 });
-exe.linkLibrary(primitives_dep.artifact("blst"));
-exe.linkLibrary(primitives_dep.artifact("keccak-asm"));
-exe.linkLibrary(primitives_dep.artifact("sha3-asm"));
-exe.linkLibrary(primitives_dep.artifact("crypto_wrappers"));
+exe.root_module.addImport("guillotine_mini", guillotine_dep.module("guillotine_mini"));
+exe.root_module.addImport("voltaire", voltaire_dep.module("primitives"));
 ```
 
-**Build from source**
-
-```bash
-git clone https://github.com/evmts/guillotine-mini.git --recurse-submodules
-cd guillotine-mini
-zig build
-```
-
-> The primitives library is fetched automatically during build. Downstream consumers must link the crypto artifacts from `guillotine_primitives` (see snippet above).
+Voltaire's modules carry the Rust crypto archive and its system libraries, so no
+extra `linkLibrary` calls are needed. The `voltaire` import is only required if
+your code constructs `Address` values or uses other Voltaire primitives directly.
 
 ## Quick Start
+
+Run a value-transferring contract call with `zig build run-simple-call`.
+The [Zig examples](examples/README.md) include nine more runnable programs and their expected output.
 
 ```bash
 zig build
@@ -2369,11 +2706,12 @@ TEST_FILTER="push0" zig build specs
 
 ## WebAssembly
 
-The WASM build uses the adjacent `../voltaire` checkout and requires Zig 0.15.2,
-Rust/Cargo, and Python 3. Install Rust's WASM standard library once:
+The WASM build uses the adjacent `../voltaire` checkout and the same Zig and
+Cargo toolchain as the native build. Install Rust's WASM standard library and Binaryen once:
 
 ```bash
 rustup target add wasm32-unknown-unknown
+npm install --global --ignore-scripts binaryen@132.0.0
 zig build wasm
 zig build test-wasm
 node examples/wasm.mjs
@@ -2398,6 +2736,48 @@ views after allocations or EVM calls because WebAssembly memory may grow.
 Call `evm_destroy(handle)` when finished with an instance. See the complete
 [Node example](examples/wasm.mjs) and [execution regression tests](test/wasm.test.mjs).
 
+### Small bundle with optional precompiles
+
+Ship `guillotine_mini_core.wasm` and only the precompile modules your workload
+uses. To build the core and SHA-256 (Ethereum address `0x02`), run:
+
+```bash
+zig build wasm-core wasm-precompile-02
+```
+
+The files are installed in `zig-out/bin/`. Targets use lowercase hex addresses
+(`01` through `11`, plus `100`). `zig build wasm-modular` builds all 18 modules.
+The core keeps the same EVM C API, custom callbacks and hardfork activation rules.
+Calling an active precompile whose module was omitted throws a host error. For
+arbitrary contracts, supply all modules or use the all-in-one reactor.
+
+For example, run this ES module from the output directory with Node 22+:
+
+```js
+import { readFile } from 'node:fs/promises'
+import { WASI } from 'node:wasi'
+import { precompileImports } from './precompiles.mjs'
+
+async function reactor(file, imports = {}) {
+  const wasi = new WASI({ version: 'preview1' })
+  const { instance } = await WebAssembly.instantiate(await readFile(file), {
+    wasi_snapshot_preview1: wasi.wasiImport, ...imports,
+  })
+  wasi.initialize(instance)
+  return instance
+}
+
+const sha256 = await reactor('precompile-02.wasm')
+const core = await reactor('guillotine_mini_core.wasm', {
+  env: { js_opcode_callback: () => 0, js_precompile_callback: () => 0 },
+  precompiles: precompileImports(() => core.exports.memory, [sha256]),
+})
+```
+
+`zig build test-wasm-size` checks the uncompressed byte lengths of the core,
+the all-in-one reactor and each precompile before CI publishes the artifacts.
+The core budget is 230,721 bytes, the size recorded in the October 2025 report.
+
 ## Architecture
 
 ```mermaid
@@ -2414,16 +2794,19 @@ flowchart TB
 Performance benchmarks cover every Zig core EVM module, Zig client subsystem, WASI WASM reactor, C-FFI bridge, and TypeScript / `client-ts` package. Each module declares fine-grained `PACKAGE.ts` targets so Smithers only re-runs benchmarks whose dependencies changed and replays cached output on hits:
 
 ```bash
-# Run only benchmarks affected by your current changes (with live output & cache-hit replay)
-smithers-build affected test '//:bench_all' --include-exclusive --verbose
+# Full incremental CI (benchmarks are exclusive and omitted)
+smthrs ci '//...'
+
+# Run only tests and benchmarks affected by your current changes
+smthrs affected test '//...' --include-exclusive --verbose
 
 # Run a single module benchmark
-smithers-build test //:bench_opcodes --verbose
-smithers-build test //client/rpc:bench --verbose
-smithers-build test //client-ts/txpool:bench --verbose
+smthrs test //:bench_opcodes --verbose
+smthrs test //client/rpc:bench --verbose
+smthrs test //client-ts/txpool:bench --verbose
 
 # View unified summary across all collected JSON benchmark reports
-smithers-build run //:bench_summary
+smthrs run //:bench_summary
 
 # Or run Zig benchmarks directly
 zig build bench -Doptimize=ReleaseFast
@@ -2453,6 +2836,1110 @@ zig build bench -Doptimize=ReleaseFast
 ## License
 
 See `LICENSE`.
+
+### Inlined linked README: Zig examples
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/README.md
+
+# Guillotine Mini examples
+
+## Quick Start
+
+Set up Zig 0.15.2, Cargo and the pinned sibling Voltaire checkout using the [native build instructions](../README.md#install). Run these commands from the Guillotine Mini repository root.
+
+```sh
+zig build run-simple-call
+zig build run-example            # list example names
+zig build run-example -- tracing # emit EIP-3155 JSON Lines to stdout
+```
+
+Each `zig build run-<name>` target runs one example through the same executable. The examples use deterministic local state. Run the CI smoke test with `sh test/examples.sh`.
+
+| Example | What it shows |
+| --- | --- |
+| [simple-call](simple-call/README.md) | Value transfer and contract output |
+| [access-list](access-list/README.md) | Warm and cold access |
+| [call-types](call-types/README.md) | Message calls and deployment |
+| [direct-frame](direct-frame/README.md) | Step through a frame |
+| [nested-calls](nested-calls/README.md) | Nested calls and failure propagation |
+| [precompiles](precompiles/README.md) | Call the first nine precompiles |
+| [tracing](tracing/README.md) | Export an EIP-3155 trace |
+| [transient-storage](transient-storage/README.md) | Transaction-scoped storage |
+| [hardfork-features](hardfork-features/README.md) | Compare hardfork rules |
+| [host-interface](host-interface/README.md) | Supply a custom state backend |
+
+The [TypeScript examples](typescript/README.md) and [Node WASM example](wasm.mjs) cover the other interfaces.
+
+### Inlined linked README: simple-call
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/simple-call/README.md
+
+# Value transfer and contract output
+
+Give Alice 100 wei in a `StateOverlayHost` and send 7 wei to bytecode that adds 40 and 2. The call returns a big-endian 32-byte word. Subtract remaining gas from the message budget with `gasConsumed`. A second call supplies only one gas and checks the rollback and `error_info`.
+
+The EVM owns the call's output buffer. Read it while the EVM is alive, or use `toOwnedResult` to copy the result to a caller-owned allocator.
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-simple-call
+```
+
+**Expected output**
+
+```text
+output=42 gas_used=22 balances=93/7
+failure=OutOfGas
+```
+
+### Inlined linked README: access-list
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/access-list/README.md
+
+# Warm and cold access
+
+The first address or slot access records it in the Berlin transaction’s warm set. The next access uses the warm price. `setAccessList` supplies the contract address and the 32-byte key for slot zero before executing the same SLOAD or no-op SSTORE in a fresh transaction. The measured costs include the PUSH instructions. Transaction intrinsic charges for listing an address and key are calculated separately by the transaction runner.
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-access-list
+```
+
+**Expected output**
+
+```text
+address=2600/100 slot=2100/100
+SLOAD cold=2103 listed=103
+SSTORE cold=2206 listed=106
+```
+
+### Inlined linked README: call-types
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/call-types/README.md
+
+# Message calls and deployment
+
+CALL transfers one wei. STATICCALL reads the library’s caller and rejects a storage write. The proxy then invokes that library with DELEGATECALL and CALLCODE. Both use the proxy’s storage context. The returned `CALLER` identifies Alice for DELEGATECALL and the proxy for CALLCODE.
+
+Finally, the same initcode deploys a one-byte STOP contract with CREATE and CREATE2. The example checks the CREATE2 address against the prediction computed from the sender, salt and initcode.
+
+Inside an opcode handler, the proxy frame supplies these two nested messages to `evm.inner_call`. Here `library` is the address of the code to execute and `gas` is the forwarded budget.
+
+```zig
+const delegate: Evm.CallParams = .{ .delegatecall = .{
+    .caller = frame.caller, .to = library, .input = &.{}, .gas = gas,
+} };
+const legacy: Evm.CallParams = .{ .callcode = .{
+    .caller = frame.address, .to = library, .value = 0, .input = &.{}, .gas = gas,
+} };
+```
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-call-types
+```
+
+**Expected output**
+
+```text
+CALL transferred=1; STATICCALL rejected SSTORE
+DELEGATECALL caller=0x100; CALLCODE caller=0x200
+CREATE runtime=0x00; CREATE2 predicted=0x6bfdf46ee91a8d433715ecada5c8a2d56ae78166
+```
+
+### Inlined linked README: direct-frame
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/direct-frame/README.md
+
+# Step through a frame
+
+Initialize the EVM transaction state and give a `Frame` the bytecode and a 100-gas budget. For each opcode, print its starting program counter and the stack, allocated memory size and gas remaining after `step()`. MSTORE places 42 in byte 31 of the first memory word.
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-direct-frame
+```
+
+**Expected output**
+
+```text
+pc=0 PUSH1 stack={ 42 } memory=0 gas=97
+pc=2 PUSH0 stack={ 42, 0 } memory=0 gas=95
+pc=3 MSTORE stack={  } memory=32 gas=89
+pc=4 STOP stack={  } memory=32 gas=89
+```
+
+### Inlined linked README: nested-calls
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/nested-calls/README.md
+
+# Nested calls and failure propagation
+
+A forwards one wei to B, and B forwards it to C. The call tracer records the parent and child of each frame. With the root at depth zero, C runs at depth two, sees B as its caller and receives one wei. The default EVM message-call depth limit is 1024.
+
+On the second run C reverts, B propagates the revert, and A returns the failed CALL’s zero status. A completes successfully in both runs.
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-nested-calls
+```
+
+**Expected output**
+
+```text
+A -> B -> C: leaf depth=2 caller=0x300 value=1 reverted=false A returned 1
+A -> B -> C: leaf depth=2 caller=0x300 value=1 reverted=true A returned 0
+```
+
+### Inlined linked README: precompiles
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/precompiles/README.md
+
+# Call the first nine precompiles
+
+Address a normal EVM message to each precompile on Cancun. SHA-256, RIPEMD-160 and identity receive the three bytes `abc`. MODEXP decodes three length words and computes 2⁵ modulo 13. An invalid ECRECOVER signature illustrates a successful call with empty output. The last four rows exercise the BN254 operations and one BLAKE2F compression round.
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-precompiles
+```
+
+**Expected output**
+
+```text
+0x01 ECRECOVER gas=3000 output_bytes=0
+0x02 SHA256 gas=72 output_bytes=32
+0x03 RIPEMD160 gas=720 output_bytes=32
+0x04 IDENTITY gas=18 output_bytes=3
+0x05 MODEXP gas=200 output_bytes=1
+0x06 BN254ADD gas=150 output_bytes=64
+0x07 BN254MUL gas=6000 output_bytes=64
+0x08 BN254PAIRING gas=45000 output_bytes=32
+0x09 BLAKE2F gas=1 output_bytes=64
+```
+
+### Inlined linked README: tracing
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/tracing/README.md
+
+# Export an EIP-3155 trace
+
+Enable `Tracer`, attach it to the EVM and execute `PUSH1 42; POP; STOP` with 100,000 gas. `writeEip3155Jsonl` emits one JSON object per opcode followed by a summary. The POP entry sees `0x2a` on the stack. Its gas cost is two.
+
+The [sample output](trace-output.jsonl) contains the full four-line stream. To reproduce the comparison with geth's `evm` tool (v1.15.11), run the same bytecode and gas budget and project both streams onto the common opcode fields. The diff should be empty.
+
+```sh
+evm run --trace --gas 100000 602a5000 2>geth.jsonl
+fields='select(has("pc")) | [.pc, .op, .gas, .gasCost, .stack, .depth]'
+jq -c "$fields" geth.jsonl >geth-steps.jsonl
+zig build run-tracing | jq -c "$fields" | diff -u geth-steps.jsonl -
+```
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-tracing
+```
+
+**Expected summary (last line)**
+
+```text
+{"output":"0x","gasUsed":"0x5","pass":true}
+```
+
+### Inlined linked README: transient-storage
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/transient-storage/README.md
+
+# Transaction-scoped storage
+
+The Cancun guard reads transient slot zero and reverts if it is already locked. It sets the lock on entry, reads it inside the guarded section, then releases it. A separate TSTORE deliberately leaves a value in that slot. A later message reads zero with TLOAD while the same slot written by SSTORE retains one. Gas figures include the instructions that push the value and key.
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-transient-storage
+```
+
+**Expected output**
+
+```text
+inside guard=1
+TSTORE gas=105; SSTORE gas=22105
+later TLOAD=0; SLOAD=1
+```
+
+### Inlined linked README: hardfork-features
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/hardfork-features/README.md
+
+# Compare hardfork rules
+
+Each EVM starts with slot zero set to one. Clearing it exposes the London change to the raw storage refund counter. Reading the slot in a fresh transaction shows the Berlin cold-access price. Each fork then executes the same three opcode probes and checks either success or the explicit `InvalidOpcode` error.
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-hardfork-features
+```
+
+**Expected output**
+
+```text
+ISTANBUL SLOAD=803 clear_refund=15000 PUSH0=off MCOPY=off TSTORE=off
+BERLIN SLOAD=2103 clear_refund=15000 PUSH0=off MCOPY=off TSTORE=off
+LONDON SLOAD=2103 clear_refund=4800 PUSH0=off MCOPY=off TSTORE=off
+SHANGHAI SLOAD=2103 clear_refund=4800 PUSH0=on MCOPY=off TSTORE=off
+CANCUN SLOAD=2103 clear_refund=4800 PUSH0=on MCOPY=on TSTORE=on
+```
+
+### Inlined linked README: host-interface
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/host-interface/README.md
+
+# Supply a custom state backend
+
+The [in-memory host](custom-host.zig) implements the `HostInterface` vtable over account and storage maps. It owns its bytecode and records allocation errors because the setter callbacks return `void`. The backend lives longer than either EVM.
+
+One call increments a stored counter from 40 to 41. A second EVM reads through a `StateOverlayHost` and increments the counter to 42 in its own overlay. The underlying host still reads 41.
+
+Run [the example](main.zig) from the repository root.
+
+```sh
+zig build run-host-interface
+```
+
+**Expected output**
+
+```text
+initial=40 committed=41 simulated=42
+```
+
+### Inlined linked README: TypeScript examples
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/examples/typescript/README.md
+
+# Guillotine Mini - TypeScript/WASM Examples
+
+Comprehensive examples demonstrating how to use the Guillotine Mini EVM via the WASM interface from TypeScript/JavaScript.
+
+## Prerequisites
+
+1. **Build the WASM module** (required):
+   ```bash
+   cd ../..
+   zig build wasm
+   ```
+   This generates `zig-out/bin/guillotine_mini.wasm`
+
+2. **Install dependencies** (for running examples):
+   ```bash
+   npm install
+   # or
+   bun install
+   ```
+
+3. **TypeScript/Bun** (recommended):
+   ```bash
+   brew install bun  # Fast TypeScript runtime
+   ```
+
+## Examples Overview
+
+| Example | Description | Key Concepts |
+|---------|-------------|--------------|
+| [`basic-usage.ts`](#1-basic-usage) | Fundamental EVM operations | Initialization, bytecode execution, gas metering, return values |
+| [`async-execution.ts`](#2-async-execution) | External state integration | Storage requests, async protocol, state backends |
+| [`tracing.ts`](#3-tracing) | Execution introspection | Storage changes, event logs, gas refunds |
+| [`custom-precompiles.ts`](#4-custom-precompiles) | EVM extensions | JavaScript callbacks, custom opcodes, domain-specific logic |
+| [`advanced-patterns.ts`](#5-advanced-patterns) | Real-world scenarios | Nested calls, value transfers, transient storage, access lists |
+
+## Running Examples
+
+```bash
+# Run individual examples
+bun examples/typescript/basic-usage.ts
+bun examples/typescript/async-execution.ts
+bun examples/typescript/tracing.ts
+bun examples/typescript/custom-precompiles.ts
+bun examples/typescript/advanced-patterns.ts
+
+# Or with Node.js (requires ts-node)
+npx ts-node examples/typescript/basic-usage.ts
+```
+
+---
+
+## 1. Basic Usage
+
+**File:** `basic-usage.ts`
+
+Learn the fundamentals of EVM execution:
+
+- **Example 1: Simple Arithmetic**
+  - Execute basic operations (2 + 3)
+  - Read gas metrics
+  - Understand stack-based execution
+
+- **Example 2: Return Value**
+  - Store result in memory
+  - Return data from execution
+  - Parse output as u256
+
+- **Example 3: Storage Operations**
+  - SSTORE/SLOAD operations
+  - Inspect storage changes
+  - Track gas refunds
+
+### Key API Functions
+
+```typescript
+// Create EVM instance
+const evmHandle = wasm.evm_create(hardforkBytes, hardforkBytes.length, logLevel);
+
+// Set bytecode
+wasm.evm_set_bytecode(evmHandle, bytecode, bytecode.length);
+
+// Set execution context
+wasm.evm_set_execution_context(
+  evmHandle,
+  gas,
+  caller,
+  address,
+  value,
+  calldata,
+  calldata.length
+);
+
+// Set blockchain context
+wasm.evm_set_blockchain_context(
+  evmHandle,
+  chainId,
+  blockNumber,
+  blockTimestamp,
+  blockDifficulty,
+  blockPrevrandao,
+  blockCoinbase,
+  blockGasLimit,
+  blockBaseFee,
+  blobBaseFee
+);
+
+// Execute
+const success = wasm.evm_execute(evmHandle);
+
+// Get results
+const gasUsed = wasm.evm_get_gas_used(evmHandle);
+const outputLen = wasm.evm_get_output_len(evmHandle);
+wasm.evm_get_output(evmHandle, outputBuffer, outputLen);
+
+// Clean up
+wasm.evm_destroy(evmHandle);
+```
+
+### Output Example
+
+```
+Example 1: Simple Arithmetic (2 + 3)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Bytecode: 0x60 0x02 0x60 0x03 0x01 0x00
+Operation: 2 + 3
+
+✅ Execution: SUCCESS
+⛽ Gas used: 9 / 100000
+⛽ Gas remaining: 99991
+
+📤 Output: (empty - result on stack)
+
+💡 Note: Result (5) remains on stack. Use RETURN to output it.
+```
+
+---
+
+## 2. Async Execution
+
+**File:** `async-execution.ts`
+
+Integrate the EVM with external state backends:
+
+- **Example 1: Simple Async Storage Load**
+  - Start async execution
+  - Handle storage requests
+  - Resume execution with data
+  - Complete async protocol flow
+
+- **Example 2: Multiple Async Requests**
+  - Complex bytecode with multiple SLOADs
+  - Async iteration loop
+  - Request/response pattern
+
+### Async Protocol Flow
+
+```typescript
+// 1. Enable storage injector
+wasm.evm_enable_storage_injector(evmHandle);
+
+// 2. Start execution (returns first request)
+let continueExecution = wasm.evm_call_ffi(evmHandle, requestPtr);
+
+// 3. Async loop
+while (continueExecution) {
+  const requestType = memory[requestPtr];
+
+  if (requestType === RequestType.NEED_STORAGE) {
+    // Query backend
+    const value = await backend.getStorage(address, slot);
+
+    // Build response
+    const response = new Uint8Array(84); // address(20) + slot(32) + value(32)
+    // ... pack data
+
+    // Continue execution
+    continueExecution = wasm.evm_continue_ffi(evmHandle, 1, response, 84, requestPtr);
+  }
+  else if (requestType === RequestType.RESULT) {
+    break; // Done
+  }
+}
+```
+
+### Request Types
+
+| Type | Value | Description | Response Format |
+|------|-------|-------------|-----------------|
+| `RESULT` | 0 | Execution complete | N/A |
+| `NEED_STORAGE` | 1 | Storage value needed | `address(20) + slot(32) + value(32)` |
+| `NEED_BALANCE` | 2 | Balance needed | `address(20) + balance(32)` |
+| `NEED_CODE` | 3 | Contract code needed | `address(20) + code(...)` |
+| `NEED_NONCE` | 4 | Account nonce needed | `address(20) + nonce(8)` |
+| `READY_TO_COMMIT` | 5 | State changes ready | Acknowledge with `continue_type=5` |
+| `ERROR` | 255 | Execution error | N/A |
+
+### Use Cases
+
+- **Database Backends**: PostgreSQL, LevelDB, RocksDB
+- **Remote State**: RPC nodes, distributed databases
+- **Layer 2 Solutions**: Rollups with off-chain state
+- **State Channels**: Ephemeral state management
+
+---
+
+## 3. Tracing
+
+**File:** `tracing.ts`
+
+Debug and analyze EVM execution:
+
+- **Example 1: Storage Changes**
+  - Track modified slots
+  - Inspect addresses
+  - Analyze state transitions
+
+- **Example 2: Event Logs**
+  - Parse LOG0-LOG4 events
+  - Extract topics and data
+  - Decode event parameters
+
+- **Example 3: Gas Refund Analysis**
+  - Track SSTORE refunds
+  - Understand refund caps (EIP-3529)
+  - Optimize gas consumption
+
+### Inspection APIs
+
+```typescript
+// Storage changes
+const count = wasm.evm_get_storage_change_count(evmHandle);
+for (let i = 0; i < count; i++) {
+  const addressOut = new Uint8Array(20);
+  const slotOut = new Uint8Array(32);
+  const valueOut = new Uint8Array(32);
+
+  wasm.evm_get_storage_change(evmHandle, i, addressOut, slotOut, valueOut);
+
+  const slot = bytesToU256(slotOut);
+  const value = bytesToU256(valueOut);
+  console.log(`Slot ${slot}: ${value}`);
+}
+
+// Event logs
+const logCount = wasm.evm_get_log_count(evmHandle);
+for (let i = 0; i < logCount; i++) {
+  const addressOut = new Uint8Array(20);
+  const topicsCountOut = new Uint32Array(1);
+  const topicsOut = new Uint8Array(4 * 32);
+  const dataLenOut = new Uint32Array(1);
+  const dataOut = new Uint8Array(1024);
+
+  wasm.evm_get_log(
+    evmHandle, i,
+    addressOut, topicsCountOut, topicsOut,
+    dataLenOut, dataOut, dataOut.length
+  );
+
+  console.log(`Log ${i}: ${topicsCountOut[0]} topics`);
+}
+
+// Gas refunds
+const refund = wasm.evm_get_gas_refund(evmHandle);
+console.log(`Gas refund: ${refund}`);
+```
+
+### Output Example
+
+```
+Example 1: Inspecting Storage Changes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Execution: SUCCESS
+⛽ Gas used: 60000
+⛽ Gas remaining: 40000
+💰 Gas refund: 0
+
+📦 Storage Changes (3 slots modified):
+
+  Slot 0: 100
+  Slot 1: 200
+  Slot 5: 300
+```
+
+---
+
+## 4. Custom Precompiles
+
+**File:** `custom-precompiles.ts`
+
+Extend the EVM with custom functionality:
+
+- **Example 1: String Reverser**
+  - Custom precompile at 0x1000
+  - Input: UTF-8 string
+  - Output: Reversed string
+  - Gas: 100 + 10 per byte
+
+- **Example 2: Fibonacci Calculator**
+  - Custom precompile at 0x2000
+  - Input: u256 (n)
+  - Output: u256 (fibonacci(n))
+  - Gas: 50 + 20 * n
+
+### Registering Custom Precompiles
+
+```typescript
+// 1. Define handler function
+const handler: PrecompileHandler = (input: Uint8Array, gasLimit: bigint) => {
+  const gasCost = 100n + BigInt(input.length) * 10n;
+
+  if (gasCost > gasLimit) {
+    return { success: false, output: new Uint8Array(0), gasUsed: gasLimit };
+  }
+
+  // Custom logic
+  const output = processInput(input);
+
+  return { success: true, output, gasUsed: gasCost };
+};
+
+// 2. Register in registry
+registry.register('0x0000000000000000000000000000000000001000', handler);
+
+// 3. Load WASM with callback
+const wasm = await loadWasmWithPrecompiles(registry);
+
+// 4. WASM imports handle routing
+const imports = {
+  env: {
+    js_precompile_callback: (
+      address_ptr: number,
+      input_ptr: number,
+      input_len: number,
+      gas_limit: number,
+      output_len_ptr: number,
+      output_ptr_ptr: number,
+      gas_used_ptr: number
+    ) => {
+      // Read input from WASM memory
+      const memory = new Uint8Array(instance.exports.memory.buffer);
+      const address = memory.slice(address_ptr, address_ptr + 20);
+      const input = memory.slice(input_ptr, input_ptr + input_len);
+
+      // Try to handle
+      const result = registry.handle(address, input, BigInt(gas_limit));
+
+      if (!result || !result.success) {
+        return 0; // Not handled, use default
+      }
+
+      // Allocate output, write metadata
+      const outputPtr = wasm.malloc(result.output.length);
+      memory.set(result.output, outputPtr);
+
+      // Return success
+      return 1;
+    }
+  }
+};
+```
+
+### Calling Precompiles from Bytecode
+
+```typescript
+// Bytecode to call precompile at 0x1000
+const bytecode = new Uint8Array([
+  // Store input in memory
+  0x7f, ...inputBytes, ...padding,  // PUSH32 input
+  0x60, 0x00,                       // PUSH1 0 (offset)
+  0x52,                             // MSTORE
+
+  // CALL(gas, to, value, argsOffset, argsSize, retOffset, retSize)
+  0x60, 0x20,                       // PUSH1 32 (retSize)
+  0x60, 0x20,                       // PUSH1 32 (retOffset)
+  0x60, 0x0c,                       // PUSH1 12 (argsSize)
+  0x60, 0x00,                       // PUSH1 0 (argsOffset)
+  0x60, 0x00,                       // PUSH1 0 (value)
+  0x61, 0x10, 0x00,                 // PUSH2 0x1000 (precompile address)
+  0x61, 0xff, 0xff,                 // PUSH2 65535 (gas)
+  0xf1,                             // CALL
+
+  // Return output
+  0x60, 0x20,                       // PUSH1 32
+  0x60, 0x20,                       // PUSH1 32
+  0xf3                              // RETURN
+]);
+```
+
+### Use Cases
+
+- **Layer 2 Protocols**: Custom cryptography (BLS, ZK proofs)
+- **Rollups**: Optimized state transitions
+- **Private Chains**: Domain-specific operations
+- **Testing**: Mock external dependencies
+- **Development**: Rapid prototyping of new EIPs
+
+---
+
+## 5. Advanced Patterns
+
+**File:** `advanced-patterns.ts`
+
+Real-world contract execution patterns:
+
+- **Example 1: Nested Contract Calls**
+  - Contract A → Contract B → Contract C
+  - Call depth management
+  - Return data propagation
+  - Context preservation
+
+- **Example 2: Value Transfers**
+  - ETH transfers between contracts
+  - Balance tracking
+  - CALL with value
+
+- **Example 3: Transient Storage (EIP-1153)**
+  - TLOAD/TSTORE opcodes
+  - Transaction-scoped state
+  - Gas optimization (always warm, 100 gas)
+  - Reentrancy guards
+
+- **Example 4: Access List Optimization (EIP-2930)**
+  - Pre-warm addresses and slots
+  - Gas savings comparison
+  - Cold vs warm access costs
+
+### Nested Calls Pattern
+
+```typescript
+// Contract C: Returns 42
+const codeC = [
+  0x60, 0x2a,  // PUSH1 42
+  0x60, 0x00,  // PUSH1 0
+  0x52,        // MSTORE
+  0x60, 0x20,  // PUSH1 32
+  0x60, 0x00,  // PUSH1 0
+  0xf3         // RETURN
+];
+
+// Contract B: Calls C, adds 10
+const codeB = [
+  // CALL C
+  0x60, 0x20,       // retSize
+  0x60, 0x00,       // retOffset
+  0x60, 0x00,       // argsSize
+  0x60, 0x00,       // argsOffset
+  0x60, 0x00,       // value
+  0x73, ...addressC,  // to
+  0x61, 0xff, 0xff, // gas
+  0xf1,             // CALL
+
+  // Add 10 to result
+  0x60, 0x00,  // PUSH1 0
+  0x51,        // MLOAD
+  0x60, 0x0a,  // PUSH1 10
+  0x01,        // ADD
+
+  // Return
+  0x60, 0x00,  // PUSH1 0
+  0x52,        // MSTORE
+  0x60, 0x20,  // PUSH1 32
+  0x60, 0x00,  // PUSH1 0
+  0xf3         // RETURN
+];
+
+// Contract A: Calls B, multiplies by 2
+// ... similar pattern
+
+// Result: C returns 42 → B returns 52 → A returns 104
+```
+
+### Transient Storage (EIP-1153)
+
+```typescript
+// Transient storage is transaction-scoped
+const bytecode = [
+  // TSTORE 999 at slot 0
+  0x61, 0x03, 0xe7,  // PUSH2 999
+  0x60, 0x00,        // PUSH1 0
+  0x5d,              // TSTORE (0x5d)
+
+  // TLOAD from slot 0
+  0x60, 0x00,        // PUSH1 0
+  0x5c,              // TLOAD (0x5c)
+
+  // Return result
+  0x60, 0x00,  // PUSH1 0
+  0x52,        // MSTORE
+  0x60, 0x20,  // PUSH1 32
+  0x60, 0x00,  // PUSH1 0
+  0xf3         // RETURN
+];
+
+// Benefits:
+// - Always warm (100 gas vs 2100 cold SLOAD)
+// - Cleared after transaction
+// - Perfect for reentrancy guards
+// - No refund complexity
+```
+
+### Access List Optimization
+
+```typescript
+// Without access list: Cold SLOAD = 2100 gas
+// With access list: Warm SLOAD = 100 gas
+// Savings: 2000 gas per slot
+
+// Set access list before execution
+const accessListAddresses = new Uint8Array(20);
+accessListAddresses.set(contractAddress, 0);
+
+wasm.evm_set_access_list_addresses(evmHandle, accessListAddresses, 1);
+
+// Pre-warm storage slots
+const accessListKeys = new Uint8Array(numSlots * 52); // address(20) + slot(32)
+for (let i = 0; i < numSlots; i++) {
+  accessListKeys.set(contractAddress, i * 52);
+  accessListKeys.set(u256ToBytes(BigInt(i)), i * 52 + 20);
+}
+
+wasm.evm_set_access_list_storage_keys(
+  evmHandle,
+  accessListAddresses,
+  accessListKeys.slice(20),
+  numSlots
+);
+```
+
+---
+
+## API Reference
+
+### Core Functions
+
+| Function | Description | Returns |
+|----------|-------------|---------|
+| `evm_create(hardfork, hardfork_len, log_level)` | Create EVM instance | Handle |
+| `evm_destroy(handle)` | Destroy EVM instance | void |
+| `evm_set_bytecode(handle, bytecode, len)` | Set bytecode | bool |
+| `evm_set_execution_context(handle, gas, caller, address, value, calldata, calldata_len)` | Set execution context | bool |
+| `evm_set_blockchain_context(handle, ...)` | Set block context | void |
+| `evm_execute(handle)` | Execute bytecode | bool |
+| `evm_get_gas_used(handle)` | Get gas used | i64 |
+| `evm_get_gas_remaining(handle)` | Get gas remaining | i64 |
+| `evm_get_output_len(handle)` | Get output length | usize |
+| `evm_get_output(handle, buffer, len)` | Copy output data | usize |
+
+### Async Protocol Functions
+
+| Function | Description |
+|----------|-------------|
+| `evm_enable_storage_injector(handle)` | Enable async storage |
+| `evm_call_ffi(handle, request_out)` | Start async execution |
+| `evm_continue_ffi(handle, type, data, len, request_out)` | Continue execution |
+
+### Inspection Functions
+
+| Function | Description |
+|----------|-------------|
+| `evm_get_gas_refund(handle)` | Get gas refund counter |
+| `evm_get_storage_change_count(handle)` | Get number of modified slots |
+| `evm_get_storage_change(handle, index, ...)` | Get storage change by index |
+| `evm_get_log_count(handle)` | Get number of logs |
+| `evm_get_log(handle, index, ...)` | Get log by index |
+
+### State Management Functions
+
+| Function | Description |
+|----------|-------------|
+| `evm_set_storage(handle, address, slot, value)` | Set storage value |
+| `evm_get_storage(handle, address, slot, value_out)` | Get storage value |
+| `evm_set_balance(handle, address, balance)` | Set account balance |
+| `evm_set_code(handle, address, code, code_len)` | Set contract code |
+| `evm_set_nonce(handle, address, nonce)` | Set account nonce |
+
+### Access List Functions (EIP-2930)
+
+| Function | Description |
+|----------|-------------|
+| `evm_set_access_list_addresses(handle, addresses, count)` | Set pre-warmed addresses |
+| `evm_set_access_list_storage_keys(handle, addresses, slots, count)` | Set pre-warmed storage slots |
+
+### Blob Functions (EIP-4844)
+
+| Function | Description |
+|----------|-------------|
+| `evm_set_blob_hashes(handle, hashes, count)` | Set blob versioned hashes |
+
+---
+
+## Gas Costs Reference
+
+### Opcodes (Cancun)
+
+| Operation | Base Cost | Notes |
+|-----------|-----------|-------|
+| ADD, SUB, MUL | 3 gas | Arithmetic |
+| DIV, MOD | 5 gas | Division |
+| SLOAD (cold) | 2100 gas | First access |
+| SLOAD (warm) | 100 gas | Subsequent access |
+| SSTORE (set) | 20000 gas | Zero → nonzero |
+| SSTORE (update) | 5000 gas | Nonzero → nonzero |
+| TLOAD | 100 gas | Always warm |
+| TSTORE | 100 gas | Always warm |
+| CALL (cold) | 2600 gas | + stipend costs |
+| CALL (warm) | 100 gas | Pre-warmed |
+| LOG0 | 375 + 375/word | Base + data |
+| LOG1-LOG4 | +375 per topic | Additional topics |
+
+### Access Lists (EIP-2930)
+
+| Item | Cost |
+|------|------|
+| Address | 2400 gas |
+| Storage key | 1900 gas |
+
+**Benefit**: Pre-paying upfront saves 2000 gas per cold SLOAD/SSTORE
+
+### Refunds (EIP-3529, London+)
+
+- **Cap**: 1/5 of gas used (was 1/2 pre-London)
+- **SSTORE clear**: 4800 gas (nonzero → zero)
+- **No refunds**: For SELFDESTRUCT (EIP-6780)
+
+---
+
+## Hardforks Supported
+
+| Hardfork | Notable Features |
+|----------|------------------|
+| **Frontier** | Basic EVM operations |
+| **Homestead** | DELEGATECALL |
+| **Tangerine** | Gas cost adjustments (EIP-150) |
+| **Spurious** | REVERT, STATICCALL |
+| **Byzantium** | RETURNDATASIZE, RETURNDATACOPY |
+| **Constantinople** | CREATE2, EXTCODEHASH, SHL/SHR/SAR |
+| **Istanbul** | ChainID, SELFBALANCE |
+| **Berlin** | Warm/cold access (EIP-2929) |
+| **London** | Base fee, reduced refunds (EIP-3529) |
+| **Merge** | PREVRANDAO (EIP-4399) |
+| **Shanghai** | PUSH0, warm coinbase, init code limit |
+| **Cancun** | Transient storage, MCOPY, blob transactions |
+| **Prague** | TBD (future) |
+
+---
+
+## Common Patterns
+
+### Pattern 1: Execute Simple Bytecode
+
+```typescript
+const wasm = await loadWasm();
+const evmHandle = wasm.evm_create(hardforkBytes, hardforkBytes.length, 0);
+
+wasm.evm_set_bytecode(evmHandle, bytecode, bytecode.length);
+wasm.evm_set_execution_context(evmHandle, gas, caller, address, value, calldata, calldata.length);
+wasm.evm_set_blockchain_context(evmHandle, ...);
+
+const success = wasm.evm_execute(evmHandle);
+const gasUsed = wasm.evm_get_gas_used(evmHandle);
+
+wasm.evm_destroy(evmHandle);
+```
+
+### Pattern 2: Async Execution Loop
+
+```typescript
+wasm.evm_enable_storage_injector(evmHandle);
+let continueExecution = wasm.evm_call_ffi(evmHandle, requestPtr);
+
+while (continueExecution) {
+  const requestType = memory[requestPtr];
+
+  switch (requestType) {
+    case RequestType.NEED_STORAGE:
+      const value = await backend.getStorage(address, slot);
+      continueExecution = wasm.evm_continue_ffi(evmHandle, 1, response, 84, requestPtr);
+      break;
+    case RequestType.RESULT:
+      return; // Done
+  }
+}
+```
+
+### Pattern 3: Inspect Execution Results
+
+```typescript
+const success = wasm.evm_execute(evmHandle);
+
+// Storage changes
+const storageCount = wasm.evm_get_storage_change_count(evmHandle);
+for (let i = 0; i < storageCount; i++) {
+  wasm.evm_get_storage_change(evmHandle, i, addrOut, slotOut, valueOut);
+}
+
+// Logs
+const logCount = wasm.evm_get_log_count(evmHandle);
+for (let i = 0; i < logCount; i++) {
+  wasm.evm_get_log(evmHandle, i, addrOut, topicsOut, dataOut);
+}
+
+// Gas metrics
+const gasUsed = wasm.evm_get_gas_used(evmHandle);
+const gasRefund = wasm.evm_get_gas_refund(evmHandle);
+```
+
+---
+
+## Troubleshooting
+
+### Issue: "Module not found"
+
+**Solution**: Build WASM module first:
+```bash
+zig build wasm
+```
+
+### Issue: "Out of gas"
+
+**Solution**: Increase gas limit or optimize bytecode:
+```typescript
+const gas = 10000000n; // Increase limit
+wasm.evm_set_execution_context(evmHandle, Number(gas), ...);
+```
+
+### Issue: "Invalid bytecode"
+
+**Solution**: Verify opcode sequence:
+```typescript
+// Invalid: JUMP without JUMPDEST
+[0x56] // JUMP
+
+// Valid: JUMP to JUMPDEST
+[
+  0x60, 0x03, // PUSH1 3 (jump target)
+  0x56,       // JUMP
+  0x5b        // JUMPDEST
+]
+```
+
+### Issue: "Storage not found"
+
+**Solution**: Enable storage injector for async:
+```typescript
+wasm.evm_enable_storage_injector(evmHandle);
+```
+
+Or pre-populate storage for sync:
+```typescript
+wasm.evm_set_storage(evmHandle, address, slot, value);
+```
+
+---
+
+## Best Practices
+
+1. **Always destroy EVM instances** to prevent memory leaks:
+   ```typescript
+   try {
+     // ... use EVM
+   } finally {
+     wasm.evm_destroy(evmHandle);
+   }
+   ```
+
+2. **Use access lists** for multi-slot operations to save gas:
+   ```typescript
+   wasm.evm_set_access_list_addresses(...);
+   wasm.evm_set_access_list_storage_keys(...);
+   ```
+
+3. **Enable tracing** during development:
+   ```typescript
+   const evmHandle = wasm.evm_create(hardforkBytes, hardforkBytes.length, 4); // log_level=4 (debug)
+   ```
+
+4. **Validate bytecode** before execution:
+   - Ensure JUMP targets are JUMPDEST
+   - Check PUSH immediate values are within bounds
+   - Verify call gas limits
+
+5. **Handle errors gracefully**:
+   ```typescript
+   const success = wasm.evm_execute(evmHandle);
+   if (!success) {
+     const outputLen = wasm.evm_get_output_len(evmHandle);
+     if (outputLen > 0) {
+       // Get revert data
+     }
+   }
+   ```
+
+---
+
+## Additional Resources
+
+- **Main Documentation**: `../../CLAUDE.md`
+- **C API Reference**: `../../src/root_c.zig`
+- **Zig Implementation**: `../../src/evm.zig`, `../../src/frame.zig`
+- **Ethereum Specs**: https://github.com/ethereum/execution-specs
+- **EIPs**: https://eips.ethereum.org/
+
+---
+
+## Contributing
+
+Found a bug or want to add an example? See `../../CONTRIBUTING.md`
+
+---
+
+## License
+
+See `../../LICENSE`
 
 ---
 

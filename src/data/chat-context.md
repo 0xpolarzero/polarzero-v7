@@ -81,7 +81,7 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2470
+Stars: 2471
 Forks: 171
 
 ## silo
@@ -2613,7 +2613,7 @@ Source: https://github.com/evmts/guillotine-mini
   </h1>
   <sup>
     <a href="https://github.com/evmts/guillotine-mini">
-       <img src="https://img.shields.io/badge/zig-0.15.1+-orange.svg" alt="zig version" />
+       <img src="https://img.shields.io/badge/zig-0.15.2-orange.svg" alt="zig version" />
     </a>
     <a href="https://github.com/evmts/guillotine-mini/actions/workflows/ci.yml">
       <img src="https://github.com/evmts/guillotine-mini/actions/workflows/ci.yml/badge.svg" alt="CI" />
@@ -2628,10 +2628,10 @@ Source: https://github.com/evmts/guillotine-mini
 
 ## Requirements
 
-- Zig 0.15.1+ (CI uses 0.15.2)
+- Zig 0.15.2
 - Cargo (Voltaire builds its Rust crypto archive)
 - A `../voltaire` checkout at the revision pinned in `native-dependencies.json`
-- Python 3 and [uv](https://docs.astral.sh/uv/) for `zig build test` and `zig build specs` (execution-specs fills fixtures with Python 3.11+)
+- Python 3 and [uv](https://docs.astral.sh/uv/) for `zig build specs` (execution-specs fills fixtures with Python 3.11+)
 - Binaryen `wasm-opt` for building either WASM EVM reactor (CI uses 132.0.0)
 - Node 22+ for `zig build test-wasm` and `examples/wasm.mjs`
 
@@ -2644,9 +2644,10 @@ adjacent `../voltaire` directory. Clone both repositories side by side and check
 out the Voltaire revision pinned in `native-dependencies.json`:
 
 ```bash
-git clone --recurse-submodules https://github.com/evmts/guillotine-mini.git
+git clone https://github.com/evmts/guillotine-mini.git
 git clone https://github.com/evmts/voltaire.git
 git -C voltaire checkout "$(jq -r .voltaire.revision guillotine-mini/native-dependencies.json)"
+git -C voltaire submodule update --init packages/voltaire-zig/lib/libwally-core vendor/execution-apis
 cd guillotine-mini
 zig build
 ```
@@ -2654,14 +2655,6 @@ zig build
 The first build runs Cargo inside `../voltaire` to compile the Rust crypto
 archive. Plain `zig build` installs no artifacts; use `zig build native` for the
 C ABI static library and `zig build wasm` for the WASI reactor.
-
-`zig build test` runs the unit tests and the execution-specs state tests. It reads
-fixtures from the `execution-specs` and `ethereum-tests` submodules and, on the
-first run, uses `uv` to fill the execution-specs fixtures and `python3` to generate
-the spec test wrappers. If you cloned without submodules, run
-`git submodule update --init execution-specs ethereum-tests`. The Nethermind
-trie diff runs only when `dotnet` is installed; pass `-Dnethermind-diff=false` to
-skip it explicitly.
 
 **Use as a Zig dependency**
 
@@ -2701,16 +2694,33 @@ Run a value-transferring contract call with `zig build run-simple-call`.
 The [Zig examples](examples/README.md) include nine more runnable programs and their expected output.
 
 ```bash
-zig build
+zig build examples
+zig build run-examples
 zig build test
-zig build specs
-zig build wasm
-zig build test-wasm
 ```
 
+## Conformance tests
+
+Initialize `ethereum-tests` for the full trie suite and `execution-specs` for
+the Sepolia runner fixture and state conformance tests. `zig build test` runs
+the native suite. State conformance and Nethermind differential tests are
+opt-in via `-Dspecs=true` and `-Dnethermind-diff=true`.
+
 ```bash
+git submodule update --init execution-specs ethereum-tests
+zig build specs
 TEST_FILTER="push0" zig build specs
+zig build specs-blockchain
 ```
+
+See the [contributor guide](CONTRIBUTING.md#running-spec-subsets) for fixture
+generation and the optional Nethermind checkout.
+
+The [Lean 4 reference specification](spec/lean/README.md) models core EVM
+semantics and includes machine-checked theorems. With Elan installed,
+`zig build lean-diff -Doptimize=ReleaseFast` builds the oracle with the pinned
+Lean toolchain and compares 14,784 vectors against the Zig EVM. The
+`lean-diff-unit` target tests the Zig harness.
 
 ## WebAssembly
 
@@ -2799,6 +2809,11 @@ flowchart TB
 
 ## Benchmarks (Incremental via Smithers)
 
+CI uses Node 26 and Bun 1.4.2 for Smithers. With `smthrs@next` rc.16,
+the workflow plans the full graph using the CLI's bundled dependencies and
+runs native targets through Smithers. The client job runs against its
+own Effect installation.
+
 Performance benchmarks cover every Zig core EVM module, Zig client subsystem, WASI WASM reactor, C-FFI bridge, and TypeScript / `client-ts` package. Each module declares fine-grained `PACKAGE.ts` targets so Smithers only re-runs benchmarks whose dependencies changed and replays cached output on hits:
 
 ```bash
@@ -2826,12 +2841,14 @@ zig build bench -Doptimize=ReleaseFast
 - `CONTRIBUTING.md` — setup, test suites, and contribution workflow
 - `NATIVE_RELEASE.md` — native ZEVM embedding notes
 - `CLAUDE.md` — project guide for devs and AI assistants
+- [Glamsterdam hardfork roadmap](docs/HARDFORK_ROADMAP.md) — audit baseline and staged implementation
+- [Audit review reports](docs/reviews/) — findings from three review rounds
 
 ## Highlights
 
-- Full hardfork support (Frontier → Osaka)
+- Hardfork rules from Frontier through Osaka, including an Osaka property test suite
 - 20+ EIPs implemented (EIP-1153, EIP-2537, EIP-4844, EIP-6780, EIP-7702, EIP-7939 `CLZ`, EIP-7951 `P256VERIFY`)
-- Bounded EIP-3155 tracing (`Tracer.max_entries`) and `TraceDiff`
+- Bounded EIP-3155 tracing, execution inspectors, built-in tracers, and JSON-RPC tracing
 - WASI Preview 1 WASM reactor with linked crypto precompiles (`zig build wasm`)
 - Flat C ABI static archive (`zig build native`)
 
@@ -2856,8 +2873,10 @@ Source: https://github.com/evmts/guillotine-mini/blob/main/examples/README.md
 Set up Zig 0.15.2, Cargo and the pinned sibling Voltaire checkout using the [native build instructions](../README.md#install). Run these commands from the Guillotine Mini repository root.
 
 ```sh
+zig build examples                # compile the example executable
+zig build run-examples            # run all ten Zig examples
 zig build run-simple-call
-zig build run-example            # list example names
+zig build run-example             # list example names
 zig build run-example -- tracing # emit EIP-3155 JSON Lines to stdout
 ```
 
@@ -3948,6 +3967,129 @@ Found a bug or want to add an example? See `../../CONTRIBUTING.md`
 ## License
 
 See `../../LICENSE`
+
+### Inlined linked README: Lean 4 reference specification
+
+Source: https://github.com/evmts/guillotine-mini/blob/main/spec/lean/README.md
+
+# Lean 4 EVM reference specification
+
+An executable Lean 4 specification of the core EVM semantics that
+guillotine-mini implements, plus machine-checked theorems about it. The
+compiled binary is the reference side of a differential fuzzer: the Zig EVM and
+this specification answer the same requests, and any difference is a bug in one
+of them.
+
+The specification is written from the Yellow Paper, EELS
+(`execution-specs/src/ethereum/forks/*/vm`) and the EIPs, not from the Zig
+source.
+
+## Build
+
+```bash
+cd spec/lean
+lake build                       # about 6 seconds from clean, no dependencies
+.lake/build/bin/evm-lean-spec    # TSV oracle on stdin/stdout
+```
+
+The toolchain is `leanprover/lean4:v4.36.0`. The project uses only the Lean
+standard library (`Std.HashMap`, `Std.HashSet`); it has no Mathlib dependency.
+
+## Modules
+
+| File | Contents |
+|---|---|
+| `EvmSpec/Word.lean` | 256-bit word opcodes: ADD..SIGNEXTEND, LT..ISZERO, AND..SAR, CLZ, EXP gas |
+| `EvmSpec/Gas.lean` | `Fork` order, word-opcode gas, memory expansion, SLOAD and SSTORE gas and refunds, precompile table, EIP-7825 cap |
+| `EvmSpec/Bytecode.lean` | JUMPDEST analysis and the zero-padded PUSH immediate reader |
+| `EvmSpec/Machine.lean` | Small-step interpreter for one standalone frame |
+| `EvmSpec/Theorems.lean` | 60 kernel-checked theorems |
+| `EvmSpec/Main.lean` | TSV oracle loop |
+
+## Oracle protocol
+
+One tab-separated request per line, one tab-separated response per line,
+flushed after every line. `u256` values are lowercase hex without `0x`; byte
+strings are hex with `-` for empty; gas values are decimal.
+
+| Request | Response |
+|---|---|
+| `WORD <FORK> <OP> <A0> <A1> <A2>` | `OK <RESULT> <GAS>` or `ERR InvalidOpcode` |
+| `MEMGAS <CURRENT_SIZE> <END_BYTES>` | `OK <DELTA_GAS>` (`18446744073709551615` on `u64` overflow) |
+| `SSTORE <FORK> <ORIGINAL> <CURRENT> <NEW> <IS_COLD> <GAS_REM>` | `OK <GAS> <REFUND_DELTA>` or `ERR OutOfGas` |
+| `JUMPDEST <CODE>` | `OK <PC,PC,...>` or `OK -` |
+| `PUSH <CODE> <PC> <SIZE>` | `OK <VALUE>` |
+| `PRECOMPILE <FORK> <ADDR> <TX_GAS_LIMIT>` | `OK <IS_PRECOMPILE> <TX_GAS_ALLOWED>` |
+| `EXEC <FORK> <GAS> <CODE> <CALLDATA>` | `OK <STATUS> <GAS_REM> <REFUND> <OUTPUT>` |
+| `QUIT` | exits with code 0 |
+
+`STATUS` is `STOP`, `RETURN`, `REVERT`, `OOG`, `STACK_UNDERFLOW`,
+`STACK_OVERFLOW`, `INVALID_JUMP` or `INVALID_OPCODE`.
+
+Two responses extend the protocol:
+
+- `ERR BadRequest` answers a malformed line (unknown command, wrong field
+  count, unknown fork, bad number).
+- `ERR UnsupportedOpcode <OP_HEX>` answers an `EXEC` that reaches an opcode the
+  fork defines but the single-frame model does not execute (KECCAK256,
+  environment and block opcodes, LOG, CALL, CREATE, SELFDESTRUCT). The oracle
+  refuses instead of reporting a false `INVALID_OPCODE`.
+
+Example:
+
+```text
+$ printf 'WORD\tOSAKA\t1e\t1\t0\t0\nEXEC\tOSAKA\t100000\t600260030160005260206000f3\t-\nQUIT\n' \
+    | .lake/build/bin/evm-lean-spec
+OK	ff	5
+OK	RETURN	99976	0	0000000000000000000000000000000000000000000000000000000000000005
+```
+
+## Semantic decisions
+
+- **Exception precedence.** Each opcode follows EELS: pop operands, charge gas,
+  operate, push. An `ADD` on an empty stack with 0 gas reports
+  `STACK_UNDERFLOW`. guillotine-mini charges gas before it pops, so it reports
+  `OOG` there. Every exception consumes all gas, so this difference does not
+  affect consensus; a fuzzer that compares `STATUS` exactly will report it.
+- **Constantinople SSTORE.** `CONSTANTINOPLE` uses the Frontier schedule, as
+  EELS and mainnet do. EIP-1283 never ran on mainnet.
+- **Memory.** `memoryExpansionCost` is exact on unbounded naturals with no size
+  cap. `MEMGAS` answers `memoryExpansionCostU64`, which returns `2^64 - 1` only
+  when `end + 31` or `words²` exceeds `u64`.
+- **Precompiles.** The table is the canonical one: `0x01..0x04`, `..0x08`
+  (Byzantium), `..0x09` (Istanbul), `..0x0a` (Cancun), `..0x11` (Prague),
+  plus `0x0100` (Osaka).
+- **EXEC start state.** Storage and transient storage are empty, the refund
+  counter is 0, and every slot is cold from Berlin on. `REFUND` is the raw
+  counter before the EIP-3529 cap, and 0 after `REVERT`.
+- **Forks.** The oracle also accepts `DAO`, `MUIR_GLACIER`, `ARROW_GLACIER`
+  and `GRAY_GLACIER`.
+
+## Theorems
+
+`EvmSpec/Theorems.lean` has no admitted goals and uses only `propext`,
+`Quot.sound` and `Classical.choice`. A selection:
+
+| Theorem | Statement |
+|---|---|
+| `clz_zero`, `clz_lt_256` | `CLZ(0) = 256`; a nonzero word has fewer than 256 leading zeros |
+| `sdiv_min_neg1` | `-2^255 / -1 = -2^255` |
+| `sub_self_zero` | `a - a = 0` for every word |
+| `memoryCost_monotone` | `a ≤ b → memoryCost a ≤ memoryCost b` |
+| `memoryExpansion_additive` | expanding in two steps costs the same as expanding once |
+| `scan_ge`, `jumpdest_in_push_invalid` | a `0x5b` inside a `PUSH1` immediate is never a valid jump destination, for any following code |
+| `sstore_istanbul_vs_berlin_restore` | restoring an empty slot refunds 19200 (Istanbul) and 19900 (Berlin) |
+| `sstore_noop_refund` | a no-op SSTORE never changes the refund counter, on any fork |
+| `sstore_sentry` | SSTORE with 2300 gas fails from Istanbul on, for any values |
+| `eip7825_boundary` | Osaka accepts `2^24` gas and rejects `2^24 + 1`; Prague accepts both |
+| `precompile_monotone` | a precompile stays a precompile in every later fork |
+
+Check the axioms of any theorem:
+
+```bash
+echo 'import EvmSpec.Theorems
+#print axioms EvmSpec.Theorems.jumpdest_in_push_invalid' | lake env lean --stdin
+```
 
 ---
 

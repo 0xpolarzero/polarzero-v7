@@ -81,7 +81,7 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2471
+Stars: 2472
 Forks: 171
 
 ## silo
@@ -2593,7 +2593,7 @@ bun test            # loads ../../zig-out/lib unless GUILLOTINE_LIB_PATH is set
 bun run lint:package  # publint + are-the-types-wrong on the packed tarball
 ```
 
-`bun run build:native` builds a ReleaseFast library and copies it into `prebuilds/<platform>-<arch>/`. `prepublishOnly` runs it, so a publish ships only the host platform's prebuild. Publishing for more platforms requires building each one into `prebuilds/` before `npm publish`.
+`bun run build:native` builds a ReleaseFast library and copies it into `prebuilds/<platform>-<arch>/`. `prepublishOnly` runs it by default so a local publish ships the host platform's prebuild. In CI or multi-platform releases where `prebuilds/` is pre-assembled across platforms, set `GUILLOTINE_SKIP_NATIVE_BUILD=1` so `prepublishOnly` keeps the assembled prebuilds intact while still running build, typecheck, tests, and package linting.
 
 ## License
 

@@ -17,7 +17,7 @@
       "description": "Codex computer use, decoupled from the app, for usage inside any harness.",
       "language": "JavaScript",
       "languageColor": "#f1e05a",
-      "stars": 2555,
+      "stars": 2562,
       "forks": 176
     },
     {
@@ -25,8 +25,8 @@
       "nameWithOwner": "amontlabs/silo",
       "url": "https://github.com/amontlabs/silo",
       "description": "Isolated computers for AI agents. Run untrusted code with a desktop and computer use, branch checkpoints, and diff states.",
-      "language": "JavaScript",
-      "languageColor": "#f1e05a",
+      "language": "Python",
+      "languageColor": "#3572A5",
       "stars": 9,
       "forks": 1
     },

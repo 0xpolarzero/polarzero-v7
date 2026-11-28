@@ -81,7 +81,7 @@ Repository: amontlabs/lcu
 URL: https://github.com/amontlabs/lcu
 Description: Codex computer use, decoupled from the app, for usage inside any harness.
 Primary language: JavaScript
-Stars: 2555
+Stars: 2562
 Forks: 176
 
 ## silo
@@ -89,7 +89,7 @@ Forks: 176
 Repository: amontlabs/silo
 URL: https://github.com/amontlabs/silo
 Description: Isolated computers for AI agents. Run untrusted code with a desktop and computer use, branch checkpoints, and diff states.
-Primary language: JavaScript
+Primary language: Python
 Stars: 9
 Forks: 1
 
